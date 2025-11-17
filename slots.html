@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты | [СИСТЕМА] v.4.4 (Кибер-Кликер)</title>
+    <title>Слоты | [СИСТЕМА] v.4.6 (Финализированные выплаты)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -86,7 +86,7 @@
             margin-right: 30px; 
         }
         
-        /* ПАНЕЛЬ ПРАВИЛ */
+        /* ПАНЕЛЬ ПРАВИЛ (Обновлены выплаты) */
         .rules-panel {
             width: 250px; 
             padding: 20px;
@@ -244,11 +244,11 @@
             text-align: center;
         }
         
-        /* --- СТИЛИ КЛИКЕРА (НОВАЯ ВЕРСИЯ) --- */
+        /* --- СТИЛИ КЛИКЕРА --- */
         .clicker-section {
             margin-top: 30px;
             padding: 15px;
-            background-color: #150020; /* Темно-фиолетовый фон */
+            background-color: #150020; 
             border: 3px solid var(--accent-pink);
             border-radius: 10px;
             box-shadow: 0 0 20px var(--accent-pink), 0 0 10px rgba(0, 0, 0, 0.5) inset;
@@ -377,7 +377,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>СЛОТЫ | [СИСТЕМА] v.4.4</h1>
+    <h1>СЛОТЫ | [СИСТЕМА] v.4.6</h1>
 
     <div id="balance-display">КРЕДИТ: 0 М</div>
 
@@ -388,14 +388,16 @@
             <ul>
                 <li><strong>ЦЕЛЬ:</strong> Собрать 3 одинаковых символа по центральной линии.</li>
                 <li><strong>СТАВКА:</strong> Минимум 10 М. Снимается перед каждым спином.</li>
-                <li><strong>ВЫПЛАТЫ:</strong>
+                <li><strong>ВЫПЛАТЫ (3х Совпадения):</strong>
                     <ul>
-                        <li><span style="color: var(--win-color)">3х Символа</span> = Ставка x (2.5 до 60).</li>
-                        <li><span style="color: var(--win-color)">2х Символа</span> = Ставка x 0.5.</li>
-                        <li><span style="color: var(--loss-color)">ПРОИГРЫШ</span> = 0.</li>
+                        <li><span style="color: #FFD700">3х ⚡️:</span> Ставка x 3.</li>
+                        <li><span style="color: #FF0000">3х 🍎:</span> Ставка x 6.</li>
+                        <li><span style="color: #00FFFF">3х 💎:</span> Ставка x 20.</li>
+                        <li><span style="color: #FFFF00">3х ⭐️:</span> Ставка x 50 (МЕГА).</li>
                     </ul>
                 </li>
-                <li><strong>Шансы:</strong> Используются взвешенные коэффициенты. Редкие символы (например, 💎) приносят больше, но выпадают реже.</li>
+                <li><strong style="color: var(--accent-blue)">2х Совпадения:</strong> Ставка x 1.5 (Чистый выигрыш 50%).</li>
+                <li><span style="color: var(--loss-color)">ПРОИГРЫШ</span> = 0.</li>
             </ul>
         </div>
         
@@ -455,12 +457,16 @@
             let currentTop = 0;
             let isSpinning = false;
 
-            // --- СИМВОЛЫ ИГРЫ (ЭМОДЗИ) С ВЕСОМ ---
+            // --- СИМВОЛЫ ИГРЫ (ЭМОДЗИ) С ФИНАЛЬНЫМИ ВЫПЛАТАМИ ---
             const SYMBOLS = [
-                { text: '⚡️', payout: 2.5, color: '#FFD700', weight: 10 }, // Частый
-                { text: '🍎', payout: 6, color: '#FF0000', weight: 6 },    // Средний
-                { text: '💎', payout: 18, color: '#00FFFF', weight: 4 },   // Редкий
-                { text: '⭐️', payout: 60, color: '#FFFF00', weight: 5 }    // Супер-редкий, но с хорошим весом
+                // 3х ⚡️ = 3x
+                { text: '⚡️', payout: 3, color: '#FFD700', weight: 10 }, 
+                // 3х 🍎 = 6x
+                { text: '🍎', payout: 6, color: '#FF0000', weight: 6 },    
+                // 3х 💎 = 20x
+                { text: '💎', payout: 20, color: '#00FFFF', weight: 4 },   
+                // 3х ⭐️ = 50x 
+                { text: '⭐️', payout: 50, color: '#FFFF00', weight: 5 }    
             ];
             const MIN_BET = 10;
 
@@ -521,8 +527,8 @@
                 BALANCE_DISPLAY.textContent = `КРЕДИТ: ${currentMoney} М`;
                 
                 const isAffordable = currentMoney >= MIN_BET;
-                
-                // ЛОГИКА ОТОБРАЖЕНИЯ КЛИКЕРА
+
+                // ЛОГИКА ОТОБРАЖЕНИЯ КЛИКЕРА (только если не авторизован или низкий баланс)
                 if (!isUserLoggedIn) {
                     CLICKER_PANEL.style.display = 'flex';
                     CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
@@ -638,7 +644,6 @@
                 setTimeout(() => {
                     REELS.forEach(reel => reel.classList.remove('spinning'));
                     
-                    // ИСПОЛЬЗУЕМ ВЗВЕШЕННЫЙ МАССИВ
                     const results = REELS.map(() => WEIGHTED_SYMBOLS[Math.floor(Math.random() * WEIGHTED_SYMBOLS.length)]);
                     
                     results.forEach((item, index) => {
@@ -663,23 +668,23 @@
                 const r2_text = r2.text;
                 const r3_text = r3.text;
 
-                // Находим объект символа по тексту для получения payout
                 const getSymbolPayout = (text) => SYMBOLS.find(s => s.text === text).payout;
 
                 // 1. ПРОВЕРКА НА 3 ОДИНАКОВЫХ (JACKPOT)
                 if (r1_text === r2_text && r2_text === r3_text) {
                     const payoutMultiplier = getSymbolPayout(r1_text);
                     winnings = bet * payoutMultiplier;
-                    MESSAGE_DISPLAY.textContent = `[JACKPOT!] ${r1_text} ${r2_text} ${r3_text}. ВЫИГРЫШ: ${winnings} М.`;
+                    MESSAGE_DISPLAY.textContent = `[JACKPOT!] ${r1_text} ${r2_text} ${r3_text}. ВЫИГРЫШ: ${winnings} М. (x${payoutMultiplier})`;
                     MESSAGE_DISPLAY.className = 'win';
                     REELS.forEach(reel => reel.classList.add('win-glow'));
                     REELS.forEach(reel => reel.classList.add('glitch-active'));
                 } 
-                // 2. ПРОВЕРКА НА 2 ОДИНАКОВЫХ (ЧАСТИЧНЫЙ ВЫИГРЫШ)
+                // 2. ПРОВЕРКА НА 2 ОДИНАКОВЫХ (1.5x)
                 else if (r1_text === r2_text || r2_text === r3_text || r1_text === r3_text) {
-                    winnings = bet * 0.5;
-                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] АКТИВАЦИЯ. ДВЕ СОВПАДЕНИЯ. ВЫИГРЫШ: ${winnings} М.`;
-                    MESSAGE_DISPLAY.className = 'win';
+                    // ИЗМЕНЕНИЕ: 1.5x (Чистый выигрыш 50%)
+                    winnings = bet * 1.5; 
+                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] АКТИВАЦИЯ. ДВЕ СОВПАДЕНИЯ. ВЫИГРЫШ: ${winnings} М. (x1.5)`;
+                    MESSAGE_DISPLAY.className = 'info'; 
                 } 
                 // 3. ПРОИГРЫШ
                 else {
