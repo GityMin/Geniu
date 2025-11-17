@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Денис Казаков — Гений, Визионер, Разработчик</title>
+    <title>Главная | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* ГЛОБАЛЬНЫЕ СТИЛИ */
         body { 
             font-family: 'Arial', sans-serif; 
-            background-color: #121212; 
+            background-color: #0d0d0d; 
             color: #E0E0E0; 
             text-align: center; 
             padding-top: 50px; 
@@ -16,7 +17,6 @@
             background-color: #333; 
             padding: 10px 0; 
             margin-bottom: 50px; 
-            width: 100%;
         }
         .nav-bar a { 
             color: #fff; 
@@ -24,49 +24,101 @@
             text-decoration: none; 
             font-size: 18px; 
             font-weight: bold; 
-            display: inline-block;
         }
         .nav-bar a:hover { 
             background-color: #575757; 
         }
+
+        /* ОСНОВНОЙ КОНТЕЙНЕР */
+        .main-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            border: 3px solid #00FFFF;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        /* ПРИВЕТСТВИЕ */
         h1 { 
-            color: #4CAF50; 
-            font-size: 3em; 
-            text-shadow: 0 0 10px #4CAF50; 
-        }
-        .content { 
-            max-width: 700px; 
-            margin: 0 auto; 
-            background-color: #1E1E1E; 
-            padding: 30px; 
-            border-radius: 15px; 
-            border: 2px solid #4CAF50; 
-            text-align: left;
-        }
-        p { 
-            margin-bottom: 15px; 
-            font-size: 1.1em;
-        }
-        .key-feature {
-            color: #FFD700;
-            font-weight: bold;
-        }
-        #greeting-message {
-            font-size: 1.5em;
-            color: #00BFFF;
-            margin-bottom: 20px;
-            font-weight: bold;
-            min-height: 30px;
+            color: #FFFF00; 
+            text-shadow: 0 0 10px #FFFF00; 
+            font-size: 3em;
+            margin-bottom: 10px;
         }
         
-        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        /* СОСТОЯНИЕ ВХОДА (динамический блок) */
+        #auth-status {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        /* Стили для зарегистрированного пользователя */
+        .logged-in {
+            background-color: #00800033;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+        }
+        
+        /* Стили для гостя */
+        .logged-out {
+            background-color: #8B000033;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+        }
+
+        /* КНОПКА ИГР */
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1.8em;
+            font-weight: bold;
+            background-color: #FF4500;
+            color: #FFF;
+            text-decoration: none;
+            border-radius: 10px;
+            box-shadow: 0 5px #CC3700;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .cta-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px #CC3700;
+        }
+
+        /* ИНФОБЛОК */
+        .info-block {
+            text-align: left;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 8px;
+            border-left: 5px solid #00FFFF;
+        }
+        .info-block h3 {
+            color: #00FFFF;
+        }
+        .info-block ul {
+            list-style: none;
+            padding: 0;
+        }
+        .info-block li::before {
+            content: "🎮 ";
+            color: #FFFF00;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 600px) {
             h1 { font-size: 2em; }
-            .content { padding: 15px; margin: 0 10px; }
-            .nav-bar a { 
-                font-size: 16px; 
-                padding: 10px 15px;
-            }
+            .cta-button { font-size: 1.5em; padding: 12px 20px; }
+            .main-container { margin: 0 10px; padding: 20px; }
         }
     </style>
 </head>
@@ -78,39 +130,62 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>Сайт Дениса Казакова — Гения и Визионера МММ</h1>
-
-    <div id="greeting-message"></div>
-
-    <div class="content">
-        <p>Добро пожаловать в мою цифровую империю! Меня зовут Денис Казаков, и я — **Гений** этого проекта. Этот сайт служит полигоном для моих грандиозных идей в области кодинга и разработки игр. Я создаю будущее, используя самые передовые, а иногда и самые смелые, концепции.</p>
+    <div class="main-container">
+        <h1>Ручка Гения v1.0</h1>
         
-        <h2>🔥 Что вы найдете на сайте?</h2>
-        <ul>
-            <li>**<span class="key-feature">Авторизация (Новинка!):</span>** Теперь вы можете войти в систему и персонализировать свой опыт!</li>
-            <li>**<span class="key-feature">Игры:</span>** Коллекция уникальных, смелых игр, включая Кликер с сохранением прогресса, Сэндбокс-симулятор и, конечно же, <span class="key-feature">Слоты</span> и <span class="key-feature">Блэкджек</span>.</li>
-            <li>**<span class="key-feature">Защита баланса:</span>** Я внедрил гениальную защиту (Checksum) от читеров! Попробуй обмануть меня!</li>
-        </ul>
+        <div id="auth-status" class="logged-out">
+            Привет, Гость! Войди или зарегистрируйся, чтобы начать играть!
+            <a href="login.html" style="color: #FFFF00; margin-left: 10px;">(Войти)</a>
+        </div>
+        <a href="games.html" class="cta-button">Начать Игры на Мани!</a>
 
-        <p>Все мои проекты созданы на чистом **HTML, CSS и JavaScript**, что является доказательством моего мастерства и эффективности. Я не нуждаюсь в сложных фреймворках, чтобы создавать шедевры.</p>
-        
-        <p>Перейдите на страницу <a href="games.html">**Игры**</a>, чтобы начать свой путь к богатству и просвещению!</p>
+        <div class="info-block">
+            <h3>Что такое "Ручка Гения"?</h3>
+            <p>Это коллекция простейших азартных игр, созданных Денисом Казаковым для тренировки навыков веб-разработки (HTML/CSS/JS).</p>
+            <ul>
+                <li>Баланс "Мани" сохраняется локально в Вашем браузере.</li>
+                <li>Ваш баланс и логин привязываются к имени пользователя.</li>
+                <li>Все игры работают на чистом JavaScript, без серверов!</li>
+            </ul>
+        </div>
     </div>
-    
+
     <script>
         window.onload = function() {
-            const USERNAME_KEY = 'denisKazakovUsername';
-            const SESSION_KEY = 'denisKazakovUserLoggedIn';
-            const GREETING_DIV = document.getElementById('greeting-message');
+            const AUTH_STATUS_DIV = document.getElementById('auth-status');
+            const CURRENT_USER_KEY = 'denisKazakovUser'; 
+            const SECRET_KEY = 952;
+            const MONEY_PREFIX = 'money_';
+            const CHECKSUM_PREFIX = 'checksum_';
 
-            const loggedIn = localStorage.getItem(SESSION_KEY) === 'true';
-            const username = localStorage.getItem(USERNAME_KEY);
+            const storedUser = localStorage.getItem(CURRENT_USER_KEY);
+            
+            function getMoney(username) {
+                const moneyKey = MONEY_PREFIX + username;
+                const checksumKey = CHECKSUM_PREFIX + username;
 
-            if (loggedIn && username) {
-                GREETING_DIV.textContent = `Снова рады видеть тебя, великий ${username}!`;
-            } else {
-                GREETING_DIV.innerHTML = 'Ты еще не вошел. Перейди на <a href="login.html">**Вход/Выход**</a>, чтобы начать.';
+                const storedMoney = parseInt(localStorage.getItem(moneyKey));
+                const storedChecksum = parseInt(localStorage.getItem(checksumKey));
+
+                // Проверка целостности
+                if (storedMoney + SECRET_KEY !== storedChecksum) {
+                    return 'Баланс: НЕДЕЙСТВИТЕЛЕН (нужна перерегистрация)';
+                }
+                return `Баланс: ${storedMoney} Мани`;
             }
+
+            if (storedUser) {
+                const moneyInfo = getMoney(storedUser);
+
+                AUTH_STATUS_DIV.classList.remove('logged-out');
+                AUTH_STATUS_DIV.classList.add('logged-in');
+                AUTH_STATUS_DIV.innerHTML = `
+                    Привет, **Гений ${storedUser}**! <br> 
+                    ${moneyInfo}
+                    <a href="login.html" style="color: #FFFF00; margin-left: 10px; text-decoration: underline;">(Выход)</a>
+                `;
+            }
+            // Если пользователя нет, то отображается стандартный `logged-out` текст из HTML
         };
     </script>
 </body>
