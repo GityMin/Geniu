@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты | [СИСТЕМА] v.4.2 (С правилами)</title>
+    <title>Слоты | [СИСТЕМА] v.4.3 (Кибер-Кликер)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -67,7 +67,7 @@
         
         /* ОБЩИЙ КОНТЕЙНЕР ДЛЯ ПРАВИЛ И ИГРЫ */
         .slot-wrapper {
-            max-width: 1200px; /* Увеличил ширину для панели правил */
+            max-width: 1200px; 
             margin: 0 auto;
             display: flex; 
             justify-content: center;
@@ -83,7 +83,7 @@
             box-shadow: 0 0 35px rgba(51, 204, 255, 0.7);
             position: relative;
             transform: perspective(1000px) rotateX(2deg); 
-            margin-right: 30px; /* Отступ от ручки */
+            margin-right: 30px; 
         }
         
         /* ПАНЕЛЬ ПРАВИЛ */
@@ -134,7 +134,7 @@
             gap: 15px;
         }
         .reel {
-            font-size: 4.5em; /* Увеличенный размер для эмодзи */
+            font-size: 4.5em; 
             width: 140px;
             height: 140px;
             line-height: 140px;
@@ -196,18 +196,6 @@
             transition: top 0.1s ease-out; 
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
-        #lever-arm::before {
-            content: '';
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            width: 15px;
-            height: 110px;
-            background: linear-gradient(to top, var(--accent-pink) 0%, transparent 50%, var(--accent-blue) 100%);
-            opacity: 0.6;
-            filter: blur(4px);
-            pointer-events: none;
-        }
         #lever-arm.dragging {
             cursor: grabbing;
         }
@@ -255,6 +243,55 @@
             border-radius: 3px;
             text-align: center;
         }
+        
+        /* --- СТИЛИ КЛИКЕРА (НОВАЯ ВЕРСИЯ) --- */
+        .clicker-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.95); 
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10; 
+            padding: 20px;
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .clicker-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        #clicker-button {
+            padding: 15px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            font-weight: 700;
+            background-color: var(--accent-pink);
+            color: var(--bg-color);
+            border: 4px solid var(--accent-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--accent-pink), 0 0 10px var(--accent-blue) inset;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        #clicker-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 10px var(--accent-pink);
+        }
+        .clicker-overlay p {
+            font-size: 1.5em;
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px var(--accent-blue);
+            margin-bottom: 20px;
+        }
+
 
         /* АНИМАЦИИ */
         @keyframes spin {
@@ -290,7 +327,7 @@
                 margin-right: 0;
                 margin-bottom: 20px;
                 transform: none;
-                order: -1; /* Правила сверху */
+                order: -1; 
             }
             .slot-container {
                 width: 100%;
@@ -328,6 +365,14 @@
             :root {
                 --lever-drop-height: 60px;
             }
+            
+            .clicker-overlay p {
+                font-size: 1.2em;
+            }
+            #clicker-button {
+                font-size: 1.2em;
+                padding: 10px 20px;
+            }
         }
     </style>
 </head>
@@ -339,7 +384,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>СЛОТЫ | [СИСТЕМА] v.4.2</h1>
+    <h1>СЛОТЫ | [СИСТЕМА] v.4.3</h1>
 
     <div id="balance-display">КРЕДИТ: 0 М</div>
 
@@ -377,6 +422,11 @@
             </div>
             
             <p id="message-display" class="info">ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].</p>
+            
+            <div class="clicker-overlay" id="clicker-panel">
+                <p>КРЕДИТ < МИН. СТАВКИ. <br>АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.</p>
+                <button id="clicker-button">КЛИКНИ +1 М</button>
+            </div>
         </div>
         
         <div id="lever-wrapper">
@@ -388,10 +438,6 @@
 
     </div>
 
-    <div class="clicker-section" id="clicker-panel" style="display: none;">
-        <p>КРЕДИТ [0]. АКТИВИРУЙ КЛИКЕР.</p>
-        <button id="clicker-button">КЛИКНИ +1 М</button>
-    </div>
 
     <script>
         window.onload = function() {
@@ -535,10 +581,17 @@
                 
                 const isAffordable = currentMoney >= MIN_BET;
                 
-                if (!isAffordable) {
-                    CLICKER_PANEL.style.display = 'block';
+                // ЛОГИКА ОВЕРЛЕЯ КЛИКЕРА
+                if (!isUserLoggedIn) {
+                    CLICKER_PANEL.classList.add('active');
+                    CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
+                    CLICKER_BUTTON.disabled = true;
+                } else if (!isAffordable) {
+                    CLICKER_PANEL.classList.add('active');
+                    CLICKER_BUTTON.textContent = `КЛИКНИ [+1 М] КРЕДИТ: ${currentMoney}`;
+                    CLICKER_BUTTON.disabled = false;
                 } else {
-                    CLICKER_PANEL.style.display = 'none';
+                    CLICKER_PANEL.classList.remove('active');
                 }
                 
                 const shouldDisable = !isAffordable || isSpinning || !isUserLoggedIn;
@@ -649,7 +702,6 @@
             function handleCick() {
                 if (isUserLoggedIn) {
                     setMoney(getMoney() + 1);
-                    CLICKER_BUTTON.textContent = `[+1 М] КРЕДИТ: ${getMoney()}`;
                 }
             }
 
@@ -659,10 +711,6 @@
                 LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px'; 
             } else {
                  MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
-                 CLICKER_PANEL.style.display = 'block';
-                 CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
-                 CLICKER_BUTTON.disabled = true;
-                 LEVER_ARM.disabled = true;
             }
 
             // СЛУШАТЕЛИ РУЧКИ
