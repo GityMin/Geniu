@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты | [СИСТЕМА] v.3.0</title>
+    <title>Слоты | [СИСТЕМА] v.4.0 (Эмодзи)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -84,7 +84,7 @@
             transform: perspective(1000px) rotateX(2deg); 
         }
 
-        /* 3D-БАРАБАНЫ - МАТРИЧНЫЙ ДИЗАЙН */
+        /* 3D-БАРАБАНЫ - СТИЛИЗОВАННЫЕ ПОД ЭМОДЗИ */
         .reels {
             display: flex;
             justify-content: space-around;
@@ -92,7 +92,7 @@
             gap: 15px;
         }
         .reel {
-            font-size: 3.5em; 
+            font-size: 4.5em; /* Увеличенный размер для эмодзи */
             width: 140px;
             height: 140px;
             line-height: 140px;
@@ -101,18 +101,25 @@
             border: 5px outset var(--accent-pink); 
             box-shadow: inset 0 0 20px rgba(51, 204, 255, 0.5), 0 0 10px var(--accent-pink);
             font-weight: 700; 
-            color: var(--accent-blue); 
-            text-shadow: 0 0 10px var(--accent-blue), 0 0 20px rgba(51, 204, 255, 0.7); 
+            color: var(--accent-blue); /* Цвет не будет влиять на эмодзи, но оставим для эффекта */
+            text-shadow: none; /* Убираем текстовую тень, т.к. она плохо влияет на эмодзи */
             transition: all 0.2s;
             overflow: hidden; 
             transform: skewX(-5deg); 
+            /* Важно: эмодзи всегда будут использовать свои цвета, но мы можем контролировать рамки */
         }
         .reel.win-glow {
             border-color: var(--win-color);
             box-shadow: 0 0 30px var(--win-color), inset 0 0 15px var(--win-color);
-            color: var(--win-color);
             transform: scale(1.05) skewX(-5deg);
         }
+        /* Установим для символов-эмодзи универсальный стиль, чтобы они выглядели ярче */
+        .reel span {
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
+            display: block;
+            line-height: inherit;
+        }
+
 
         /* ДЕТАЛИЗИРОВАННАЯ 3D-РУЧКА */
         #lever-wrapper {
@@ -198,6 +205,17 @@
         .info { color: var(--accent-blue); text-shadow: 0 0 15px rgba(51, 204, 255, 0.9); }
         .win { color: var(--win-color); text-shadow: 0 0 15px rgba(0, 255, 0, 0.9); }
         .loss { color: var(--loss-color); text-shadow: 0 0 15px rgba(255, 0, 0, 0.9); }
+        
+        .controls input[type="number"] {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #333;
+            color: var(--text-color);
+            border: 2px solid var(--accent-pink);
+            padding: 5px 10px;
+            width: 80px;
+            border-radius: 3px;
+            text-align: center;
+        }
 
         /* АНИМАЦИИ */
         @keyframes spin {
@@ -238,7 +256,7 @@
                 gap: 5px;
             }
             .reel {
-                font-size: 2.5em; 
+                font-size: 3.5em; /* Размер эмодзи на мобильном */
                 width: 90px;
                 height: 90px;
                 line-height: 90px;
@@ -274,7 +292,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 СЛОТЫ | [СИСТЕМА] v.3.0</h1>
+    <h1>СЛОТЫ | [СИСТЕМА] v.4.0</h1>
 
     <div id="balance-display">КРЕДИТ: 0 М</div>
 
@@ -334,19 +352,13 @@
             let currentTop = 0;
             let isSpinning = false;
 
-            // --- СИМВОЛЫ ИГРЫ ---
+            // --- СИМВОЛЫ ИГРЫ (ЭМОДЗИ!) ---
             const SYMBOLS = [
-                { text: 'X', color: '#FF33CC' },
-                { text: '0', color: '#FFD700' },
-                { text: 'CODE', color: '#00FF00' },
-                { text: 'TRON', color: '#33CCFF' }
+                { text: '⚡️', payout: 2, color: '#FFD700' }, // Молния (Золото)
+                { text: '🍎', payout: 5, color: '#FF0000' }, // Яблоко (Красный)
+                { text: '💎', payout: 15, color: '#00FFFF' }, // Алмаз (Циан)
+                { text: '⭐️', payout: 50, color: '#FFFF00' }  // Звезда (Ярко-желтый)
             ];
-            const PAYOUTS = {
-                'X': 2,
-                '0': 5,
-                'CODE': 15,
-                'TRON': 50
-            };
             const MIN_BET = 10;
             
             // --- ЛОГИКА БАЛАНСА ---
@@ -497,7 +509,7 @@
                     reel.classList.add('spinning');
                     reel.classList.remove('win-glow');
                     reel.classList.remove('glitch-active');
-                    reel.textContent = '?';
+                    reel.innerHTML = '<span style="color: var(--accent-blue)">?</span>'; // Используем span для "?"
                 });
                 
                 MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ИДЕТ ОБРАБОТКА ДАННЫХ...";
@@ -509,11 +521,10 @@
                     const results = REELS.map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
                     
                     results.forEach((item, index) => {
-                        REELS[index].textContent = item.text;
-                        REELS[index].style.color = item.color; 
+                        REELS[index].innerHTML = `<span>${item.text}</span>`;
                         REELS[index].style.borderColor = item.color;
+                        // Эмодзи лучше всего смотрятся с желто-синими рамками и без тени текста
                         REELS[index].style.boxShadow = `inset 0 0 20px rgba(51, 204, 255, 0.5), 0 0 10px ${item.color}`;
-                        REELS[index].style.textShadow = `0 0 10px ${item.color}, 0 0 20px ${item.color}`;
                     });
                     
                     checkResult(results, bet);
@@ -532,9 +543,13 @@
                 const r2_text = r2.text;
                 const r3_text = r3.text;
 
+                // Находим объект символа по тексту для получения payout
+                const getSymbolPayout = (text) => SYMBOLS.find(s => s.text === text).payout;
+
                 if (r1_text === r2_text && r2_text === r3_text) {
-                    winnings = bet * PAYOUTS[r1_text];
-                    MESSAGE_DISPLAY.textContent = `[JACKPOT!] ВЫИГРЫШ: ${winnings} М.`;
+                    const payoutMultiplier = getSymbolPayout(r1_text);
+                    winnings = bet * payoutMultiplier;
+                    MESSAGE_DISPLAY.textContent = `[JACKPOT!] ${r1_text} ${r2_text} ${r3_text}. ВЫИГРЫШ: ${winnings} М.`;
                     MESSAGE_DISPLAY.className = 'win';
                     REELS.forEach(reel => reel.classList.add('win-glow'));
                     REELS.forEach(reel => reel.classList.add('glitch-active'));
