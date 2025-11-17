@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Блэкджек | [СИСТЕМА] v.3.1 (3D & ЦВЕТ)</title>
+    <title>Блэкджек | [СИСТЕМА] v.3.2 (3D & ЦВЕТ & КЛИКЕР)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -14,8 +14,8 @@
             --card-bg: #181818; 
             --win-color: #00FF00;
             --loss-color: #FF0000;
-            --red-suit: var(--accent-pink);    /* Розовый неон для красных мастей */
-            --black-suit: var(--accent-blue);  /* Голубой неон для черных мастей */
+            --red-suit: var(--accent-pink);
+            --black-suit: var(--accent-blue);
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -101,18 +101,17 @@
             
             /* 3D И СВЕЧЕНИЕ КАРТЫ */
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(51, 204, 255, 0.8);
-            transform: perspective(500px) rotateX(10deg) translateZ(10px); /* Объем и небольшой наклон */
+            transform: perspective(500px) rotateX(10deg) translateZ(10px); 
 
             font-size: 1.2em;
             font-weight: 700;
-            transition: transform 0.5s, opacity 0.5s, box-shadow 0.5s; /* Анимация раздачи */
+            transition: transform 0.5s, opacity 0.5s, box-shadow 0.5s; 
             opacity: 1;
         }
         .card-value {
             font-size: 2.5em;
             font-weight: 900;
             line-height: 1;
-            /* Цвет текста будет зависеть от класса масти ниже */
             text-shadow: 0 0 8px currentColor; 
         }
         .card-suit {
@@ -134,12 +133,10 @@
         
         /* АНИМАЦИЯ РАЗДАЧИ */
         .card.dealt {
-            /* Начальное положение: невидимо и повернуто */
             transform: perspective(500px) rotateX(90deg) translateZ(0);
             opacity: 0;
         }
         .card.visible {
-            /* Конечное положение */
             transform: perspective(500px) rotateX(10deg) translateZ(10px);
             opacity: 1;
         }
@@ -171,6 +168,31 @@
             transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
         }
 
+        /* СТИЛИ КЛИКЕРА */
+        .clicker-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #111111;
+            border: 2px solid var(--accent-pink);
+            border-radius: 8px;
+            box-shadow: 0 0 15px var(--accent-pink);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #clicker-button {
+            background-color: var(--accent-pink);
+            color: var(--bg-color);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            box-shadow: 0 0 10px var(--accent-pink);
+        }
+
+
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 768px) {
             .game-area {
@@ -195,7 +217,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.1 ♥</h1>
+    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.2 ♥</h1>
 
     <div class="game-area">
         <div id="balance-display">КРЕДИТ: 100 М</div>
@@ -218,6 +240,11 @@
         </div>
     </div>
 
+    <div class="clicker-section" id="clicker-panel" style="display: none;">
+        <p style="font-size: 1.1em; margin-bottom: 10px;">КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙ КЛИКЕР.</p>
+        <button id="clicker-button">КЛИКНИ +1 М</button>
+    </div>
+
     <script>
         window.onload = function() {
             // DOM Элементы
@@ -231,10 +258,11 @@
             const newGameBtn = document.getElementById('new-game-button');
             const hitBtn = document.getElementById('hit-button');
             const standBtn = document.getElementById('stand-button');
+            const clickerPanel = document.getElementById('clicker-panel');
+            const clickerButton = document.getElementById('clicker-button');
 
             // --- КОНФИГУРАЦИЯ ---
             const MIN_BET = 10;
-            // Возвращаем масти и добавляем класс цвета
             const SUITS = {
                 'Hearts': { symbol: '♥', colorClass: 'red' },
                 'Diamonds': { symbol: '♦', colorClass: 'red' },
@@ -294,19 +322,39 @@
             function updateBalanceDisplay(currentMoney) {
                 balanceEl.textContent = `КРЕДИТ: ${currentMoney} М`;
                 
+                const isAffordable = currentMoney >= MIN_BET;
+
+                // ЛОГИКА КЛИКЕРА
                 if (!isUserLoggedIn) {
                     messageEl.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
                     newGameBtn.disabled = true;
-                } else if (currentMoney < MIN_BET) {
+                    clickerPanel.style.display = 'block';
+                    clickerButton.textContent = 'АВТОРИЗУЙСЯ';
+                    clickerButton.disabled = true;
+                } else if (!isAffordable) {
                     messageEl.textContent = `[СИСТЕМА] НЕДОСТАТОЧНО КРЕДИТА. МИНИМУМ: ${MIN_BET} М.`;
                     messageEl.className = 'loss';
                     newGameBtn.disabled = true;
+                    // Показываем кликер
+                    clickerPanel.style.display = 'block';
+                    clickerButton.textContent = `[+1 М] КРЕДИТ: ${currentMoney}`;
+                    clickerButton.disabled = false;
                 } else if (!gameActive) {
                      messageEl.textContent = `НАЖМИТЕ [НОВАЯ ИГРА], ЧТОБЫ НАЧАТЬ. СТАВКА: ${betInputEl.value} М.`;
                      messageEl.className = 'info';
                      newGameBtn.disabled = false;
+                     // Скрываем кликер
+                     clickerPanel.style.display = 'none';
                 }
             }
+
+            // --- ЛОГИКА КЛИКЕРА ---
+            function handleCick() {
+                if (isUserLoggedIn) {
+                    setMoney(getMoney() + 1);
+                }
+            }
+
 
             // --- ЛОГИКА КАРТ ---
             function createDeck() {
@@ -402,11 +450,9 @@
                 dealerHand = [drawCard(), drawCard()];
                 playerHand = [drawCard(), drawCard()];
 
-                // Очистка перед новой раздачей
                 dealerHandEl.innerHTML = '';
                 playerHandEl.innerHTML = '';
 
-                // Раздача с небольшой задержкой для анимации
                 setTimeout(() => {
                     renderHands();
                     
@@ -429,11 +475,9 @@
             function hit() {
                 if (!gameActive) return;
                 
-                // Добавляем новую карту и рендерим только ее
                 playerHand.push(drawCard());
                 playerHandEl.innerHTML += renderCard(playerHand[playerHand.length - 1]);
                 
-                // Анимация новой карты
                 setTimeout(() => {
                     const lastCard = playerHandEl.lastElementChild;
                     lastCard.classList.remove('dealt');
@@ -460,7 +504,7 @@
                 hitBtn.disabled = true;
                 standBtn.disabled = true;
                 
-                renderHands(false); // Открываем карту дилера
+                renderHands(false); 
                 
                 const dealerTurn = () => {
                     const dealerScore = calculateScore(dealerHand);
@@ -471,7 +515,6 @@
                         dealerHand.push(drawCard());
                         dealerHandEl.innerHTML += renderCard(dealerHand[dealerHand.length - 1]);
                         
-                        // Анимация новой карты дилера
                         setTimeout(() => {
                             const lastCard = dealerHandEl.lastElementChild;
                             lastCard.classList.remove('dealt');
@@ -504,7 +547,7 @@
                 } else if (dealerScore > playerScore) {
                     winner = 'dealer';
                 } else {
-                    winner = 'push'; // Ничья
+                    winner = 'push'; 
                 }
 
                 if (winner === 'player') {
@@ -542,12 +585,7 @@
                 hitBtn.addEventListener('click', hit);
                 standBtn.addEventListener('click', stand);
                 betInputEl.addEventListener('input', () => updateBalanceDisplay(getMoney()));
-                
-                if (!isUserLoggedIn) {
-                    messageEl.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ. ДЛЯ ИГРЫ ВОЙДИТЕ В СИСТЕМУ.";
-                    messageEl.className = 'loss';
-                    newGameBtn.disabled = true;
-                }
+                clickerButton.addEventListener('click', handleCick);
             }
             
             init();
