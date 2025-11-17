@@ -244,7 +244,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.3: FINAL PAYOUTS]</h1>
+    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.4: WORKING & FIXED]</h1>
 
     <div id="game-area">
         <div class="slot-container">
@@ -266,7 +266,7 @@
         </div>
 
         <div class="paytable">
-            <h2>ТАБЛИЦА ВЫПЛАТ (АКТУАЛЬНО)</h2>
+            <h2>ТАБЛИЦА ВЫПЛАТ</h2>
             <ul>
                 <li>💰💰💰 (Редкий) <strong>x60</strong></li>
                 <li>👾👾👾 (Редкий) <strong>x40</strong></li>
@@ -422,7 +422,7 @@
                 return strip;
             }
 
-            // --- ЛОГИКА АНИМАЦИИ ---
+            // --- ЛОГИКА АНИМАЦИИ (ИСПРАВЛЕНО) ---
 
             function spinReel(reelElement, finalSymbol, delay) {
                 return new Promise(resolve => {
@@ -430,19 +430,23 @@
                     const symbolHeight = 100;
                     const totalSpinHeight = strip.length * symbolHeight;
                     
+                    // Дублирование для эффекта "бесконечной" прокрутки
                     reelElement.innerHTML = [...strip, ...strip].map(s => `<div>${s}</div>`).join('');
                     
                     const duration = 3000 + delay; 
 
+                    // ВОССТАНОВЛЕНИЕ ПЛАВНОЙ КРУТКИ
                     reelElement.style.transition = `transform ${duration}ms cubic-bezier(0.1, 0.9, 0.4, 1)`;
                     const finalTranslateY = totalSpinHeight; 
                     reelElement.style.transform = `translateY(-${finalTranslateY}px)`;
 
 
                     setTimeout(() => {
+                        // Сброс и установка финального символа
                         reelElement.style.transition = 'none';
                         reelElement.style.transform = `translateY(0)`;
                         
+                        // Установка только финального символа
                         reelElement.innerHTML = `<div>${finalSymbol}</div>`;
                         
                         resolve(finalSymbol);
@@ -450,7 +454,7 @@
                 });
             }
 
-            // --- ЛОГИКА ВЫИГРЫША (ОБНОВЛЕНО) ---
+            // --- ЛОГИКА ВЫИГРЫША ---
 
             function checkWin(results, bet) {
                 const counts = {};
@@ -482,9 +486,8 @@
                 
                 // 2. Проверка на три разных символа (2x)
                 else if (uniqueCount === 3) {
-                    // Убедимся, что все три символа не редкие (только COMMON)
                     const rareCount = results.filter(s => RARE_SYMBOLS.includes(s)).length;
-                    if (rareCount < 3) { // Если не все редкие, то это 3 разных (2x)
+                    if (rareCount < 3) { 
                         winMultiplier = Math.max(winMultiplier, 2);
                         winMessage = '3 РАЗНЫХ! x2';
                         messageClass = 'win';
@@ -501,15 +504,18 @@
 
                 // 4. Проверка на два одинаковых символа (1.5x)
                 for (const symbol in counts) {
-                    if (counts[symbol] === 2 && !RARE_SYMBOLS.includes(symbol)) { // Только обычные/фрукты
-                        winMultiplier = Math.max(winMultiplier, 1.5);
-                        winMessage = '2 ОДИНАКОВЫХ! x1.5';
-                        messageClass = 'win';
+                    if (counts[symbol] === 2) { 
+                        // Применяем 1.5x, только если не сработали более высокие множители (5x, 20x, 40x, 60x)
+                        if (winMultiplier === 0) {
+                            winMultiplier = 1.5;
+                            winMessage = '2 ОДИНАКОВЫХ! x1.5';
+                            messageClass = 'win';
+                        }
                         break; 
                     }
                 }
                 
-                // Если сработал множитель, но сообщение не обновилось, используем общее
+                // Финальная корректировка сообщения
                 if (winMultiplier === 1.5 && messageClass === 'loss') {
                      winMessage = '2 ОДИНАКОВЫХ! x1.5';
                      messageClass = 'win';
@@ -591,6 +597,7 @@
                 GAME_AREA.style.display = 'block';
                 LOGIN_WARNING.style.display = 'none';
                 
+                // Убеждаемся, что барабаны готовы
                 REELS.forEach(reel => {
                     reel.innerHTML = `<div>${ALL_SYMBOLS[0]}</div>`;
                 });
