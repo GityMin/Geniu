@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Блэкджек | [СИСТЕМА] v.3.3 (С правилами)</title>
+    <title>Блэкджек | [СИСТЕМА] v.3.4 (Стилизованный Кликер)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -218,31 +218,47 @@
             box-shadow: 0 0 15px var(--accent-blue);
             transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
         }
-
-        /* СТИЛИ КЛИКЕРА */
+        
+        /* НОВЫЕ СТИЛИ ДЛЯ ИНТЕГРИРОВАННОГО КЛИКЕРА */
         .clicker-section {
-            margin-top: 20px;
+            margin-top: 30px;
             padding: 15px;
-            background-color: #111111;
-            border: 2px solid var(--accent-pink);
-            border-radius: 8px;
-            box-shadow: 0 0 15px var(--accent-pink);
-            max-width: 400px;
+            background-color: #001A2A; /* Темно-синий фон */
+            border: 3px solid var(--accent-blue);
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--accent-blue), 0 0 10px rgba(0, 0, 0, 0.5) inset;
+            max-width: 500px;
             margin-left: auto;
             margin-right: auto;
-        }
-        #clicker-button {
-            background-color: var(--accent-pink);
-            color: var(--bg-color);
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            box-shadow: 0 0 10px var(--accent-pink);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: perspective(1000px) rotateX(2deg);
         }
 
+        .clicker-section p {
+            font-size: 1.2em;
+            color: var(--accent-pink);
+            text-shadow: 0 0 10px var(--accent-pink);
+            margin-bottom: 15px;
+        }
+        #clicker-button {
+            padding: 10px 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            background-color: var(--accent-pink);
+            color: var(--bg-color);
+            border: 3px solid var(--accent-blue);
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-pink);
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        #clicker-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 5px var(--accent-pink);
+        }
 
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 1200px) {
@@ -280,7 +296,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.3 ♥</h1>
+    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.4 ♥</h1>
 
     <div id="balance-display">КРЕДИТ: 100 М</div>
 
@@ -329,7 +345,7 @@
     </div>
 
     <div class="clicker-section" id="clicker-panel" style="display: none;">
-        <p style="font-size: 1.1em; margin-bottom: 10px;">КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙ КЛИКЕР.</p>
+        <p>КРЕДИТ [0]. АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.</p>
         <button id="clicker-button">КЛИКНИ +1 М</button>
     </div>
 
@@ -412,11 +428,11 @@
                 
                 const isAffordable = currentMoney >= MIN_BET;
 
-                // ЛОГИКА КЛИКЕРА
+                // ЛОГИКА КЛИКЕРА (Отображается под игрой)
                 if (!isUserLoggedIn) {
                     messageEl.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
                     newGameBtn.disabled = true;
-                    clickerPanel.style.display = 'block';
+                    clickerPanel.style.display = 'flex'; // Показываем
                     clickerButton.textContent = 'АВТОРИЗУЙСЯ';
                     clickerButton.disabled = true;
                 } else if (!isAffordable) {
@@ -424,8 +440,9 @@
                     messageEl.className = 'loss';
                     newGameBtn.disabled = true;
                     // Показываем кликер
-                    clickerPanel.style.display = 'block';
-                    clickerButton.textContent = `[+1 М] КРЕДИТ: ${currentMoney}`;
+                    clickerPanel.style.display = 'flex';
+                    clickerPanel.querySelector('p').textContent = 'КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.';
+                    clickerButton.textContent = `КЛИКНИ [+1 М] КРЕДИТ: ${currentMoney}`;
                     clickerButton.disabled = false;
                 } else if (!gameActive) {
                      messageEl.textContent = `НАЖМИТЕ [НОВАЯ ИГРА], ЧТОБЫ НАЧАТЬ. СТАВКА: ${betInputEl.value} М.`;
