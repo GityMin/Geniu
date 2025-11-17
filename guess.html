@@ -1,28 +1,122 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Угадай Число | Денис Казаков</title>
+    <title>Угадай Число | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #121212; color: #E0E0E0; text-align: center; padding-top: 50px; line-height: 1.6; }
-        .nav-bar { background-color: #333; padding: 10px 0; margin-bottom: 50px; }
-        .nav-bar a { color: #fff; padding: 14px 20px; text-decoration: none; font-size: 18px; font-weight: bold; }
-        .nav-bar a:hover { background-color: #575757; }
-        h1 { color: #FF4500; }
-        .game-area { max-width: 500px; margin: 0 auto; background-color: #1E1E1E; padding: 30px; border-radius: 10px; border: 2px solid #FF4500; }
-        #message { font-size: 1.5em; margin: 20px 0; min-height: 30px; }
-        #guessInput { padding: 10px; font-size: 1.2em; width: 60px; text-align: center; border: 2px solid #FF4500; background-color: #282828; color: white; border-radius: 5px; }
-        #checkButton, #restartButton { padding: 10px 20px; font-size: 1.1em; cursor: pointer; border: none; border-radius: 5px; margin: 5px; }
-        #checkButton { background-color: #FF4500; color: white; }
-        #restartButton { background-color: #4CAF50; color: white; }
+        /* ГЛОБАЛЬНЫЕ СТИЛИ */
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-color: #0d0d0d; 
+            color: #E0E0E0; 
+            text-align: center; 
+            padding-top: 50px; 
+            line-height: 1.6;
+        }
+        .nav-bar { 
+            background-color: #333; 
+            padding: 10px 0; 
+            margin-bottom: 30px; 
+        }
+        .nav-bar a { 
+            color: #fff; 
+            padding: 14px 20px; 
+            text-decoration: none; 
+            font-size: 18px; 
+            font-weight: bold; 
+        }
+        .nav-bar a:hover { 
+            background-color: #575757; 
+        }
+        
+        /* КОНТЕЙНЕР ИГРЫ */
+        .game-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            border: 3px solid #00FF00;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
+        }
+        
+        h1 { 
+            color: #00FF00; 
+            text-shadow: 0 0 8px #00FF00; 
+            margin-bottom: 20px;
+        }
 
-        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        /* ИНФОРМАЦИЯ И ПОЛЯ ВВОДА */
+        .info-panel {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+        #attempts-left {
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        #guess-input {
+            width: 80px;
+            padding: 10px;
+            font-size: 1.5em;
+            text-align: center;
+            border: 2px solid #555;
+            border-radius: 5px;
+            background-color: #282828;
+            color: white;
+            margin-right: 10px;
+        }
+
+        /* КНОПКИ */
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.1s;
+        }
+
+        #submit-button {
+            background-color: #00FFFF;
+            color: #111;
+        }
+        #submit-button:hover {
+            background-color: #00E0E0;
+        }
+        
+        #new-game-button {
+            background-color: #FF4500;
+            color: white;
+            display: none; /* Скрыта по умолчанию */
+            margin-top: 15px;
+        }
+        #new-game-button:hover {
+            background-color: #CC3700;
+        }
+
+        /* СООБЩЕНИЯ */
+        #message {
+            min-height: 40px;
+            margin-top: 25px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .result-win { color: #00FF00; }
+        .result-lose { color: #FF0000; }
+        .result-hint { color: #00FFFF; }
+
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 600px) {
-            h1 { font-size: 2em; }
-            .game-area { padding: 20px; margin: 0 10px; }
-            #guessInput { width: 40px; }
-            #checkButton, #restartButton { padding: 8px 15px; font-size: 1em; }
-            .nav-bar a { font-size: 16px; padding: 10px 15px; }
+            .game-container {
+                margin: 20px 10px;
+            }
+            #guess-input {
+                width: 60px;
+            }
         }
     </style>
 </head>
@@ -34,83 +128,107 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🧠 Угадай Секретное Число (от 1 до 10)</h1>
-
-    <div class="game-area">
-        <p>Попытайся угадать число, задуманное мной, великим Гением, от 1 до 10. У тебя есть всего 3 попытки!</p>
+    <div class="game-container">
+        <h1>🧠 Угадай Секретное Число</h1>
         
-        <div>
-            <input type="number" id="guessInput" min="1" max="10" placeholder="?">
-            <button id="checkButton">ПРОВЕРИТЬ</button>
+        <div class="info-panel">
+            <p>Я загадал число от 1 до 10. У тебя есть <span id="attempts-left">3</span> попытки.</p>
+        </div>
+        
+        <div class="input-area">
+            <input type="number" id="guess-input" min="1" max="10" placeholder="?" required>
+            <button id="submit-button">Угадать</button>
         </div>
         
         <p id="message">Начни игру!</p>
-        <p id="attempts">Осталось попыток: 3</p>
         
-        <button id="restartButton" style="display: none;">Начать Снова</button>
+        <button id="new-game-button">Начать Новую Игру</button>
+
     </div>
 
     <script>
         window.onload = function() {
-            const input = document.getElementById('guessInput');
-            const checkButton = document.getElementById('checkButton');
-            const restartButton = document.getElementById('restartButton');
-            const message = document.getElementById('message');
-            const attemptsDisplay = document.getElementById('attempts');
+            const GUESS_INPUT = document.getElementById('guess-input');
+            const SUBMIT_BUTTON = document.getElementById('submit-button');
+            const NEW_GAME_BUTTON = document.getElementById('new-game-button');
+            const MESSAGE = document.getElementById('message');
+            const ATTEMPTS_LEFT = document.getElementById('attempts-left');
+
+            const MAX_ATTEMPTS = 3;
+            const MIN_RANGE = 1;
+            const MAX_RANGE = 10;
             
             let secretNumber;
-            let attemptsLeft;
+            let attempts;
 
             function startGame() {
-                secretNumber = Math.floor(Math.random() * 10) + 1;
-                attemptsLeft = 3;
-                message.textContent = 'Введите число и нажмите "Проверить".';
-                message.style.color = '#E0E0E0';
-                attemptsDisplay.textContent = `Осталось попыток: ${attemptsLeft}`;
-                input.value = '';
-                input.disabled = false;
-                checkButton.disabled = false;
-                restartButton.style.display = 'none';
+                // Загадываем новое число
+                secretNumber = Math.floor(Math.random() * (MAX_RANGE - MIN_RANGE + 1)) + MIN_RANGE;
+                attempts = MAX_ATTEMPTS;
+
+                // Обновляем интерфейс
+                ATTEMPTS_LEFT.textContent = attempts;
+                MESSAGE.textContent = 'Число загадано. Твоя очередь!';
+                MESSAGE.className = '';
+                
+                GUESS_INPUT.value = '';
+                GUESS_INPUT.disabled = false;
+                SUBMIT_BUTTON.style.display = 'inline-block';
+                NEW_GAME_BUTTON.style.display = 'none';
+                console.log('Секретное число:', secretNumber); // Для тестирования
             }
 
-            function checkGuess() {
-                const guess = parseInt(input.value);
+            function handleGuess() {
+                const userGuess = parseInt(GUESS_INPUT.value);
 
-                if (isNaN(guess) || guess < 1 || guess > 10) {
-                    message.textContent = 'Ошибка: Введите число от 1 до 10!';
-                    message.style.color = '#FFD700';
+                // Проверка ввода
+                if (isNaN(userGuess) || userGuess < MIN_RANGE || userGuess > MAX_RANGE) {
+                    MESSAGE.textContent = `Пожалуйста, введи число от ${MIN_RANGE} до ${MAX_RANGE}.`;
+                    MESSAGE.className = 'result-hint';
                     return;
                 }
 
-                attemptsLeft--;
+                // Уменьшаем попытки
+                attempts--;
+                ATTEMPTS_LEFT.textContent = attempts;
 
-                if (guess === secretNumber) {
-                    message.textContent = `🎉 ПОБЕДА! Ты угадал число ${secretNumber}! Ты настоящий Гений!`;
-                    message.style.color = '#00FF00';
-                    endGame();
-                } else if (attemptsLeft === 0) {
-                    message.textContent = `😭 ПРОИГРЫШ. Число было ${secretNumber}. Повезет в следующий раз.`;
-                    message.style.color = '#FF0000';
-                    endGame();
+                if (userGuess === secretNumber) {
+                    // Победа
+                    MESSAGE.textContent = `🎉 ПОБЕДА! Ты угадал число ${secretNumber}!`;
+                    MESSAGE.className = 'result-win';
+                    endGame(true);
+                } else if (attempts === 0) {
+                    // Проигрыш
+                    MESSAGE.textContent = `❌ ПРОИГРЫШ! Попытки закончились. Загаданное число: ${secretNumber}.`;
+                    MESSAGE.className = 'result-lose';
+                    endGame(false);
                 } else {
-                    const hint = guess < secretNumber ? 'Больше' : 'Меньше';
-                    message.textContent = `Нет, попробуй ${hint}.`;
-                    message.style.color = '#E0E0E0';
-                    input.value = ''; 
+                    // Подсказка
+                    let hint = userGuess < secretNumber ? 'больше' : 'меньше';
+                    MESSAGE.textContent = `Неверно! Попробуй число ${hint}. Осталось ${attempts} попыт(ки/ок).`;
+                    MESSAGE.className = 'result-hint';
+                    GUESS_INPUT.value = ''; // Очищаем поле для нового ввода
                 }
-                
-                attemptsDisplay.textContent = `Осталось попыток: ${attemptsLeft}`;
             }
 
-            function endGame() {
-                input.disabled = true;
-                checkButton.disabled = true;
-                restartButton.style.display = 'inline-block';
+            function endGame(isWin) {
+                GUESS_INPUT.disabled = true;
+                SUBMIT_BUTTON.style.display = 'none';
+                NEW_GAME_BUTTON.style.display = 'block';
             }
 
-            checkButton.addEventListener('click', checkGuess);
-            restartButton.addEventListener('click', startGame);
+            // --- СЛУШАТЕЛИ СОБЫТИЙ ---
+            SUBMIT_BUTTON.addEventListener('click', handleGuess);
+            NEW_GAME_BUTTON.addEventListener('click', startGame);
 
+            // Также позволяем нажимать Enter
+            GUESS_INPUT.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !GUESS_INPUT.disabled) {
+                    handleGuess();
+                }
+            });
+
+            // Начинаем игру при загрузке
             startGame();
         };
     </script>
