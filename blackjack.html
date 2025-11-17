@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Блэкджек | [СИСТЕМА] v.2.0 (3D)</title>
+    <title>Блэкджек | [СИСТЕМА] v.3.1 (3D & ЦВЕТ)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -14,8 +14,8 @@
             --card-bg: #181818; 
             --win-color: #00FF00;
             --loss-color: #FF0000;
-            --red-suit: #FF0044;    
-            --black-suit: #00FFCC; 
+            --red-suit: var(--accent-pink);    /* Розовый неон для красных мастей */
+            --black-suit: var(--accent-blue);  /* Голубой неон для черных мастей */
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -112,7 +112,8 @@
             font-size: 2.5em;
             font-weight: 900;
             line-height: 1;
-            text-shadow: 0 0 8px currentColor; /* Усиленное свечение символов */
+            /* Цвет текста будет зависеть от класса масти ниже */
+            text-shadow: 0 0 8px currentColor; 
         }
         .card-suit {
             font-size: 1.8em;
@@ -143,7 +144,7 @@
             opacity: 1;
         }
 
-        /* ЦВЕТА МАСТЕЙ */
+        /* ЦВЕТА МАСТЕЙ (НЕОН) */
         .red { color: var(--red-suit); }
         .black { color: var(--black-suit); }
 
@@ -152,12 +153,11 @@
             font-size: 1.5em;
             font-weight: 700;
             margin: 10px 0;
-            text-shadow: 0 0 10px currentColor; /* Усиленное свечение */
+            text-shadow: 0 0 10px currentColor; 
         }
         
         /* КНОПКИ */
         .control-button {
-            /* ... (Стили кнопок) ... */
             padding: 12px 25px;
             font-family: 'Orbitron', sans-serif;
             font-size: 1.1em;
@@ -176,15 +176,14 @@
             .game-area {
                 padding: 10px;
                 margin: 0 10px;
-                transform: perspective(1000px) rotateX(0); /* Убираем 3D наклон стола на мобильных */
+                transform: perspective(1000px) rotateX(0); 
             }
             .card {
                 width: 90px;
                 height: 130px;
                 padding: 5px;
-                transform: perspective(500px) rotateX(0) translateZ(5px); /* Убираем 3D наклон карт на мобильных */
+                transform: perspective(500px) rotateX(0) translateZ(5px); 
             }
-            /* ... (Остальные стили для мобильных) ... */
         }
     </style>
 </head>
@@ -196,7 +195,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>♦ БЛЭКДЖЕК | [СИСТЕМА] v.2.0 ♥</h1>
+    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.1 ♥</h1>
 
     <div class="game-area">
         <div id="balance-display">КРЕДИТ: 100 М</div>
@@ -235,6 +234,7 @@
 
             // --- КОНФИГУРАЦИЯ ---
             const MIN_BET = 10;
+            // Возвращаем масти и добавляем класс цвета
             const SUITS = {
                 'Hearts': { symbol: '♥', colorClass: 'red' },
                 'Diamonds': { symbol: '♦', colorClass: 'red' },
@@ -247,7 +247,7 @@
             let playerHand = [];
             let gameActive = false;
 
-            // --- ЛОГИКА БАЛАНСА (Как в slots.html) ---
+            // --- ЛОГИКА БАЛАНСА ---
             const currentUsername = localStorage.getItem('denisKazakovUser');
             const isUserLoggedIn = !!currentUsername;
             const SECRET_KEY = 952; 
