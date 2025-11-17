@@ -27,16 +27,27 @@
     <button id="click-button">КЛИКНИ И ПРИУМНОЖЬ!</button>
 
     <script>
-        // --- !!! ВАЖНОЕ ИСПРАВЛЕНИЕ: Оборачиваем код в window.onload !!! ---
         window.onload = function() {
-            let money = 0;
+            // 1. ИЗВЛЕКАЕМ ДЕНЬГИ ИЗ ПАМЯТИ ИЛИ НАЧИНАЕМ С 0
+            let money = parseInt(localStorage.getItem('denisKazakovMoney')) || 0;
             const display = document.getElementById('money-display');
             const button = document.getElementById('click-button');
+            
+            // Функция обновления дисплея и сохранения
+            function updateMoney(amount) {
+                money += amount;
+                display.textContent = `Мани: ${money}`;
+                // 2. СОХРАНЯЕМ НОВОЕ ЗНАЧЕНИЕ В ПАМЯТИ БРАУЗЕРА
+                localStorage.setItem('denisKazakovMoney', money);
+            }
+
+            // Инициализация при загрузке
+            updateMoney(0);
 
             button.addEventListener('click', () => {
-                // Гениальная формула приумножения
-                money += Math.floor(Math.random() * 5) + 1; 
-                display.textContent = `Мани: ${money}`;
+                // Гениальная формула приумножения (от 1 до 5)
+                const earnings = Math.floor(Math.random() * 5) + 1;
+                updateMoney(earnings);
             });
         };
     </script>
