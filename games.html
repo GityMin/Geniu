@@ -3,96 +3,134 @@
 <head>
     <title>Игры | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЕ СТИЛЫ */
+        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
+        :root {
+            --bg-color: #111111; /* Графит */
+            --text-color: #F0F0F0; /* Белый */
+            --accent-pink: #FF33CC; /* Яркий Розовый (Фуксия) */
+            --accent-blue: #33CCFF; /* Электрический Голубой */
+            --card-bg: #1F1F1F; /* Темнее для карточек */
+        }
+
+        /* ОСНОВНЫЕ СТИЛИ */
         body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #0d0d0d; 
-            color: #E0E0E0; 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
             text-align: center; 
             padding-top: 50px; 
-            line-height: 1.6;
+            margin: 0;
+            background-image: repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px), 
+                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
         }
+        
+        /* ЗАГОЛОВКИ */
+        h1 { 
+            color: var(--accent-pink); 
+            font-size: 3.5em;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255, 51, 204, 0.8);
+            margin-bottom: 40px;
+            padding-top: 30px;
+            letter-spacing: 2px;
+        }
+
+        /* НАВИГАЦИОННЫЙ БАР */
         .nav-bar { 
-            background-color: #333; 
-            padding: 10px 0; 
-            margin-bottom: 50px; 
+            background-color: #000000;
+            padding: 15px 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         .nav-bar a { 
-            color: #fff; 
-            padding: 14px 20px; 
+            color: var(--text-color); 
+            padding: 14px 25px; 
             text-decoration: none; 
-            font-size: 18px; 
-            font-weight: bold; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s;
+            border-radius: 5px;
         }
         .nav-bar a:hover { 
-            background-color: #575757; 
+            color: var(--accent-pink); 
+            text-shadow: 0 0 10px var(--accent-pink); 
+            background-color: rgba(255, 51, 204, 0.1);
         }
 
-        /* КОНТЕЙНЕР ИГР */
-        .games-container {
-            max-width: 900px;
+        /* СЕТКА ИГР */
+        .games-grid {
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* ЗАГОЛОВОК */
-        h1 { 
-            color: #00FFFF; 
-            text-shadow: 0 0 10px #00FFFF; 
-            font-size: 2.5em;
-            margin-bottom: 30px;
-        }
-
-        /* СПИСОК ИГР (СЕТКА) */
-        .game-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            padding: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            padding: 20px;
         }
 
-        /* КАРТОЧКА ИГРЫ */
+        /* КАРТОЧКА ИГРЫ (Game Card) */
         .game-card {
-            background-color: #1a1a1a;
+            background-color: var(--card-bg);
             border-radius: 10px;
-            padding: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(51, 204, 255, 0.5);
+            transition: transform 0.4s ease-out, box-shadow 0.4s ease-out; /* Анимация */
             text-align: left;
-            border: 2px solid #555;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.2s, border-color 0.2s;
+            border: 2px solid var(--accent-blue);
+            position: relative;
         }
         .game-card:hover {
-            transform: translateY(-5px);
-            border-color: #FFD700;
+            transform: scale(1.05);
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 25px var(--accent-pink), 0 0 50px rgba(255, 51, 204, 0.3);
+            cursor: pointer;
         }
 
-        .game-card h2 {
-            margin-top: 0;
-            color: #FFD700;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h2 {
             font-size: 1.8em;
+            color: var(--accent-pink);
+            text-shadow: 0 0 8px rgba(255, 51, 204, 0.5);
+            margin-top: 0;
         }
-
-        .game-card p {
-            color: #C0C0C0;
+        
+        .card-content p {
+            color: #ccc;
             margin-bottom: 15px;
         }
 
-        .game-card a {
+        .game-link {
             display: block;
             text-align: center;
             padding: 10px;
-            background-color: #FF4500;
-            color: white;
+            background-color: var(--accent-blue);
+            color: var(--bg-color);
+            font-weight: 700;
             text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s;
         }
-        .game-card a:hover {
-            background-color: #CC3700;
+        .game-link:hover {
+            background-color: var(--accent-pink);
+        }
+
+        /* Специальные стили для иконок/заголовков */
+        .icon {
+            font-size: 2.5em;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--accent-blue);
+        }
+        
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
         }
     </style>
 </head>
@@ -104,33 +142,35 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <div class="games-container">
-        <h1>🎲 Каталог Игр Ручки Гения</h1>
+    <h1>🕹️ Игры Гения</h1>
 
-        <div class="game-list">
-            
-            <div class="game-card">
-                <h2>🎰 Слоты (Однорукий Бандит)</h2>
-                <p><strong>Испытай удачу:</strong> Ставьте Мани и крутите барабаны! При трех одинаковых символах Вы выигрываете джекпот. Классика азарта.</p>
-                <p>Минимальная ставка: 10 Мани.</p>
-                <a href="slots.html">Играть в Слоты</a>
+    <div class="games-grid">
+        <a href="slots.html" class="game-card">
+            <div class="card-content">
+                <span class="icon">🎰</span>
+                <h2>Слоты Гения</h2>
+                <p>Классика жанра. Три барабана, один спин, максимальный джекпот. Минимальная ставка: 10 Мани.</p>
+                <div class="game-link">Играть в Слоты</div>
             </div>
+        </a>
 
-            <div class="game-card">
-                <h2>♠️ Блэкджек (21)</h2>
-                <p><strong>Битва с Дилером:</strong> Постарайтесь набрать 21 очко или сумму, максимально близкую к 21, но не больше! Игра на логику и риск.</p>
-                <p>Минимальная ставка: 20 Мани.</p>
-                <a href="blackjack.html">Играть в Блэкджек</a>
+        <a href="blackjack.html" class="game-card">
+            <div class="card-content">
+                <span class="icon">♠️</span>
+                <h2>Блэкджек (21)</h2>
+                <p>Битва с Дилером. Главное — не перебрать. Минимальная ставка: 20 Мани.</p>
+                <div class="game-link">Играть в Блэкджек</div>
             </div>
+        </a>
 
-            <div class="game-card">
-                <h2>🧠 Угадай Число</h2>
-                <p><strong>Проверь свою интуицию:</strong> Угадай секретное число от 1 до 10 за 3 попытки. Чисто развлекательная игра, без ставок на Мани.</p>
-                <p>Развлекательная игра.</p>
-                <a href="guess.html">Играть в Угадай Число</a>
+        <a href="guess.html" class="game-card">
+            <div class="card-content">
+                <span class="icon">🧠</span>
+                <h2>Угадай Число</h2>
+                <p>Испытай свою интуицию. Угадай секретное число от 1 до 10 за 3 попытки. Ставка: 10 Мани.</p>
+                <div class="game-link">Играть в Угадай Число</div>
             </div>
-            
-        </div>
+        </a>
     </div>
 </body>
 </html>
