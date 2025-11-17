@@ -152,6 +152,7 @@
         <a href="index.html">Главная</a>
         <a href="games.html">Игры</a>
         <a href="about.html">Автор</a>
+        <a href="login.html">Вход/Выход</a>
     </div>
 
     <h1>♠️ Блэкджек от Гения МММ (Стандартные Правила) ♣️</h1>
@@ -243,7 +244,7 @@
                 STAND_BUTTON.disabled = !isGameActive;
             }
 
-            // --- Card Logic (Остается без изменений) ---
+            // --- Card Logic ---
             const CARDS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
             const SUITS = ['♠️', '♥️', '♦️', '♣️'];
 
@@ -412,13 +413,13 @@
                         winnings = currentBet * 2;
                         message = `🎉 ПОБЕДА! Выигрыш: +${winnings} Мани.`;
                     }
-                    setMoney(getMoney() + winnings); // Используем getMoney + winnings
+                    setMoney(getMoney() + winnings);
                 } else if (playerWins === false) {
                     winnings = 0;
                     message = `😭 ПРОИГРЫШ. Дилер забирает ${currentBet} Мани.`;
                 } else {
                     winnings = currentBet;
-                    setMoney(getMoney() + winnings); // Возврат ставки
+                    setMoney(getMoney() + winnings);
                     message = `🤝 НИЧЬЯ (PUSH). Ставка ${winnings} возвращена.`;
                 }
 
