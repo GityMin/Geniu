@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты | [СИСТЕМА] v.4.3 (Кибер-Кликер)</title>
+    <title>Слоты | [СИСТЕМА] v.4.4 (Кибер-Кликер)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -245,51 +245,44 @@
         }
         
         /* --- СТИЛИ КЛИКЕРА (НОВАЯ ВЕРСИЯ) --- */
-        .clicker-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.95); 
-            border-radius: 15px;
+        .clicker-section {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #150020; /* Темно-фиолетовый фон */
+            border: 3px solid var(--accent-pink);
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--accent-pink), 0 0 10px rgba(0, 0, 0, 0.5) inset;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 10; 
-            padding: 20px;
-            backdrop-filter: blur(2px);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            transform: perspective(1000px) rotateX(2deg);
         }
-        .clicker-overlay.active {
-            opacity: 1;
-            visibility: visible;
+
+        .clicker-section p {
+            font-size: 1.2em;
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px var(--accent-blue);
+            margin-bottom: 15px;
         }
         #clicker-button {
-            padding: 15px 30px;
+            padding: 10px 25px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.5em;
+            font-size: 1.1em;
             font-weight: 700;
-            background-color: var(--accent-pink);
+            background-color: var(--accent-blue);
             color: var(--bg-color);
-            border: 4px solid var(--accent-blue);
-            border-radius: 8px;
+            border: 3px solid var(--accent-pink);
+            border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0 0 20px var(--accent-pink), 0 0 10px var(--accent-blue) inset;
+            box-shadow: 0 0 15px var(--accent-blue);
             transition: transform 0.1s, box-shadow 0.2s;
         }
         #clicker-button:active {
             transform: scale(0.95);
-            box-shadow: 0 0 10px var(--accent-pink);
-        }
-        .clicker-overlay p {
-            font-size: 1.5em;
-            color: var(--accent-blue);
-            text-shadow: 0 0 10px var(--accent-blue);
-            margin-bottom: 20px;
+            box-shadow: 0 0 5px var(--accent-blue);
         }
 
 
@@ -366,7 +359,7 @@
                 --lever-drop-height: 60px;
             }
             
-            .clicker-overlay p {
+            .clicker-section p {
                 font-size: 1.2em;
             }
             #clicker-button {
@@ -384,7 +377,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>СЛОТЫ | [СИСТЕМА] v.4.3</h1>
+    <h1>СЛОТЫ | [СИСТЕМА] v.4.4</h1>
 
     <div id="balance-display">КРЕДИТ: 0 М</div>
 
@@ -422,11 +415,6 @@
             </div>
             
             <p id="message-display" class="info">ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].</p>
-            
-            <div class="clicker-overlay" id="clicker-panel">
-                <p>КРЕДИТ < МИН. СТАВКИ. <br>АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.</p>
-                <button id="clicker-button">КЛИКНИ +1 М</button>
-            </div>
         </div>
         
         <div id="lever-wrapper">
@@ -436,6 +424,11 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="clicker-section" id="clicker-panel" style="display: none;">
+        <p>КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.</p>
+        <button id="clicker-button">КЛИКНИ +1 М</button>
     </div>
 
 
@@ -522,6 +515,44 @@
                 return Math.max(0, storedMoney);
             }
             
+            // --- УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ---
+
+            function updateBalanceDisplay(currentMoney) {
+                BALANCE_DISPLAY.textContent = `КРЕДИТ: ${currentMoney} М`;
+                
+                const isAffordable = currentMoney >= MIN_BET;
+                
+                // ЛОГИКА ОТОБРАЖЕНИЯ КЛИКЕРА
+                if (!isUserLoggedIn) {
+                    CLICKER_PANEL.style.display = 'flex';
+                    CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
+                    CLICKER_BUTTON.disabled = true;
+                    CLICKER_PANEL.querySelector('p').textContent = 'ТРЕБУЕТСЯ АВТОРИЗАЦИЯ ДЛЯ ДОЗАПРАВКИ.';
+                } else if (!isAffordable) {
+                    CLICKER_PANEL.style.display = 'flex';
+                    CLICKER_BUTTON.textContent = `КЛИКНИ [+1 М] КРЕДИТ: ${currentMoney}`;
+                    CLICKER_BUTTON.disabled = false;
+                    CLICKER_PANEL.querySelector('p').textContent = 'КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.';
+                } else {
+                    CLICKER_PANEL.style.display = 'none';
+                }
+                
+                const shouldDisable = !isAffordable || isSpinning || !isUserLoggedIn;
+                LEVER_ARM.disabled = shouldDisable;
+                BET_INPUT.disabled = shouldDisable;
+
+                if (!isUserLoggedIn) {
+                     MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
+                     MESSAGE_DISPLAY.className = 'info';
+                } else if (!isAffordable && !isSpinning) {
+                     MESSAGE_DISPLAY.textContent = `[СИСТЕМА] КРЕДИТА НЕДОСТАТОЧНО. МИНИМУМ: ${MIN_BET} М.`;
+                     MESSAGE_DISPLAY.className = 'loss';
+                } else if (!isSpinning && isAffordable) {
+                     MESSAGE_DISPLAY.textContent = "ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].";
+                     MESSAGE_DISPLAY.className = 'info';
+                }
+            }
+            
             // --- УПРАВЛЕНИЕ РУЧКОЙ ---
 
             function handleStart(event) {
@@ -572,42 +603,6 @@
                 setTimeout(() => {
                     LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px';
                 }, 100); 
-            }
-
-            // --- УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ---
-
-            function updateBalanceDisplay(currentMoney) {
-                BALANCE_DISPLAY.textContent = `КРЕДИТ: ${currentMoney} М`;
-                
-                const isAffordable = currentMoney >= MIN_BET;
-                
-                // ЛОГИКА ОВЕРЛЕЯ КЛИКЕРА
-                if (!isUserLoggedIn) {
-                    CLICKER_PANEL.classList.add('active');
-                    CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
-                    CLICKER_BUTTON.disabled = true;
-                } else if (!isAffordable) {
-                    CLICKER_PANEL.classList.add('active');
-                    CLICKER_BUTTON.textContent = `КЛИКНИ [+1 М] КРЕДИТ: ${currentMoney}`;
-                    CLICKER_BUTTON.disabled = false;
-                } else {
-                    CLICKER_PANEL.classList.remove('active');
-                }
-                
-                const shouldDisable = !isAffordable || isSpinning || !isUserLoggedIn;
-                LEVER_ARM.disabled = shouldDisable;
-                BET_INPUT.disabled = shouldDisable;
-
-                if (!isUserLoggedIn) {
-                     MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
-                     MESSAGE_DISPLAY.className = 'info';
-                } else if (!isAffordable) {
-                     MESSAGE_DISPLAY.textContent = `[СИСТЕМА] КРЕДИТА НЕДОСТАТОЧНО. МИНИМУМ: ${MIN_BET} М.`;
-                     MESSAGE_DISPLAY.className = 'loss';
-                } else if (!isSpinning) {
-                     MESSAGE_DISPLAY.textContent = "ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].";
-                     MESSAGE_DISPLAY.className = 'info';
-                }
             }
             
             // --- ЛОГИКА ИГРЫ ---
@@ -700,18 +695,16 @@
 
             // --- ЛОГИКА КЛИКЕРА ---
             function handleCick() {
-                if (isUserLoggedIn) {
+                if (isUserLoggedIn && !CLICKER_BUTTON.disabled) {
                     setMoney(getMoney() + 1);
                 }
             }
 
             // --- Инициализация ---
             if (isUserLoggedIn) {
-                updateBalanceDisplay(getMoney());
                 LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px'; 
-            } else {
-                 MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
-            }
+            } 
+            updateBalanceDisplay(getMoney());
 
             // СЛУШАТЕЛИ РУЧКИ
             LEVER_ARM.addEventListener('mousedown', handleStart);
