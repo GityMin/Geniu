@@ -51,7 +51,7 @@
             margin-bottom: 30px;
         }
         .reel {
-            font-size: 4em;
+            font-size: 3em; /* Уменьшаем размер, так как теперь это текст */
             width: 100px;
             height: 100px;
             line-height: 100px;
@@ -59,8 +59,11 @@
             border-radius: 10px;
             border: 5px solid #555;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
-            color: white;
-            animation: spin-initial 0.5s ease-out;
+            font-weight: 900; /* Жирный текст */
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            /* Добавлено для лучшего рендеринга на iOS */
+            -webkit-font-smoothing: antialiased; 
+            transition: color 0.1s; /* Плавный переход цвета */
         }
 
         /* УПРАВЛЕНИЕ ИГРОЙ */
@@ -134,8 +137,8 @@
 
         /* АНИМАЦИЯ ВРАЩЕНИЯ */
         @keyframes spin {
-            0% { transform: translateY(-50%); opacity: 0.5; }
-            100% { transform: translateY(0); opacity: 1; }
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
         .spinning {
             animation: spin 0.1s infinite alternate;
@@ -156,9 +159,9 @@
         <div id="balance-display">Баланс: 0 Мани</div>
 
         <div class="reels">
-            <div class="reel" id="reel1">?</div>
-            <div class="reel" id="reel2">?</div>
-            <div class="reel" id="reel3">?</div>
+            <div class="reel" id="reel1" style="color: #FF00FF;">?</div>
+            <div class="reel" id="reel2" style="color: #FF00FF;">?</div>
+            <div class="reel" id="reel3" style="color: #FF00FF;">?</div>
         </div>
 
         <div class="controls">
@@ -189,13 +192,18 @@
             const CLICKER_PANEL = document.getElementById('clicker-panel');
             const CLICKER_BUTTON = document.getElementById('clicker-button');
 
-            // --- КОНСТАНТЫ ИГРЫ ---
-            const SYMBOLS = ['🍒', '🍋', '7️⃣', '💎'];
+            // --- КОНСТАНТЫ ИГРЫ (ИЗМЕНЕНЫ ДЛЯ СОВМЕСТИМОСТИ) ---
+            const SYMBOLS = [
+                { text: 'CH', color: '#FF0000' },     // Вишня (Красный)
+                { text: 'L', color: '#FFD700' },      // Лимон (Желтый)
+                { text: '7', color: '#FF8C00' },      // Семерка (Оранжевый)
+                { text: 'BAR', color: '#00FFFF' }     // BAR (Голубой)
+            ];
             const PAYOUTS = {
-                '🍒': 2,    // Две вишни = 2x
-                '🍋': 5,
-                '7️⃣': 10,
-                '💎': 50   // Джекпот!
+                'CH': 2,
+                'L': 5,
+                '7': 10,
+                'BAR': 50
             };
             const MIN_BET = 10;
             
@@ -300,8 +308,14 @@
                 setTimeout(() => {
                     REELS.forEach(reel => reel.classList.remove('spinning'));
                     
+                    // Создаем массив объектов {text, color}
                     const results = REELS.map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
-                    results.forEach((symbol, index) => REELS[index].textContent = symbol);
+                    
+                    // ПРИСВОЕНИЕ ТЕКСТА И ЦВЕТА (ИСПРАВЛЕНО!)
+                    results.forEach((item, index) => {
+                        REELS[index].textContent = item.text;
+                        REELS[index].style.color = item.color;
+                    });
                     
                     checkResult(results, bet);
                     SPIN_BUTTON.disabled = false;
@@ -314,16 +328,16 @@
                 let winnings = 0;
                 
                 // 3 одинаковых (Джекпот)
-                if (r1 === r2 && r2 === r3) {
-                    winnings = bet * PAYOUTS[r1];
-                    MESSAGE_DISPLAY.textContent = `🎉 ДЖЕКПОТ! ${r1}${r2}${r3}! Вы выиграли ${winnings} Мани!`;
+                if (r1.text === r2.text && r2.text === r3.text) {
+                    winnings = bet * PAYOUTS[r1.text];
+                    MESSAGE_DISPLAY.textContent = `🎉 ДЖЕКПОТ! ${r1.text}${r2.text}${r3.text}! Вы выиграли ${winnings} Мани!`;
                     MESSAGE_DISPLAY.className = 'win';
                 } 
                 // 2 одинаковых (небольшой выигрыш)
-                else if (r1 === r2 || r2 === r3 || r1 === r3) {
-                    let symbol = (r1 === r2) ? r1 : r3; // Берем символ, который повторился
+                else if (r1.text === r2.text || r2.text === r3.text || r1.text === r3.text) {
+                    let text = (r1.text === r2.text) ? r1.text : r3.text; // Берем символ, который повторился
                     winnings = bet * 0.5; // Выплата 50% от ставки
-                    MESSAGE_DISPLAY.textContent = `💰 Почти! Два "${symbol}". Вы выиграли ${winnings} Мани.`;
+                    MESSAGE_DISPLAY.textContent = `💰 Почти! Два "${text}". Вы выиграли ${winnings} Мани.`;
                     MESSAGE_DISPLAY.className = 'win';
                 } 
                 // Проигрыш
