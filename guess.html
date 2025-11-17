@@ -96,7 +96,7 @@
                     const hint = guess < secretNumber ? 'Больше' : 'Меньше';
                     message.textContent = `Нет, попробуй ${hint}.`;
                     message.style.color = '#E0E0E0';
-                    input.value = ''; // Очищаем поле для удобства
+                    input.value = ''; 
                 }
                 
                 attemptsDisplay.textContent = `Осталось попыток: ${attemptsLeft}`;
@@ -111,7 +111,6 @@
             checkButton.addEventListener('click', checkGuess);
             restartButton.addEventListener('click', startGame);
 
-            // Начало игры при загрузке страницы
             startGame();
         };
     </script>
