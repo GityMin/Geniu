@@ -244,7 +244,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.1: 3D-FX]</h1>
+    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.3: FINAL PAYOUTS]</h1>
 
     <div id="game-area">
         <div class="slot-container">
@@ -266,15 +266,16 @@
         </div>
 
         <div class="paytable">
-            <h2>ТАБЛИЦА ВЫПЛАТ</h2>
+            <h2>ТАБЛИЦА ВЫПЛАТ (АКТУАЛЬНО)</h2>
             <ul>
-                <li>⚡⚡⚡ (ДЖЕКПОТ) <strong>x20</strong></li>
-                <li>👾👾👾 <strong>x10</strong></li>
-                <li>💰💰💰 <strong>x5</strong></li>
-                <li>💥💥💥 <strong>x3</strong></li>
-                <li>Любые два ⚡ <strong>x2</strong></li>
+                <li>💰💰💰 (Редкий) <strong>x60</strong></li>
+                <li>👾👾👾 (Редкий) <strong>x40</strong></li>
+                <li>⚡⚡⚡ (Джекпот) <strong>x20</strong></li>
+                <li>3 Одинаковых (Обычные) <strong>x5</strong></li>
+                <li>2 Редких (⚡, 👾, 💰) <strong>x3</strong></li>
+                <li>3 Разных (Обычные) <strong>x2</strong></li>
+                <li>2 Одинаковых (Обычные/Фрукты) <strong>x1.5</strong></li>
             </ul>
-            <p style="font-size: 0.8em; color: #888; margin-top: 15px;">*Выплаты указаны как множитель к вашей ставке.</p>
         </div>
     </div>
     
@@ -307,20 +308,13 @@
 
             // --- АККАУНТ РАЗРАБОТЧИКА (ЧИТ-РЕЖИМ) ---
             const DEV_USERNAME = 'DenisKazakov';
-            const DEV_MONEY = 999999999; // Бесконечный баланс для разработчика
-
+            const DEV_MONEY = 999999999; 
+            
             // --- СИМВОЛЫ И ВЫПЛАТЫ ---
-            const SYMBOLS = ['⚡', '👾', '💰', '💥', '7️⃣']; // 7️⃣ - низкоуровневый символ
-            const PAYOUTS = {
-                '⚡,⚡,⚡': 20, // Джекпот
-                '👾,👾,👾': 10,
-                '💰,💰,💰': 5,
-                '💥,💥,💥': 3,
-                '⚡,⚡,_': 2, // Любые два Джекпота
-            };
-            
-            let isSpinning = false;
-            
+            const RARE_SYMBOLS = ['💰', '👾', '⚡']; // Самые редкие
+            const COMMON_SYMBOLS = ['7️⃣', '💥']; // Обычные/Фрукты
+            const ALL_SYMBOLS = [...RARE_SYMBOLS, ...COMMON_SYMBOLS];
+
             // ===================================================
             // === ФУНКЦИИ БАЛАНСА С ЧИТ-ЛОГИКОЙ (Не менять) ===
             // ===================================================
@@ -399,18 +393,21 @@
 
             function updateDisplay() {
                 const money = getMoney();
-                // Форматируем для удобства чтения
                 BALANCE_DISPLAY.textContent = `БАЛАНС: ${money.toLocaleString('ru-RU')}`;
             }
 
-            function getRandomSymbol(reelIndex) {
-                // Добавляем вес для символов
-                let weightedSymbols = ['7️⃣', '7️⃣', '💥', '💰', '👾', '⚡', '7️⃣', '💥', '💰', '👾']; 
-                
-                // Делаем Джекпот чуть реже
-                if (reelIndex % 2 === 0) { // Например, в первом и третьем барабане
-                    weightedSymbols.push('7️⃣'); 
-                }
+            function getRandomSymbol() {
+                // Шансы (веса): 
+                // 💰: 2, 👾: 3, ⚡: 4
+                // 7️⃣: 8, 💥: 8
+                // Всего 25 весовых единиц
+                let weightedSymbols = [
+                    ...Array(2).fill('💰'),
+                    ...Array(3).fill('👾'),
+                    ...Array(4).fill('⚡'),
+                    ...Array(8).fill('7️⃣'),
+                    ...Array(8).fill('💥')
+                ];
                 
                 const index = Math.floor(Math.random() * weightedSymbols.length);
                 return weightedSymbols[index];
@@ -419,42 +416,33 @@
             function generateReelStrip(finalSymbol, length = 30) {
                 let strip = [];
                 for (let i = 0; i < length - 1; i++) {
-                    strip.push(getRandomSymbol(i % 3)); 
+                    strip.push(getRandomSymbol()); 
                 }
-                // Гарантируем, что последний символ в полосе - это нужный нам
                 strip.push(finalSymbol); 
                 return strip;
             }
 
-            // --- ЛОГИКА АНИМАЦИИ (Улучшенная) ---
+            // --- ЛОГИКА АНИМАЦИИ ---
 
             function spinReel(reelElement, finalSymbol, delay) {
                 return new Promise(resolve => {
                     const strip = generateReelStrip(finalSymbol);
-                    const symbolHeight = 100; // Должно соответствовать --reel-size
+                    const symbolHeight = 100;
                     const totalSpinHeight = strip.length * symbolHeight;
                     
-                    // Генерируем HTML для полосы с нужными символами
-                    // Дублируем strip для создания эффекта бесконечности при прокрутке
                     reelElement.innerHTML = [...strip, ...strip].map(s => `<div>${s}</div>`).join('');
                     
-                    // Продолжительность: нарастает с задержкой (эффект каскада)
-                    const duration = 3000 + delay; // 3.0s, 3.5s, 4.0s
+                    const duration = 3000 + delay; 
 
-                    // Установка CSS-перехода с Easing-функцией для реализма
                     reelElement.style.transition = `transform ${duration}ms cubic-bezier(0.1, 0.9, 0.4, 1)`;
-                    
-                    // Сдвигаем на высоту strip + последний символ, чтобы он остановился ровно
                     const finalTranslateY = totalSpinHeight; 
                     reelElement.style.transform = `translateY(-${finalTranslateY}px)`;
 
 
                     setTimeout(() => {
-                        // Сброс transition и transform для следующего спина
                         reelElement.style.transition = 'none';
                         reelElement.style.transform = `translateY(0)`;
                         
-                        // Теперь устанавливаем контент, чтобы победный символ был по центру
                         reelElement.innerHTML = `<div>${finalSymbol}</div>`;
                         
                         resolve(finalSymbol);
@@ -462,35 +450,77 @@
                 });
             }
 
-            // --- ЛОГИКА ВЫИГРЫША ---
+            // --- ЛОГИКА ВЫИГРЫША (ОБНОВЛЕНО) ---
 
             function checkWin(results, bet) {
-                const rStr = results.join(',');
+                const counts = {};
+                results.forEach(s => {
+                    counts[s] = (counts[s] || 0) + 1;
+                });
+                
+                const uniqueCount = Object.keys(counts).length;
                 let winMultiplier = 0;
                 let winMessage = 'ПРОИГРЫШ. Попробуйте снова.';
                 let messageClass = 'loss';
-
-                // 1. Проверка полного совпадения (Джекпот и Тройки)
-                if (PAYOUTS[rStr]) {
-                    winMultiplier = PAYOUTS[rStr];
-                } 
-                // 2. Проверка комбинации с двумя Джекпотами
-                else if (rStr.split(',').filter(s => s === '⚡').length === 2) {
-                    winMultiplier = PAYOUTS['⚡,⚡,_'];
+                
+                // 1. Проверка на тройное совпадение (60x, 40x, 20x, 5x)
+                if (uniqueCount === 1) {
+                    const symbol = results[0];
+                    if (symbol === '💰') winMultiplier = 60;
+                    else if (symbol === '👾') winMultiplier = 40;
+                    else if (symbol === '⚡') winMultiplier = 20;
+                    else if (COMMON_SYMBOLS.includes(symbol)) winMultiplier = 5;
+                    
+                    if (winMultiplier >= 20) {
+                         winMessage = `${symbol}${symbol}${symbol} СУПЕР-ВЫИГРЫШ! x${winMultiplier}`;
+                         messageClass = 'jackpot';
+                    } else if (winMultiplier > 0) {
+                         winMessage = `ТРОЙНОЕ СОВПАДЕНИЕ! x${winMultiplier}`;
+                         messageClass = 'win';
+                    }
                 }
                 
-                const winAmount = bet * winMultiplier;
-                
-                if (winMultiplier > 0) {
-                    if (winMultiplier === 20) {
-                        winMessage = `⚡⚡⚡ ДЖЕКПОТ! Вы выиграли ${winAmount.toLocaleString('ru-RU')}!`;
-                        messageClass = 'jackpot';
-                    } else {
-                        winMessage = `ВЫИГРЫШ! Вы выиграли ${winAmount.toLocaleString('ru-RU')}.`;
+                // 2. Проверка на три разных символа (2x)
+                else if (uniqueCount === 3) {
+                    // Убедимся, что все три символа не редкие (только COMMON)
+                    const rareCount = results.filter(s => RARE_SYMBOLS.includes(s)).length;
+                    if (rareCount < 3) { // Если не все редкие, то это 3 разных (2x)
+                        winMultiplier = Math.max(winMultiplier, 2);
+                        winMessage = '3 РАЗНЫХ! x2';
                         messageClass = 'win';
                     }
                 }
+                
+                // 3. Проверка на два редких символа (3x)
+                const rareMatches = results.filter(s => RARE_SYMBOLS.includes(s));
+                if (rareMatches.length === 2) {
+                     winMultiplier = Math.max(winMultiplier, 3);
+                     winMessage = '2 РЕДКИХ! x3';
+                     messageClass = 'win';
+                }
 
+                // 4. Проверка на два одинаковых символа (1.5x)
+                for (const symbol in counts) {
+                    if (counts[symbol] === 2 && !RARE_SYMBOLS.includes(symbol)) { // Только обычные/фрукты
+                        winMultiplier = Math.max(winMultiplier, 1.5);
+                        winMessage = '2 ОДИНАКОВЫХ! x1.5';
+                        messageClass = 'win';
+                        break; 
+                    }
+                }
+                
+                // Если сработал множитель, но сообщение не обновилось, используем общее
+                if (winMultiplier === 1.5 && messageClass === 'loss') {
+                     winMessage = '2 ОДИНАКОВЫХ! x1.5';
+                     messageClass = 'win';
+                }
+                if (winMultiplier === 2 && messageClass === 'loss') {
+                     winMessage = '3 РАЗНЫХ! x2';
+                     messageClass = 'win';
+                }
+
+                const winAmount = bet * winMultiplier;
+                
                 return { winAmount, winMessage, messageClass };
             }
 
@@ -523,19 +553,17 @@
                 MESSAGE_DISPLAY.className = 'info';
 
                 const finalResults = [
-                    getRandomSymbol(0),
-                    getRandomSymbol(1),
-                    getRandomSymbol(2)
+                    getRandomSymbol(),
+                    getRandomSymbol(),
+                    getRandomSymbol()
                 ];
 
-                // Запускаем анимацию с каскадной задержкой
                 const reelPromises = finalResults.map((result, index) => 
-                    spinReel(REELS[index], result, index * 500) // 0ms, 500ms, 1000ms задержка
+                    spinReel(REELS[index], result, index * 500) 
                 );
                 
                 const actualResults = await Promise.all(reelPromises);
 
-                // --- ПОДСЧЕТ РЕЗУЛЬТАТОВ ---
                 isSpinning = false;
                 SPIN_BUTTON.disabled = false;
 
@@ -563,9 +591,8 @@
                 GAME_AREA.style.display = 'block';
                 LOGIN_WARNING.style.display = 'none';
                 
-                // Предварительный показ символов
                 REELS.forEach(reel => {
-                    reel.innerHTML = `<div>${SYMBOLS[0]}</div>`;
+                    reel.innerHTML = `<div>${ALL_SYMBOLS[0]}</div>`;
                 });
 
                 updateDisplay();
