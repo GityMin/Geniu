@@ -1,1 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Слоты МММ V2 | Денис Казаков, Гений</title>
+    <style>
+        /* ГЛОБАЛЬНЫЕ СТИЛИ */
+        body { font-family: 'Arial', sans-serif; background-color: #0d0d0d; color: #E0E0E0; text-align: center; padding-top: 50px; }
+        .nav-bar { background-color: #333; padding: 10px 0; margin-bottom: 30px; }
+        .nav-bar a { color: #fff; padding: 14px 20px; text-decoration: none; font-size: 18px; font-weight: bold; }
+        .nav-bar a:hover { background-color: #575757; }
+        h1 { color: #FF0000; text-shadow: 0 0 10px #FFD700; }
+        
+        /* Панель информации и баланс */
+        .info-panel { display: flex; justify-content: center; gap: 50px; margin-bottom: 30px; }
+        #money-display { font-size: 2.5em; color: #00FF00; font-weight: bold; }
+        
+        /* Основная машина */
+        .slot-machine {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin: 0 auto;
+            width: 500px;
+            padding: 20px;
+            background: linear-gradient(to right, #333 0%, #444 100%);
+            border-radius: 15px;
+            border: 5px solid #FFD700;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Барабаны */
+        .reel-housing {
+            overflow: hidden;
+            width: 100px;
+            height: 120px;
+            border: 3px solid #111;
+            background-color: #000;
+            border-radius: 5px;
+        }
+        .slot-reel {
+            font-size: 4em;
+            line-height: 120px;
+            color: #FFD700;
+            transition: transform 0.3s ease-out;
+        }
 
+        /* Ручка и управление */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-left: 30px;
+        }
+        #spin-button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            background-color: #C00000;
+            color: white;
+            border: 4px solid #FFD700;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 6px #8B0000;
+            transition: all 0.1s;
+        }
+        #spin-button:active:not(:disabled), #spin-button.pulling {
+            transform: translateY(3px);
+            box-shadow: 0 3px #8B0000;
+        }
+        #spin-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Ставка */
+        .bet-control { margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        #bet-input { padding: 8px; font-size: 1.1em; width: 60px; text-align: center; border: 2px solid #FFD700; background-color: #222; color: white; border-radius: 5px; }
+
+        /* Сообщение */
+        #result-message { font-size: 1.8em; margin-top: 30px; min-height: 40px; color: #FF00FF; text-shadow: 0 0 5px #FF00FF; }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">Главная</a>
+        <a href="games.html">Игры</a>
+        <a href="about.html">Автор</a>
+    </div>
+
+    <h1>🔥 Игровой Автомат: "Гений Умножения" 🔥</h1>
+    
+    <div class="info-panel">
+        <div id="money-display">Баланс: 0</div>
+    </div>
+
+    <div class="bet-control">
+        <label for="bet-input">Твоя Ставка:</label>
+        <input type="number" id="bet-input" value="10" min="1" step="1">
+    </div>
+
+    <div class="slot-machine">
+        <div class="reel-housing"><div class="slot-reel" id="reel1">?</div></div>
+        <div class="reel-housing"><div class="slot-reel" id="reel2">?</div></div>
+        <div class="reel-housing"><div class="slot-reel" id="reel3">?</div></div>
+        
+        <div class="controls">
+            <button id="spin-button">ДЁРНУТЬ РУЧКУ</button>
+        </div>
+    </div>
+
+    <p id="result-message">Проверь свою удачу, гений!</p>
+
+    <script>
+        window.onload = function() {
+            const REELS = [
+                document.getElementById('reel1'),
+                document.getElementById('reel2'),
+                document.getElementById('reel3')
+            ];
+            const MONEY_DISPLAY = document.getElementById('money-display');
+            const SPIN_BUTTON = document.getElementById('spin-button');
+            const BET_INPUT = document.getElementById('bet-input');
+            const RESULT_MESSAGE = document.getElementById('result-message');
+            
+            // Символы: 7 (самый редкий), 💎, 💰, ⭐ (самый частый)
+            const SYMBOLS = ['7️⃣', '💎', '💰', '⭐'];
+            const SYMBOL_HEIGHT = 120;
+            
+            let money;
+            let isSpinning = false;
+
+            // --- Функции Баланса и Хранения ---
+
+            function getMoney() {
+                return parseInt(localStorage.getItem('denisKazakovMoney')) || 0;
+            }
+
+            function setMoney(amount) {
+                money = Math.max(0, amount);
+                localStorage.setItem('denisKazakovMoney', money);
+                MONEY_DISPLAY.textContent = `Баланс: ${money} Мани`;
+                
+                const bet = parseInt(BET_INPUT.value);
+                SPIN_BUTTON.disabled = money < bet || isSpinning;
+            }
+            
+            // Инициализация
+            setMoney(getMoney());
+            BET_INPUT.addEventListener('input', () => setMoney(getMoney()));
+
+            // --- Функции Анимации и Игры ---
+
+            function generateSymbolStrip(totalSymbols) {
+                let strip = [];
+                // Частота символов (7 - редкий, ⭐ - частый)
+                const frequency = [1, 2, 3, 4];
+                
+                for (let i = 0; i < totalSymbols; i++) {
+                    let totalWeight = frequency.reduce((a, b) => a + b, 0);
+                    let randomNum = Math.floor(Math.random() * totalWeight);
+                    
+                    for (let j = 0; j < SYMBOLS.length; j++) {
+                        randomNum -= frequency[j];
+                        if (randomNum < 0) {
+                            strip.push(SYMBOLS[j]);
+                            break;
+                        }
+                    }
+                }
+                return strip;
+            }
+
+            function animateReel(reelIndex, finalSymbol) {
+                const reel = REELS[reelIndex];
+                const strip = generateSymbolStrip(20 + reelIndex * 5);
+                
+                strip.push(finalSymbol);
+                
+                reel.style.transition = 'none';
+                reel.style.transform = 'translateY(0)';
+                reel.innerHTML = strip.map(s => `<div>${s}</div>`).join('');
+                
+                const finalPosition = -(strip.length - 1) * SYMBOL_HEIGHT;
+                
+                setTimeout(() => {
+                    reel.style.transition = `transform ${2 + reelIndex * 0.5}s cubic-bezier(0.1, 0.7, 0.4, 1)`;
+                    reel.style.transform = `translateY(${finalPosition}px)`;
+                }, 50);
+            }
+            
+            function spin() {
+                const bet = parseInt(BET_INPUT.value);
+                
+                // Проверка условий перед списанием
+                if (money < bet || bet <= 0 || isSpinning) {
+                    RESULT_MESSAGE.textContent = "Недостаточно Мани или ставка неверна!";
+                    return;
+                }
+
+                // 1. Снимаем ставку и блокируем
+                isSpinning = true;
+                setMoney(money - bet); // Обновляем баланс и сохраняем
+                RESULT_MESSAGE.textContent = "КРУТИМ...";
+                SPIN_BUTTON.classList.add('pulling');
+                
+                // Финальные результаты
+                const finalResults = [
+                    SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+                    SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+                    SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
+                ];
+
+                // 2. Запуск анимации для каждого барабана
+                REELS.forEach((reel, index) => {
+                    animateReel(index, finalResults[index]);
+                });
+
+                // 3. Задержка и проверка выигрыша
+                setTimeout(() => {
+                    SPIN_BUTTON.classList.remove('pulling');
+                    checkWin(finalResults, bet);
+                    isSpinning = false;
+                    setMoney(money); // Обновляем кнопку после расчета
+                }, 3000); 
+            }
+
+            function checkWin(results, bet) {
+                const r1 = results[0];
+                const r2 = results[1];
+                const r3 = results[2];
+                let winAmount = 0;
+                let message = `Проигрыш. (${r1} | ${r2} | ${r3})`;
+
+                if (r1 === r2 && r2 === r3) {
+                    // Тройное совпадение
+                    if (r1 === '7️⃣') {
+                        winAmount = bet * 50;
+                        message = `🤯🤯🤯 ДЖЕКПОТ ГЕНИЯ! ТРИ 7️⃣! Выигрыш: +${winAmount} Мани!`;
+                    } else {
+                        winAmount = bet * 15;
+                        message = `🎉 ТРИ ${r1}! Гениальный выигрыш: +${winAmount} Мани!`;
+                    }
+                } else if (r1 === r2 || r2 === r3) {
+                    // Двойное совпадение (Средний выигрыш)
+                    winAmount = bet * 3;
+                    message = `✅ Двойной ${r2}! Выигрыш: +${winAmount} Мани.`;
+                } else if (r1 === r3) {
+                    // Уникальное совпадение R1 и R3
+                    winAmount = bet * 2;
+                    message = `👌 Совпадение R1 и R3. Выигрыш: +${winAmount} Мани.`;
+                }
+
+                if (winAmount > 0) {
+                    setMoney(money + winAmount);
+                    RESULT_MESSAGE.style.color = '#00FF00';
+                } else {
+                    RESULT_MESSAGE.style.color = '#FF0000';
+                }
+                
+                RESULT_MESSAGE.innerHTML = message;
+            }
+
+            SPIN_BUTTON.addEventListener('click', spin);
+        };
+    </script>
+</body>
+</html>
