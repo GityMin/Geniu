@@ -157,7 +157,7 @@
         }
         .success { color: var(--success-color); text-shadow: 0 0 10px var(--success-color); }
         .error { color: var(--accent-pink); text-shadow: 0 0 10px var(--accent-pink); }
-        .dev-message { color: var(--dev-color); text-shadow: 0 0 10px var(--dev-color); } /* Стиль для Dev-сообщения */
+        .dev-message { color: var(--dev-color); text-shadow: 0 0 10px var(--dev-color); }
         
         /* АНИМАЦИИ ДЛЯ СТАТУСА */
         .status-box {
@@ -173,7 +173,7 @@
             border-color: var(--success-color);
             box-shadow: 0 0 15px var(--success-color);
         }
-        .status-box.dev-mode { /* Новый статус для Dev-аккаунта */
+        .status-box.dev-mode {
             border-color: var(--dev-color);
             box-shadow: 0 0 20px var(--dev-color);
         }
@@ -261,7 +261,7 @@
             const CHECKSUM_PREFIX = 'checksum_';
             const SECRET_KEY = 952; 
             
-            // --- АККАУНТ РАЗРАБОТЧИКА (Dev Priority Fix) ---
+            // --- АККАУНТ РАЗРАБОТЧИКА ---
             const DEV_USERNAME = 'DenisKazakov';
             const DEV_PASSWORD = '4aika4jo';
 
@@ -351,7 +351,7 @@
             function handleLogin(username, password) {
                 let status = 'user'; 
                 
-                // 1. ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА (DEV PRIORITY)
+                // 1. ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
                 if (username === DEV_USERNAME && password === DEV_PASSWORD) {
                     status = 'dev';
                     localStorage.setItem('userStatus', 'dev'); 
