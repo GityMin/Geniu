@@ -3,45 +3,76 @@
 <head>
     <title>Блэкджек | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЕ СТИЛИ */
+        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
+        :root {
+            --bg-color: #111111; /* Графит */
+            --text-color: #F0F0F0; /* Белый */
+            --accent-pink: #FF33CC; /* Яркий Розовый (Фуксия) */
+            --accent-blue: #33CCFF; /* Электрический Голубой */
+            --card-bg: #1F1F1F; /* Темнее для контейнера */
+            --win-color: #00FF00; /* Зеленый */
+            --loss-color: #FF0000; /* Красный */
+            --stand-color: #FFFF00; /* Желтый */
+        }
+
+        /* ОСНОВНЫЕ СТИЛИ */
         body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #0d0d0d; 
-            color: #E0E0E0; 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
             text-align: center; 
             padding-top: 50px; 
+            margin: 0;
+            background-image: repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px), 
+                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
         }
+        
+        /* НАВИГАЦИОННЫЙ БАР */
         .nav-bar { 
-            background-color: #333; 
-            padding: 10px 0; 
-            margin-bottom: 30px; 
+            background-color: #000000;
+            padding: 15px 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         .nav-bar a { 
-            color: #fff; 
-            padding: 14px 20px; 
+            color: var(--text-color); 
+            padding: 14px 25px; 
             text-decoration: none; 
-            font-size: 18px; 
-            font-weight: bold; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s;
+            border-radius: 5px;
         }
         .nav-bar a:hover { 
-            background-color: #575757; 
+            color: var(--accent-pink); 
+            text-shadow: 0 0 10px var(--accent-pink); 
+            background-color: rgba(255, 51, 204, 0.1);
         }
+
+        /* ЗАГОЛОВКИ */
         h1 { 
-            color: #FF00FF; 
-            text-shadow: 0 0 10px #FF00FF; 
+            color: var(--accent-pink); 
+            font-size: 3em;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255, 51, 204, 0.8);
             margin-bottom: 30px;
+            padding-top: 30px;
         }
 
         /* ИГРОВОЙ СТОЛ */
         .blackjack-table {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             padding: 30px;
             background-color: #1a1a1a;
             border-radius: 15px;
-            border: 3px solid #FF00FF;
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 25px rgba(51, 204, 255, 0.5);
             text-align: left;
         }
 
@@ -49,16 +80,20 @@
         .hand-area {
             margin-bottom: 25px;
             padding: 15px;
-            border-bottom: 1px solid #444;
+            border-bottom: 1px dashed #444;
         }
         .hand-area h2 {
-            color: #00FFFF;
+            color: var(--accent-blue);
+            text-shadow: 0 0 5px rgba(51, 204, 255, 0.5);
             margin-top: 0;
+            font-weight: 700;
         }
         .cards {
             min-height: 50px;
-            font-size: 2em;
+            font-size: 2.2em; /* Крупнее карты */
             margin-bottom: 10px;
+            letter-spacing: 5px;
+            font-weight: 900;
         }
 
         /* УПРАВЛЕНИЕ */
@@ -67,19 +102,54 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid var(--accent-pink);
         }
         .game-buttons button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             font-size: 1.1em;
             margin-left: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 900;
+            letter-spacing: 1px;
+            transition: transform 0.1s, box-shadow 0.3s;
         }
-        #deal-button { background-color: #FF4500; color: white; }
-        #hit-button { background-color: #00FF00; color: #111; }
-        #stand-button { background-color: #FFFF00; color: #111; }
+        .game-buttons button:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+        .game-buttons button:disabled {
+            background-color: #555 !important;
+            box-shadow: none !important;
+            cursor: not-allowed;
+        }
+
+        /* ЦВЕТА КНОПОК */
+        #deal-button { 
+            background-color: var(--accent-pink); 
+            color: var(--bg-color); 
+            box-shadow: 0 0 10px var(--accent-pink);
+        }
+        #deal-button:hover:not(:disabled) {
+            background-color: #FF66DD;
+        }
+        #hit-button { 
+            background-color: var(--win-color); 
+            color: #111; 
+            box-shadow: 0 0 10px var(--win-color);
+        }
+        #hit-button:hover:not(:disabled) {
+            background-color: #33FF33;
+        }
+        #stand-button { 
+            background-color: var(--stand-color); 
+            color: #111; 
+            box-shadow: 0 0 10px var(--stand-color);
+        }
+        #stand-button:hover:not(:disabled) {
+            background-color: #FFFF33;
+        }
         
         /* БАЛАНС И СТАВКА */
         .bet-info {
@@ -87,20 +157,22 @@
             align-items: center;
         }
         #bet-input {
-            padding: 8px;
+            padding: 10px;
             font-size: 1em;
-            width: 80px;
+            width: 90px;
             text-align: center;
             margin-left: 10px;
             background-color: #282828;
-            color: white;
-            border: 1px solid #555;
+            color: var(--text-color);
+            border: 2px solid var(--accent-blue);
             border-radius: 5px;
         }
         #balance-display {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #00FF00;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--win-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
         }
 
         /* СООБЩЕНИЯ */
@@ -108,30 +180,36 @@
             min-height: 30px;
             margin-top: 20px;
             font-size: 1.5em;
-            font-weight: bold;
+            font-weight: 700;
             text-align: center;
+            text-shadow: 0 0 10px;
         }
 
-        /* КЛИКЕР-ПАНЕЛЬ (Встроенная) */
+        /* КЛИКЕР-ПАНЕЛЬ */
         .clicker-section {
             margin-top: 30px;
             padding: 20px;
             background-color: #282828;
-            border: 2px dashed #00FFFF;
+            border: 2px dashed var(--accent-blue);
             border-radius: 10px;
-            color: #00FFFF;
-            text-align: center;
+            color: var(--accent-blue);
         }
         #clicker-button {
             padding: 10px 20px;
             margin-top: 10px;
             font-size: 1.1em;
-            background-color: #00FFFF;
+            background-color: var(--accent-blue);
             color: #111;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            box-shadow: 0 0 10px var(--accent-blue);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        #clicker-button:hover {
+            background-color: var(--accent-pink);
+            box-shadow: 0 0 10px var(--accent-pink);
         }
     </style>
 </head>
@@ -158,7 +236,7 @@
             <div class="cards" id="player-cards"></div>
         </div>
 
-        <div id="message-display">Сделайте Вашу ставку и нажмите "Сдать"!</div>
+        <div id="message-display" style="color: var(--accent-blue);">Сделайте Вашу ставку и нажмите "Сдать"!</div>
 
         <div class="controls">
             <div class="bet-info">
@@ -218,16 +296,12 @@
             // 1. ФУНКЦИЯ ЗАПИСИ (Баланс может быть 0)
             function setMoney(amount) {
                 if (!isUserLoggedIn) return 0; 
-
                 const moneyKey = getMoneyKey(currentUsername);
                 const checksumKey = getChecksumKey(currentUsername);
-                
                 const safeAmount = Math.max(0, amount); 
                 const newChecksum = safeAmount + SECRET_KEY;
-                
                 localStorage.setItem(moneyKey, safeAmount);
                 localStorage.setItem(checksumKey, newChecksum);
-                
                 updateBalanceDisplay(safeAmount);
                 return safeAmount;
             }
@@ -235,10 +309,8 @@
             // 2. ФУНКЦИЯ ЧТЕНИЯ (Сброс только при чите)
             function getMoney() {
                 if (!isUserLoggedIn) return 0;
-
                 const moneyKey = getMoneyKey(currentUsername);
                 const checksumKey = getChecksumKey(currentUsername);
-
                 let storedMoney = parseInt(localStorage.getItem(moneyKey));
                 let storedChecksum = parseInt(localStorage.getItem(checksumKey));
                 
@@ -249,7 +321,7 @@
                 // АНТИ-ЧИТ ПРОВЕРКА
                 if (storedMoney + SECRET_KEY !== storedChecksum) {
                     MESSAGE_DISPLAY.textContent = "Баланс сброшен! Обнаружена ошибка данных.";
-                    MESSAGE_DISPLAY.style.color = '#FF0000';
+                    MESSAGE_DISPLAY.style.color = 'var(--loss-color)';
                     return setMoney(ANTI_CHEAT_RESET_AMOUNT); 
                 }
                 
@@ -264,7 +336,6 @@
                 deck = [];
                 for (let suit of suits) {
                     for (let rank of ranks) {
-                        // Используем юникодные символы для карт, так как они хорошо поддерживаются
                         let symbol = rank;
                         if (rank === 'J') symbol = 'J';
                         if (rank === 'Q') symbol = 'Q';
@@ -274,7 +345,6 @@
                         deck.push({ rank, suit, symbol: `${symbol}${suit}` });
                     }
                 }
-                // Перемешивание (Fisher-Yates)
                 for (let i = deck.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -291,7 +361,6 @@
                 let score = hand.reduce((sum, card) => sum + getCardValue(card), 0);
                 let aces = hand.filter(card => card.rank === 'A').length;
 
-                // Уменьшаем 11-очковые тузы до 1, если счет > 21
                 while (score > 21 && aces > 0) {
                     score -= 10;
                     aces--;
@@ -306,15 +375,12 @@
             // --- УПРАВЛЕНИЕ ИГРОВЫМ ПРОЦЕССОМ ---
 
             function updateDisplay(hideDealerCard = false) {
-                // Обновление карт дилера
                 DEALER_CARDS.innerHTML = dealerHand.map((card, index) => 
                     (hideDealerCard && index === 1) ? '🂠' : card.symbol
                 ).join(' ');
                 
-                // Обновление очков дилера
                 DEALER_SCORE.textContent = hideDealerCard ? getCardValue(dealerHand[0]) : calculateScore(dealerHand);
                 
-                // Обновление карт и очков игрока
                 PLAYER_CARDS.textContent = playerHand.map(card => card.symbol).join(' ');
                 PLAYER_SCORE.textContent = calculateScore(playerHand);
             }
@@ -325,31 +391,28 @@
                 
                 if (!isUserLoggedIn) {
                     MESSAGE_DISPLAY.textContent = "Войдите, чтобы играть на реальные Мани!";
-                    MESSAGE_DISPLAY.style.color = '#00FFFF';
+                    MESSAGE_DISPLAY.style.color = 'var(--accent-blue)';
                     return;
                 }
                 
                 if (isNaN(currentBet) || currentBet < MIN_BET || currentBet > currentMoney) {
                     MESSAGE_DISPLAY.textContent = `Ставка: ${MIN_BET}-${currentMoney} Мани!`;
-                    MESSAGE_DISPLAY.style.color = '#FF0000';
+                    MESSAGE_DISPLAY.style.color = 'var(--loss-color)';
                     return;
                 }
 
-                // Списываем ставку
                 setMoney(currentMoney - currentBet);
                 
-                // Инициализация
                 createDeck();
                 dealerHand = [];
                 playerHand = [];
                 
-                // Раздача (Игрок, Дилер, Игрок, Дилер (скрыта))
                 playerHand.push(drawCard());
                 dealerHand.push(drawCard());
                 playerHand.push(drawCard());
                 dealerHand.push(drawCard());
 
-                updateDisplay(true); // Скрываем вторую карту дилера
+                updateDisplay(true);
 
                 DEAL_BUTTON.disabled = true;
                 HIT_BUTTON.disabled = false;
@@ -358,11 +421,11 @@
                 
                 if (calculateScore(playerHand) === 21) {
                     MESSAGE_DISPLAY.textContent = "БЛЭКДЖЕК! Ждём Дилера...";
-                    MESSAGE_DISPLAY.style.color = '#00FF00';
+                    MESSAGE_DISPLAY.style.color = 'var(--win-color)';
                     setTimeout(stand, 1500);
                 } else {
                     MESSAGE_DISPLAY.textContent = "Твой ход: Ещё или Хватит?";
-                    MESSAGE_DISPLAY.style.color = '#00FFFF';
+                    MESSAGE_DISPLAY.style.color = 'var(--accent-blue)';
                 }
             }
 
@@ -373,11 +436,11 @@
 
                 if (score > 21) {
                     MESSAGE_DISPLAY.textContent = "❌ ПЕРЕБОР! Твой проигрыш.";
-                    MESSAGE_DISPLAY.style.color = '#FF0000';
+                    MESSAGE_DISPLAY.style.color = 'var(--loss-color)';
                     endGame();
                 } else if (score === 21) {
                     MESSAGE_DISPLAY.textContent = "21! Ждём Дилера...";
-                    MESSAGE_DISPLAY.style.color = '#00FF00';
+                    MESSAGE_DISPLAY.style.color = 'var(--win-color)';
                     setTimeout(stand, 1500);
                 }
             }
@@ -386,15 +449,13 @@
                 HIT_BUTTON.disabled = true;
                 STAND_BUTTON.disabled = true;
                 
-                updateDisplay(false); // Открываем вторую карту дилера
+                updateDisplay(false);
 
-                // Ход дилера
                 while (calculateScore(dealerHand) < 17) {
                     dealerHand.push(drawCard());
                     updateDisplay(false);
                 }
                 
-                // Задержка для драматизма
                 setTimeout(checkWinner, 1500);
             }
 
@@ -405,23 +466,22 @@
 
                 if (dealerScore > 21) {
                     MESSAGE_DISPLAY.textContent = `🎉 ПОБЕДА! Дилер перебрал (${dealerScore})! Вы получаете ${currentBet * 2} Мани.`;
-                    MESSAGE_DISPLAY.style.color = '#00FF00';
+                    MESSAGE_DISPLAY.style.color = 'var(--win-color)';
                     payout = currentBet * 2;
                 } else if (playerScore > dealerScore) {
                     MESSAGE_DISPLAY.textContent = `🎉 ПОБЕДА! ${playerScore} против ${dealerScore}. Вы получаете ${currentBet * 2} Мани.`;
-                    MESSAGE_DISPLAY.style.color = '#00FF00';
+                    MESSAGE_DISPLAY.style.color = 'var(--win-color)';
                     payout = currentBet * 2;
                 } else if (playerScore < dealerScore) {
                     MESSAGE_DISPLAY.textContent = `❌ ПРОИГРЫШ! ${playerScore} против ${dealerScore}.`;
-                    MESSAGE_DISPLAY.style.color = '#FF0000';
-                    payout = 0; // Ставка уже списана
+                    MESSAGE_DISPLAY.style.color = 'var(--loss-color)';
+                    payout = 0;
                 } else {
                     MESSAGE_DISPLAY.textContent = `🤝 НИЧЬЯ! ${playerScore} против ${dealerScore}. Ставка возвращена.`;
-                    MESSAGE_DISPLAY.style.color = '#FFFF00';
+                    MESSAGE_DISPLAY.style.color = 'var(--stand-color)';
                     payout = currentBet;
                 }
 
-                // Зачисление выигрыша/возврат ставки
                 setMoney(getMoney() + payout);
                 endGame();
             }
@@ -429,6 +489,8 @@
             function endGame() {
                 DEAL_BUTTON.disabled = false;
                 BET_INPUT.disabled = false;
+                HIT_BUTTON.disabled = true;
+                STAND_BUTTON.disabled = true;
             }
 
             function updateBalanceDisplay(currentMoney) {
@@ -439,13 +501,18 @@
                     DEAL_BUTTON.disabled = true;
                     BET_INPUT.disabled = true;
                     MESSAGE_DISPLAY.textContent = `Нужно минимум ${MIN_BET} Мани для игры!`;
-                    MESSAGE_DISPLAY.style.color = '#FF0000';
+                    MESSAGE_DISPLAY.style.color = 'var(--loss-color)';
                 } else {
                     CLICKER_PANEL.style.display = 'none';
-                    DEAL_BUTTON.disabled = false;
-                    BET_INPUT.disabled = false;
-                    MESSAGE_DISPLAY.textContent = "Сделайте Вашу ставку и нажмите 'Сдать'!";
-                    MESSAGE_DISPLAY.style.color = '#E0E0E0';
+                    // Если игра не идет, разрешаем кнопки
+                    if (DEAL_BUTTON.disabled && !HIT_BUTTON.disabled) {
+                       // Игра в процессе, кнопки остаются disabled
+                    } else {
+                        DEAL_BUTTON.disabled = false;
+                        BET_INPUT.disabled = false;
+                        MESSAGE_DISPLAY.textContent = "Сделайте Вашу ставку и нажмите 'Сдать'!";
+                        MESSAGE_DISPLAY.style.color = 'var(--text-color)';
+                    }
                 }
             }
             
@@ -460,6 +527,7 @@
             // --- ИНИЦИАЛИЗАЦИЯ ---
             if (!isUserLoggedIn) {
                 MESSAGE_DISPLAY.textContent = "Войдите, чтобы играть!";
+                MESSAGE_DISPLAY.style.color = 'var(--accent-pink)';
                 CLICKER_PANEL.style.display = 'block';
                 CLICKER_BUTTON.textContent = 'Войдите на страницу "Вход/Выход"';
                 CLICKER_BUTTON.disabled = true;
