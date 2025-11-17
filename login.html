@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Вход | Портал Гения МММ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-color: #121212; 
+            color: #E0E0E0; 
+            text-align: center; 
+            padding-top: 50px; 
+        }
+        .nav-bar { 
+            background-color: #333; 
+            padding: 10px 0; 
+            margin-bottom: 50px; 
+            width: 100%;
+        }
+        .nav-bar a { 
+            color: #fff; 
+            padding: 14px 20px; 
+            text-decoration: none; 
+            font-size: 18px; 
+            font-weight: bold; 
+            display: inline-block;
+        }
+        .nav-bar a:hover { 
+            background-color: #575757; 
+        }
+        h1 { 
+            color: #FF00FF; 
+            text-shadow: 0 0 8px #FF00FF; 
+        }
+        .login-container { 
+            max-width: 400px; 
+            margin: 0 auto; 
+            background-color: #1E1E1E; 
+            padding: 30px; 
+            border-radius: 10px; 
+            border: 2px solid #FF00FF; 
+            text-align: left;
+        }
+        .input-group { 
+            margin-bottom: 20px; 
+        }
+        .input-group label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold;
+        }
+        .input-group input { 
+            width: 95%; 
+            padding: 10px; 
+            border: 1px solid #555; 
+            background-color: #282828; 
+            color: white; 
+            border-radius: 5px; 
+            font-size: 1em;
+        }
+        #login-button { 
+            width: 100%; 
+            padding: 15px; 
+            background-color: #FF00FF; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 1.2em;
+            transition: background-color 0.2s;
+        }
+        #login-button:hover { 
+            background-color: #CC00CC; 
+        }
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .logout-panel {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logout-panel button {
+            padding: 10px 20px;
+            background-color: #CC3333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 2em; }
+            .login-container { padding: 20px; margin: 0 10px; }
+            .nav-bar a { font-size: 16px; padding: 10px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">Главная</a>
+        <a href="games.html">Игры</a>
+        <a href="about.html">Автор</a>
+        <a href="login.html">Вход/Выход</a> 
+    </div>
+
+    <h1>🔐 Вход в Портал Гения</h1>
+
+    <div class="login-container" id="login-form-container">
+        <p>Используй логин и пароль **"Genius"** для входа.</p>
+        <div class="input-group">
+            <label for="username">Имя Пользователя:</label>
+            <input type="text" id="username" value="Genius" required>
+        </div>
+        <div class="input-group">
+            <label for="password">Секретный Код (Пароль):</label>
+            <input type="password" id="password" value="Genius" required>
+        </div>
+        <button id="login-button">ВОЙТИ И ДОКАЗАТЬ, ЧТО ТЫ ГЕНИЙ</button>
+        <p id="message"></p>
+    </div>
+
+    <div class="logout-panel" id="welcome-panel" style="display: none;">
+        <h2 id="welcome-message"></h2>
+        <p>Твой доступ подтвержден, Гений!</p>
+        <button id="logout-button">ВЫЙТИ</button>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const USERNAME_INPUT = document.getElementById('username');
+            const PASSWORD_INPUT = document.getElementById('password');
+            const LOGIN_BUTTON = document.getElementById('login-button');
+            const MESSAGE_ELEMENT = document.getElementById('message');
+            const LOGIN_FORM_CONTAINER = document.getElementById('login-form-container');
+            const WELCOME_PANEL = document.getElementById('welcome-panel');
+            const WELCOME_MESSAGE = document.getElementById('welcome-message');
+            const LOGOUT_BUTTON = document.getElementById('logout-button');
+
+            // --- Константы для имитации ---
+            const CORRECT_PASSWORD = 'Genius';
+            const SESSION_KEY = 'denisKazakovUserLoggedIn';
+            const USERNAME_KEY = 'denisKazakovUsername';
+
+            function checkLoginStatus() {
+                const loggedIn = localStorage.getItem(SESSION_KEY) === 'true';
+                const username = localStorage.getItem(USERNAME_KEY);
+                
+                if (loggedIn && username) {
+                    LOGIN_FORM_CONTAINER.style.display = 'none';
+                    WELCOME_PANEL.style.display = 'block';
+                    WELCOME_MESSAGE.textContent = `Добро пожаловать, ${username}!`;
+                } else {
+                    LOGIN_FORM_CONTAINER.style.display = 'block';
+                    WELCOME_PANEL.style.display = 'none';
+                }
+            }
+
+            function handleLogin() {
+                const username = USERNAME_INPUT.value.trim();
+                const password = PASSWORD_INPUT.value.trim();
+
+                if (username === '' || password === '') {
+                    MESSAGE_ELEMENT.textContent = 'Введите имя и пароль!';
+                    MESSAGE_ELEMENT.style.color = '#FFD700';
+                    return;
+                }
+                
+                // Имитация проверки пароля
+                if (password === CORRECT_PASSWORD) {
+                    localStorage.setItem(SESSION_KEY, 'true');
+                    localStorage.setItem(USERNAME_KEY, username);
+                    MESSAGE_ELEMENT.textContent = 'Успешный вход! Перенаправляем...';
+                    MESSAGE_ELEMENT.style.color = '#00FF00';
+                    
+                    // Обновляем вид после задержки
+                    setTimeout(() => {
+                        checkLoginStatus();
+                        // Можно перенаправить на главную
+                        // window.location.href = 'index.html'; 
+                    }, 1000); 
+
+                } else {
+                    MESSAGE_ELEMENT.textContent = 'Неверный Секретный Код!';
+                    MESSAGE_ELEMENT.style.color = '#FF0000';
+                }
+            }
+
+            function handleLogout() {
+                localStorage.setItem(SESSION_KEY, 'false');
+                localStorage.removeItem(USERNAME_KEY); // Очищаем имя пользователя
+                checkLoginStatus();
+                MESSAGE_ELEMENT.textContent = 'Вы успешно вышли из системы.';
+                MESSAGE_ELEMENT.style.color = '#FFD700';
+            }
+
+            LOGIN_BUTTON.addEventListener('click', handleLogin);
+            LOGOUT_BUTTON.addEventListener('click', handleLogout);
+            
+            // Инициализация
+            checkLoginStatus();
+        };
+    </script>
+</body>
+</html>
