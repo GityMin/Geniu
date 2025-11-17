@@ -155,24 +155,39 @@
             const SYMBOLS = ['7️⃣', '💎', '💰', '⭐'];
             const SYMBOL_HEIGHT = 120;
             
-            let money;
-            let isSpinning = false;
+            let isSpinning = false; // Убрали let money
 
-            // --- Функции Баланса и Хранения ---
+            // --- ФУНКЦИИ БАЛАНСА С ЗАЩИТОЙ ---
+            const SECRET_KEY = 952; // Твой секретный ключ
 
             function getMoney() {
-                return parseInt(localStorage.getItem('denisKazakovMoney')) || 0;
+                const storedMoney = parseInt(localStorage.getItem('denisKazakovMoney')) || 100;
+                const storedChecksum = parseInt(localStorage.getItem('denisKazakovChecksum')) || (storedMoney + SECRET_KEY);
+
+                if (storedMoney + SECRET_KEY !== storedChecksum) {
+                    console.warn("Обнаружена попытка изменения баланса. Баланс сброшен.");
+                    return setMoney(10);
+                }
+                return storedMoney;
             }
 
             function setMoney(amount) {
-                money = Math.max(0, amount);
-                localStorage.setItem('denisKazakovMoney', money);
-                MONEY_DISPLAY.textContent = `Баланс: ${money} Мани`;
+                const safeAmount = Math.max(10, amount);
+                const newChecksum = safeAmount + SECRET_KEY;
+                
+                localStorage.setItem('denisKazakovMoney', safeAmount);
+                localStorage.setItem('denisKazakovChecksum', newChecksum);
+                
+                MONEY_DISPLAY.textContent = `Баланс: ${safeAmount} Мани`;
                 
                 const bet = parseInt(BET_INPUT.value);
-                SPIN_BUTTON.disabled = money < bet || isSpinning;
+                SPIN_BUTTON.disabled = safeAmount < bet || isSpinning;
+                
+                return safeAmount;
             }
+            // --- КОНЕЦ ФУНКЦИЙ БАЛАНСА С ЗАЩИТОЙ ---
             
+            // Инициализация
             setMoney(getMoney());
             BET_INPUT.addEventListener('input', () => setMoney(getMoney()));
 
@@ -180,6 +195,7 @@
 
             function generateSymbolStrip(totalSymbols) {
                 let strip = [];
+                // Частота символов (суммарный вес 10): 7(1), 💎(2), 💰(3), ⭐(4)
                 const frequency = [1, 2, 3, 4];
                 
                 for (let i = 0; i < totalSymbols; i++) {
@@ -217,14 +233,15 @@
             
             function spin() {
                 const bet = parseInt(BET_INPUT.value);
+                const currentMoney = getMoney();
                 
-                if (money < bet || bet <= 0 || isSpinning) {
+                if (currentMoney < bet || bet <= 0 || isSpinning) {
                     RESULT_MESSAGE.textContent = "Недостаточно Мани или ставка неверна!";
                     return;
                 }
 
                 isSpinning = true;
-                setMoney(money - bet);
+                setMoney(currentMoney - bet); // Снимаем ставку
                 RESULT_MESSAGE.textContent = "КРУТИМ...";
                 SPIN_BUTTON.classList.add('pulling');
                 
@@ -242,7 +259,7 @@
                     SPIN_BUTTON.classList.remove('pulling');
                     checkWin(finalResults, bet);
                     isSpinning = false;
-                    setMoney(money);
+                    setMoney(getMoney()); // Обновляем кнопку после расчета
                 }, 3000); 
             }
 
@@ -270,7 +287,7 @@
                 }
 
                 if (winAmount > 0) {
-                    setMoney(money + winAmount);
+                    setMoney(getMoney() + winAmount);
                     RESULT_MESSAGE.style.color = '#00FF00';
                 } else {
                     RESULT_MESSAGE.style.color = '#FF0000';
