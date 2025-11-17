@@ -1,49 +1,72 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты | Ручка Гения</title>
+    <title>Слоты | [СИСТЕМА] v.3.0</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
         :root {
-            --bg-color: #111111;
-            --text-color: #F0F0F0;
+            --bg-color: #0A0A0A; 
+            --text-color: #F0F0F0; 
             --accent-pink: #FF33CC; 
-            --accent-blue: #33CCFF;
-            --card-bg: #1F1F1F;
+            --accent-blue: #33CCFF; 
+            --card-bg: #181818; 
             --win-color: #00FF00; 
             --loss-color: #FF0000;
-            --lever-drop-height: 80px; /* Максимальное опускание рычага */
+            --lever-drop-height: 80px; 
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
         body { 
-            font-family: 'Montserrat', sans-serif; 
+            font-family: 'Orbitron', sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-color); 
             text-align: center; 
             padding-top: 50px; 
             margin: 0;
-            background-image: repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px), 
-                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
+            background-image: linear-gradient(0deg, transparent 95%, rgba(51, 204, 255, 0.1) 100%), 
+                              linear-gradient(90deg, transparent 95%, rgba(51, 204, 255, 0.1) 100%), 
+                              repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(255, 51, 204, 0.05) 50px), 
+                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(255, 51, 204, 0.05) 50px);
         }
         
-        /* НАВИГАЦИЯ И ЗАГОЛОВКИ */
-        .nav-bar { /* ... стили ... */ }
-        .nav-bar a { /* ... стили ... */ }
-        .nav-bar a:hover { /* ... стили ... */ }
+        /* НАВИГАЦИЯ */
+        .nav-bar { 
+            background-color: #000000;
+            padding: 15px 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-bar a { 
+            color: var(--text-color); 
+            padding: 14px 25px; 
+            text-decoration: none; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+        .nav-bar a:hover { 
+            color: var(--accent-pink); 
+            text-shadow: 0 0 10px var(--accent-pink); 
+            background-color: rgba(255, 51, 204, 0.1);
+        }
+
         h1 { 
             color: var(--accent-pink); 
-            font-size: 3em;
+            font-size: 3.5em; 
             font-weight: 900;
-            text-shadow: 0 0 20px rgba(255, 51, 204, 0.8);
+            text-shadow: 0 0 25px rgba(255, 51, 204, 1), 0 0 10px rgba(0, 0, 0, 0.9); 
             margin-bottom: 30px;
             padding-top: 30px;
         }
 
         .slot-wrapper {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             display: flex; 
             justify-content: center;
@@ -51,57 +74,61 @@
             padding: 20px 0;
         }
         .slot-container {
-            width: 550px;
-            padding: 20px;
+            width: 600px; 
+            padding: 30px 20px;
             background-color: var(--card-bg);
             border-radius: 15px;
-            border: 2px solid var(--accent-blue);
-            box-shadow: 0 0 25px rgba(51, 204, 255, 0.5);
+            border: 3px solid var(--accent-blue);
+            box-shadow: 0 0 35px rgba(51, 204, 255, 0.7);
             position: relative;
+            transform: perspective(1000px) rotateX(2deg); 
         }
 
-        /* БАРАБАНЫ */
+        /* 3D-БАРАБАНЫ - МАТРИЧНЫЙ ДИЗАЙН */
         .reels {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 25px;
-            gap: 10px;
+            margin-bottom: 30px;
+            gap: 15px;
         }
         .reel {
-            font-size: 3em; 
-            width: 120px;
-            height: 120px;
-            line-height: 120px;
+            font-size: 3.5em; 
+            width: 140px;
+            height: 140px;
+            line-height: 140px;
             background-color: #000000; 
-            border-radius: 8px;
-            border: 4px solid var(--accent-pink);
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 1), 0 0 15px var(--accent-pink);
-            font-weight: 600; 
+            border-radius: 5px;
+            border: 5px outset var(--accent-pink); 
+            box-shadow: inset 0 0 20px rgba(51, 204, 255, 0.5), 0 0 10px var(--accent-pink);
+            font-weight: 700; 
             color: var(--accent-blue); 
-            text-shadow: 0 0 8px var(--accent-blue); 
+            text-shadow: 0 0 10px var(--accent-blue), 0 0 20px rgba(51, 204, 255, 0.7); 
             transition: all 0.2s;
             overflow: hidden; 
+            transform: skewX(-5deg); 
         }
         .reel.win-glow {
             border-color: var(--win-color);
-            box-shadow: 0 0 30px var(--win-color), inset 0 0 10px var(--win-color);
+            box-shadow: 0 0 30px var(--win-color), inset 0 0 15px var(--win-color);
             color: var(--win-color);
+            transform: scale(1.05) skewX(-5deg);
         }
 
-        /* НОВАЯ ТЯНУЩАЯСЯ РУЧКА (УЛУЧШЕННЫЙ ДИЗАЙН) */
+        /* ДЕТАЛИЗИРОВАННАЯ 3D-РУЧКА */
         #lever-wrapper {
-            margin-left: 30px;
+            margin-left: 50px;
             padding-top: 25px;
-            position: relative; /* Для позиционирования рычага */
-            height: 250px; /* Достаточно места для движения */
+            position: relative; 
+            height: 250px; 
+            transform: perspective(800px) rotateY(-5deg) rotateX(5deg); 
         }
         .lever-arm-base {
-            width: 25px;
-            height: 150px; /* Увеличенная длина */
-            background-color: #444; 
+            width: 30px; 
+            height: 150px; 
+            background: linear-gradient(#444, #222); 
             border-radius: 5px;
-            border: 2px solid #666;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 3px solid #666;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
             position: absolute;
             top: 20px;
             left: 50%;
@@ -110,69 +137,89 @@
         }
         #lever-arm {
             position: absolute;
-            width: 20px;
-            height: 120px; /* Поршень, который движется */
-            background-color: #555;
-            border: 2px solid #777;
+            width: 25px;
+            height: 120px; 
+            background: linear-gradient(#777, #444); 
+            border: 2px solid #999;
             border-radius: 5px;
             left: 50%;
             transform: translateX(-50%);
             top: 0;
             z-index: 2;
             cursor: grab;
-            transition: top 0.1s ease-out; /* Плавное возвращение */
+            transition: top 0.1s ease-out; 
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
         #lever-arm::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 5px;
+            left: 5px;
+            width: 15px;
+            height: 110px;
             background: linear-gradient(to top, var(--accent-pink) 0%, transparent 50%, var(--accent-blue) 100%);
-            opacity: 0.3;
-            filter: blur(5px);
+            opacity: 0.6;
+            filter: blur(4px);
             pointer-events: none;
         }
         #lever-arm.dragging {
             cursor: grabbing;
         }
         #lever-handle {
-            width: 45px;
-            height: 45px;
+            width: 50px; 
+            height: 50px;
             background-color: var(--accent-pink);
             border-radius: 50%;
-            border: 4px solid #FFDDFF;
-            box-shadow: 0 0 20px var(--accent-pink); 
+            border: 5px solid #FFDDFF;
+            box-shadow: 0 0 30px var(--accent-pink), inset 0 0 10px rgba(0, 0, 0, 0.5); 
             position: absolute;
-            top: -22px; /* Позиционируем поверх рычага */
+            top: -25px; 
             left: 50%;
             transform: translateX(-50%);
             z-index: 3;
-            pointer-events: none; /* Захват через #lever-arm */
+            pointer-events: none; 
+            transition: box-shadow 0.2s;
         }
-        #lever-arm:disabled {
-            background-color: #555;
-            border-color: #333;
-            box-shadow: none;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
+        
         /* УПРАВЛЕНИЕ И ДИСПЛЕИ */
-        .controls { /* ... стили ... */ }
-        #bet-input { /* ... стили ... */ }
-        #balance-display { /* ... стили ... */ }
-        #message-display { /* ... стили ... */ }
-        .win { /* ... стили ... */ }
-        .loss { /* ... стили ... */ }
-        .info { /* ... стили ... */ }
+        #balance-display {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--win-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        }
+        #message-display {
+            min-height: 30px;
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+        .info { color: var(--accent-blue); text-shadow: 0 0 15px rgba(51, 204, 255, 0.9); }
+        .win { color: var(--win-color); text-shadow: 0 0 15px rgba(0, 255, 0, 0.9); }
+        .loss { color: var(--loss-color); text-shadow: 0 0 15px rgba(255, 0, 0, 0.9); }
 
         /* АНИМАЦИИ */
-        @keyframes spin { /* ... стили ... */ }
-        .spinning { /* ... стили ... */ }
-        @keyframes glitch { /* ... стили ... */ }
-        .glitch-active { /* ... стили ... */ }
+        @keyframes spin {
+            0% { transform: translateY(0%); }
+            100% { transform: translateY(-100%); }
+        }
+        .spinning {
+             animation: spin 0.05s infinite alternate; 
+             opacity: 0.5;
+        }
+        
+        @keyframes glitch {
+            0% { clip-path: inset(10% 0 85% 0); transform: translate(3px, 1px); opacity: 0.8; }
+            20% { clip-path: inset(5% 0 80% 0); transform: translate(-5px, 0); opacity: 1; }
+            40% { clip-path: inset(30% 0 60% 0); transform: translate(1px, -3px); opacity: 0.7; }
+            60% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 2px); opacity: 1; }
+            80% { clip-path: inset(80% 0 5% 0); transform: translate(4px, -1px); opacity: 0.8; }
+            100% { clip-path: inset(0 0 0 0); transform: translate(0); opacity: 1; }
+        }
+        .glitch-active {
+            animation: glitch 0.3s steps(1) 5;
+        }
 
         /* МОБИЛЬНАЯ ВЕРСИЯ */
         @media (max-width: 768px) {
@@ -185,6 +232,7 @@
                 width: 100%;
                 max-width: 400px;
                 margin-bottom: 20px;
+                transform: none; 
             }
             .reels {
                 gap: 5px;
@@ -194,11 +242,13 @@
                 width: 90px;
                 height: 90px;
                 line-height: 90px;
+                transform: none;
             }
             #lever-wrapper {
                 margin-left: 0;
                 padding-top: 0;
                 height: 200px; 
+                transform: none;
             }
             .lever-arm-base {
                  height: 120px;
@@ -224,13 +274,13 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 СЛОТЫ | [СИСТЕМА]</h1>
+    <h1>🎰 СЛОТЫ | [СИСТЕМА] v.3.0</h1>
 
     <div id="balance-display">КРЕДИТ: 0 М</div>
 
     <div class="slot-wrapper">
         <div class="slot-container">
-            <div style="position: absolute; top: 78px; left: 0; width: 100%; height: 5px; background: var(--accent-pink); box-shadow: 0 0 10px var(--accent-pink); z-index: 1;"></div>
+            <div style="position: absolute; top: 93px; left: 0; width: 100%; height: 5px; background: var(--accent-pink); box-shadow: 0 0 10px var(--accent-pink); z-index: 1;"></div>
             
             <div class="reels">
                 <div class="reel" id="reel1">?</div>
@@ -244,7 +294,7 @@
                 <button id="spin-button" style="display: none;"></button> 
             </div>
             
-            <p id="message-display" class="info">ТЯНИТЕ РЫЧАГ ВНИЗ. МИНИМУМ: 10 М.</p>
+            <p id="message-display" class="info">ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].</p>
         </div>
         
         <div id="lever-wrapper">
@@ -269,17 +319,16 @@
                 document.getElementById('reel3')
             ];
             const BET_INPUT = document.getElementById('bet-input');
-            const SPIN_BUTTON = document.getElementById('spin-button'); 
             const BALANCE_DISPLAY = document.getElementById('balance-display');
             const MESSAGE_DISPLAY = document.getElementById('message-display');
             const CLICKER_PANEL = document.getElementById('clicker-panel');
             const CLICKER_BUTTON = document.getElementById('clicker-button');
 
-            // --- ЭЛЕМЕНТЫ НОВОЙ РУЧКИ ---
+            // --- ЭЛЕМЕНТЫ РУЧКИ ---
             const LEVER_WRAPPER = document.getElementById('lever-wrapper');
             const LEVER_ARM = document.getElementById('lever-arm'); 
             const INITIAL_LEVER_TOP = 0;
-            const DROP_THRESHOLD = LEVER_WRAPPER.offsetHeight * 0.4; // Запускать спин, если опустили на 40%
+            const DROP_THRESHOLD = LEVER_WRAPPER.offsetHeight * 0.4; 
             let isDragging = false;
             let startY = 0;
             let currentTop = 0;
@@ -343,21 +392,24 @@
                 return Math.max(0, storedMoney);
             }
             
-            // --- УПРАВЛЕНИЕ РУЧКОЙ (ИНТЕРАКТИВНОСТЬ) ---
+            // --- УПРАВЛЕНИЕ РУЧКОЙ ---
 
             function handleStart(event) {
                 if (isSpinning || LEVER_ARM.disabled) return;
                 
                 isDragging = true;
                 LEVER_ARM.classList.add('dragging');
-                startY = event.clientY || event.touches[0].clientY;
+                
+                const clientY = event.clientY || event.touches[0].clientY;
+                startY = clientY;
                 currentTop = parseFloat(LEVER_ARM.style.top) || INITIAL_LEVER_TOP;
 
-                // Перемещаем слушатели на document, чтобы ловить движение за пределами ручки
                 document.addEventListener('mousemove', handleMove);
                 document.addEventListener('mouseup', handleEnd);
                 document.addEventListener('touchmove', handleMove);
                 document.addEventListener('touchend', handleEnd);
+                
+                if (event.type === 'touchstart') event.preventDefault();
             }
 
             function handleMove(event) {
@@ -366,7 +418,6 @@
                 const clientY = event.clientY || event.touches[0].clientY;
                 const dy = clientY - startY;
                 
-                // Ограничиваем движение: не выше 0 и не ниже максимальной высоты
                 const newTop = Math.min(Math.max(INITIAL_LEVER_TOP, currentTop + dy), DROP_THRESHOLD);
                 LEVER_ARM.style.top = newTop + 'px';
             }
@@ -377,7 +428,6 @@
                 isDragging = false;
                 LEVER_ARM.classList.remove('dragging');
 
-                // Удаляем слушатели с document
                 document.removeEventListener('mousemove', handleMove);
                 document.removeEventListener('mouseup', handleEnd);
                 document.removeEventListener('touchmove', handleMove);
@@ -385,13 +435,10 @@
 
                 const finalTop = parseFloat(LEVER_ARM.style.top) || INITIAL_LEVER_TOP;
                 
-                // Проверяем, достаточно ли далеко опустили ручку для спина
                 if (finalTop >= DROP_THRESHOLD * 0.8) {
-                    // Запускаем спин, затем возвращаем ручку в исходное положение
                     spin();
                 } 
 
-                // Возвращаем ручку в исходное положение плавно
                 setTimeout(() => {
                     LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px';
                 }, 100); 
@@ -410,7 +457,6 @@
                     CLICKER_PANEL.style.display = 'none';
                 }
                 
-                // Блокировка управления
                 const shouldDisable = !isAffordable || isSpinning || !isUserLoggedIn;
                 LEVER_ARM.disabled = shouldDisable;
                 BET_INPUT.disabled = shouldDisable;
@@ -422,7 +468,7 @@
                      MESSAGE_DISPLAY.textContent = `[СИСТЕМА] КРЕДИТА НЕДОСТАТОЧНО. МИНИМУМ: ${MIN_BET} М.`;
                      MESSAGE_DISPLAY.className = 'loss';
                 } else if (!isSpinning) {
-                     MESSAGE_DISPLAY.textContent = "ТЯНИТЕ РЫЧАГ ВНИЗ.";
+                     MESSAGE_DISPLAY.textContent = "ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].";
                      MESSAGE_DISPLAY.className = 'info';
                 }
             }
@@ -443,9 +489,8 @@
 
                 setMoney(currentMoney - bet);
                 isSpinning = true;
-                updateBalanceDisplay(getMoney()); // Обновляем, чтобы показать списание
+                updateBalanceDisplay(getMoney()); 
 
-                // Визуальная блокировка
                 LEVER_ARM.disabled = true;
 
                 REELS.forEach(reel => {
@@ -467,8 +512,8 @@
                         REELS[index].textContent = item.text;
                         REELS[index].style.color = item.color; 
                         REELS[index].style.borderColor = item.color;
-                        REELS[index].style.boxShadow = `inset 0 0 10px rgba(0, 0, 0, 1), 0 0 15px ${item.color}`;
-                        REELS[index].style.textShadow = `0 0 8px ${item.color}`;
+                        REELS[index].style.boxShadow = `inset 0 0 20px rgba(51, 204, 255, 0.5), 0 0 10px ${item.color}`;
+                        REELS[index].style.textShadow = `0 0 10px ${item.color}, 0 0 20px ${item.color}`;
                     });
                     
                     checkResult(results, bet);
@@ -521,7 +566,6 @@
             // --- Инициализация ---
             if (isUserLoggedIn) {
                 updateBalanceDisplay(getMoney());
-                // Устанавливаем начальное положение ручки
                 LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px'; 
             } else {
                  MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
