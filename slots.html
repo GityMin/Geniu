@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* (CSS остается прежним, удален для краткости) */
         /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
         :root {
             --bg-color: #0A0A0A; 
@@ -16,7 +17,6 @@
             --jackpot-color: #FFFF00;
             --loss-color: #FF0000;
             --reel-size: 100px; /* Размер символа */
-            /* --visible-rows: 1; - Убран, так как рамка теперь 1x */
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -252,6 +252,11 @@
             border: 2px solid var(--loss-color);
             background-color: rgba(255, 0, 0, 0.1);
         }
+        
+        /* Скрываем элементы Audio, чтобы они не мешали интерфейсу */
+        audio {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -262,7 +267,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.3.0: ТОЛЬКО ЦЕНТР]</h1>
+    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.3.1: ЗВУК]</h1>
 
     <div id="game-area">
         <div class="slot-container">
@@ -302,6 +307,12 @@
         <br><a href="login.html" style="color: var(--accent-pink); text-decoration: none; font-weight: 900;">ПЕРЕЙТИ К ВХОДУ</a>
     </div>
 
+    <audio id="sound-start" src="YOUR_URL_TO_SPIN_START_SOUND.mp3"></audio>
+    <audio id="sound-loop" src="YOUR_URL_TO_SPINNING_LOOP_SOUND.mp3" loop></audio>
+    <audio id="sound-stop" src="YOUR_URL_TO_REEL_STOP_SOUND.mp3"></audio>
+    <audio id="sound-win" src="YOUR_URL_TO_WIN_SOUND.mp3"></audio>
+    <audio id="sound-jackpot" src="YOUR_URL_TO_JACKPOT_SOUND.mp3"></audio>
+
     <script>
         window.onload = function() {
             // --- ЭЛЕМЕНТЫ DOM ---
@@ -317,52 +328,33 @@
             const GAME_AREA = document.getElementById('game-area');
             const LOGIN_WARNING = document.getElementById('login-warning');
             
+            // --- ЗВУКОВЫЕ ЭЛЕМЕНТЫ ---
+            const SOUND_START = document.getElementById('sound-start');
+            const SOUND_LOOP = document.getElementById('sound-loop');
+            const SOUND_STOP = document.getElementById('sound-stop');
+            const SOUND_WIN = document.getElementById('sound-win');
+            const SOUND_JACKPOT = document.getElementById('sound-jackpot');
+
             // --- ФЛАГ ДЛЯ ПРЕДОТВРАЩЕНИЯ ДВОЙНОГО СПИНА ---
             let isSpinning = false;
 
-            // --- КОНСТАНТЫ И БЕЗОПАСНОСТЬ ---
+            // --- КОНСТАНТЫ И БЕЗОПАСНОСТЬ (Не меняются) ---
             const USER_KEY = 'denisKazakovUser'; 
             const MONEY_PREFIX = 'money_';
             const CHECKSUM_PREFIX = 'checksum_';
             const SECRET_KEY = 952; 
             const INITIAL_MONEY = 100;
-
-            // --- АККАУНТ РАЗРАБОТЧИКА (ЧИТ-РЕЖИМ) ---
             const DEV_USERNAME = 'DenisKazakov';
             const DEV_MONEY = 999999999; 
             
-            // --- СИМВОЛЫ И КАТЕГОРИИ ---
+            // --- СИМВОЛЫ И КАТЕГОРИИ (Не меняются) ---
             const FRUITS = ['🍒', '🍇', '🍉', '🍊'];              
             const NORMAL_SYMBOLS = ['🔔', '💎', '🌟'];         
             const RARE_SYMBOLS = ['💰', '👾', '⚡'];           
             const ULTRA_RARE_SYMBOL = '7️⃣';                     
 
-            // --- ВЕСА ДЛЯ РАНДОМА (СУММА = 100) ---
-            function getRandomSymbol() {
-                const WEIGHTED_SYMBOLS = [
-                    ...Array(15).fill(FRUITS[0]), 
-                    ...Array(15).fill(FRUITS[1]), 
-                    ...Array(15).fill(FRUITS[2]), 
-                    ...Array(15).fill(FRUITS[3]), 
-
-                    ...Array(10).fill(NORMAL_SYMBOLS[0]), 
-                    ...Array(10).fill(NORMAL_SYMBOLS[1]), 
-                    ...Array(10).fill(NORMAL_SYMBOLS[2]), 
-                    
-                    ...Array(3).fill(RARE_SYMBOLS[0]), 
-                    ...Array(3).fill(RARE_SYMBOLS[1]), 
-                    ...Array(3).fill(RARE_SYMBOLS[2]), 
-
-                    ...Array(1).fill(ULTRA_RARE_SYMBOL)  
-                ];
-                
-                const index = Math.floor(Math.random() * WEIGHTED_SYMBOLS.length);
-                return WEIGHTED_SYMBOLS[index];
-            }
-
-            // ===================================================
-            // === ФУНКЦИИ БАЛАНСА С ЧИТ-ЛОГИКОЙ (Не менять) ===
-            // ===================================================
+            // --- ФУНКЦИИ БАЛАНСА И БЕЗОПАСНОСТИ (Не меняются) ---
+            // (опущены для краткости, они идентичны v.3.0)
             function setInitialMoney(username) {
                 const moneyKey = MONEY_PREFIX + username;
                 const checksumKey = CHECKSUM_PREFIX + username;
@@ -435,25 +427,38 @@
             // ===================================================
             
             // --- УТИЛИТЫ ИГРЫ ---
-
+            function getRandomSymbol() {
+                const WEIGHTED_SYMBOLS = [
+                    ...Array(15).fill(FRUITS[0]), 
+                    ...Array(15).fill(FRUITS[1]), 
+                    ...Array(15).fill(FRUITS[2]), 
+                    ...Array(15).fill(FRUITS[3]), 
+                    ...Array(10).fill(NORMAL_SYMBOLS[0]), 
+                    ...Array(10).fill(NORMAL_SYMBOLS[1]), 
+                    ...Array(10).fill(NORMAL_SYMBOLS[2]), 
+                    ...Array(3).fill(RARE_SYMBOLS[0]), 
+                    ...Array(3).fill(RARE_SYMBOLS[1]), 
+                    ...Array(3).fill(RARE_SYMBOLS[2]), 
+                    ...Array(1).fill(ULTRA_RARE_SYMBOL)  
+                ];
+                const index = Math.floor(Math.random() * WEIGHTED_SYMBOLS.length);
+                return WEIGHTED_SYMBOLS[index];
+            }
             function updateDisplay() {
                 const money = getMoney();
                 BALANCE_DISPLAY.textContent = `БАЛАНС: ${money.toLocaleString('ru-RU')}`;
             }
 
-            // Упрощенный генератор полосы для одного видимого слота
             function generateReelStrip(finalSymbol, length = 15) {
                 let strip = [];
-                // Добавляем случайные символы
                 for (let i = 0; i < length - 1; i++) { 
                     strip.push(getRandomSymbol()); 
                 }
-                // Добавляем финальный символ
                 strip.push(finalSymbol); 
                 return strip;
             }
 
-            // --- ЛОГИКА АНИМАЦИИ (ТОЛЬКО ОДИН СИМВОЛ) ---
+            // --- ЛОГИКА АНИМАЦИИ СО ЗВУКОМ ---
 
             function spinReel(reelElement, finalSymbol, delay) {
                 return new Promise(resolve => {
@@ -461,10 +466,8 @@
                     const symbolHeight = 100;
                     const stripLength = strip.length;
                     
-                    // Помещаем всю полосу
                     reelElement.innerHTML = strip.map(s => `<div>${s}</div>`).join('');
                     
-                    // Прокручиваем полосу так, чтобы последний (финальный) символ оказался вверху
                     const finalTranslateY = (stripLength - 1) * symbolHeight;
                     const duration = 2500 + delay; 
 
@@ -473,24 +476,21 @@
 
 
                     setTimeout(() => {
-                        // Сброс анимации
-                        reelElement.style.transition = 'none';
+                        // Звук остановки
+                        SOUND_STOP.currentTime = 0;
+                        SOUND_STOP.play().catch(e => console.error("Ошибка воспроизведения звука остановки:", e));
                         
-                        // ФИНАЛЬНАЯ ПОЗИЦИЯ: Устанавливаем только финальный символ
+                        reelElement.style.transition = 'none';
                         reelElement.innerHTML = `<div>${finalSymbol}</div>`;
-                        // Сброс сдвига. Так как рамка 100px и символ 100px, он будет виден
                         reelElement.style.transform = `translateY(0)`; 
                         
-                        // Возвращаем выигрышный символ
                         resolve(finalSymbol); 
                     }, duration);
                 });
             }
 
-            // --- ЛОГИКА ВЫИГРЫША ---
-
+            // --- ЛОГИКА ВЫИГРЫША (Идентична v.3.0) ---
             function checkWin(results, bet) {
-                // results содержит только 3 центральных символа (поскольку теперь они единственные)
                 const counts = {};
                 results.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
                 const uniqueCount = Object.keys(counts).length;
@@ -498,32 +498,30 @@
                 let winMessage = 'ПРОИГРЫШ. Попробуйте снова.';
                 let messageClass = 'loss';
                 
-                // 1. Проверка на тройное совпадение (высшие иксы)
+                // ... (Логика выигрыша как в v.3.0)
                 if (uniqueCount === 1) {
                     const symbol = results[0];
-                    if (symbol === ULTRA_RARE_SYMBOL) {        // 7️⃣: 100x
+                    if (symbol === ULTRA_RARE_SYMBOL) {        
                         winMultiplier = 100;
                         winMessage = `7️⃣7️⃣7️⃣ СУПЕР ДЖЕКПОТ! x100`;
                         messageClass = 'jackpot';
-                    } else if (RARE_SYMBOLS.includes(symbol)) { // Редкие: 40x
+                    } else if (RARE_SYMBOLS.includes(symbol)) { 
                         winMultiplier = 40;
                         winMessage = `${symbol}${symbol}${symbol} МЕГА ВЫИГРЫШ! x40`;
                         messageClass = 'jackpot';
-                    } else if (NORMAL_SYMBOLS.includes(symbol)) { // Обычные: 8x
+                    } else if (NORMAL_SYMBOLS.includes(symbol)) { 
                         winMultiplier = 8;
                         winMessage = `${symbol}${symbol}${symbol} КРУПНЫЙ ВЫИГРЫШ! x8`;
                         messageClass = 'win';
-                    } else if (FRUITS.includes(symbol)) {       // Фрукты: 4x
+                    } else if (FRUITS.includes(symbol)) {       
                         winMultiplier = 4;
                         winMessage = `3 ФРУКТА! x4`;
                         messageClass = 'win';
                     }
                 }
                 
-                // 2. Проверка на 3 разных Фрукта (2x)
                 if (winMultiplier === 0 && uniqueCount === 3) {
                     const allAreFruits = results.every(s => FRUITS.includes(s));
-                    
                     if (allAreFruits) {
                         winMultiplier = 2;
                         winMessage = '3 РАЗНЫХ ФРУКТА! x2';
@@ -531,7 +529,6 @@
                     }
                 }
 
-                // 3. Проверка на 2 одинаковых (1.5x)
                 if (winMultiplier === 0) {
                     for (const symbol in counts) {
                         if (counts[symbol] === 2) { 
@@ -542,6 +539,7 @@
                         }
                     }
                 }
+                // ... (Конец логики выигрыша)
 
                 const winAmount = bet * winMultiplier;
                 
@@ -568,35 +566,43 @@
                     return;
                 }
 
-                // --- НАЧАЛО СПИНА ---
+                // --- НАЧАЛО СПИНА И ЗВУК ---
                 isSpinning = true;
                 SPIN_BUTTON.disabled = true;
                 
+                // 1. Звук старта
+                SOUND_START.currentTime = 0;
+                SOUND_START.play().catch(e => console.error("Ошибка воспроизведения звука старта:", e));
+                
+                // 2. Звук вращения (запускается после старта)
+                SOUND_LOOP.play().catch(e => console.error("Ошибка воспроизведения звука лупа:", e));
+
+
                 setMoney(currentMoney - bet);
                 updateDisplay();
                 MESSAGE_DISPLAY.textContent = 'ВРАЩЕНИЕ ИДЕТ...';
                 MESSAGE_DISPLAY.className = 'info';
 
-                // Определяем фактические выигрышные символы
                 const finalWinningSymbols = [
                     getRandomSymbol(),
                     getRandomSymbol(),
                     getRandomSymbol()
                 ];
 
-                // spinReel теперь возвращает только центральный символ
                 const reelPromises = finalWinningSymbols.map((result, index) => 
                     spinReel(REELS[index], result, index * 500) 
                 );
                 
-                // finalResults содержит только 3 центральных символа
                 const finalResults = await Promise.all(reelPromises);
 
-                // --- ОКОНЧАНИЕ СПИНА ---
+                // --- ОКОНЧАНИЕ СПИНА И ЗВУК ---
                 isSpinning = false;
                 SPIN_BUTTON.disabled = false;
+                
+                // Останавливаем звук вращения
+                SOUND_LOOP.pause();
+                SOUND_LOOP.currentTime = 0; 
 
-                // Используем finalResults (только центральная линия) для расчета
                 const { winAmount, winMessage, messageClass } = checkWin(finalResults, bet);
                 
                 currentMoney = getMoney();
@@ -605,11 +611,18 @@
                 updateDisplay();
                 MESSAGE_DISPLAY.textContent = winMessage;
                 MESSAGE_DISPLAY.className = messageClass;
+
+                // 3. Звук выигрыша
+                if (winAmount > 0) {
+                    const winSound = winMultiplier >= 40 ? SOUND_JACKPOT : SOUND_WIN;
+                    winSound.currentTime = 0;
+                    winSound.play().catch(e => console.error("Ошибка воспроизведения звука выигрыша:", e));
+                }
             }
 
             // --- ИНИЦИАЛИЗАЦИЯ ---
-
             function init() {
+                // (логика init идентична v.3.0)
                 const username = localStorage.getItem(USER_KEY);
                 
                 if (!username || !checkChecksum()) {
@@ -621,12 +634,9 @@
                 GAME_AREA.style.display = 'block';
                 LOGIN_WARNING.style.display = 'none';
                 
-                // Изначальное отображение символов в центре
                 REELS.forEach(reel => {
                     const initialSymbol = getRandomSymbol();
-                    // Показываем только один символ
                     reel.innerHTML = `<div>${initialSymbol}</div>`;
-                    // Сдвиг не нужен
                     reel.style.transform = `translateY(0)`; 
                 });
 
