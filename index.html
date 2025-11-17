@@ -3,122 +3,141 @@
 <head>
     <title>Главная | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЕ СТИЛИ */
+        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
+        :root {
+            --bg-color: #111111; /* Графит */
+            --text-color: #F0F0F0; /* Белый */
+            --accent-pink: #FF33CC; /* Яркий Розовый (Фуксия) */
+            --accent-blue: #33CCFF; /* Электрический Голубой */
+            --card-bg: #1F1F1F; /* Темнее для карточек */
+            --button-color: #00FF00; /* Зеленый для активных кнопок */
+        }
+
+        /* ОСНОВНЫЕ СТИЛИ */
         body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #0d0d0d; 
-            color: #E0E0E0; 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
             text-align: center; 
             padding-top: 50px; 
             line-height: 1.6;
+            margin: 0;
+            /* Фоновый паттерн (Киберпанк сетка) */
+            background-image: repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px), 
+                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
         }
+        
+        /* ЗАГОЛОВКИ */
+        h1 { 
+            color: var(--accent-pink); 
+            font-size: 3.5em;
+            font-weight: 900; /* Extra bold */
+            text-shadow: 0 0 20px rgba(255, 51, 204, 0.8); /* Неоновая тень */
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        h2 {
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px rgba(51, 204, 255, 0.5);
+            margin-top: 0;
+            font-weight: 700;
+        }
+
+        /* НАВИГАЦИОННЫЙ БАР (Пункт 2) */
         .nav-bar { 
-            background-color: #333; 
-            padding: 10px 0; 
-            margin-bottom: 50px; 
+            background-color: #000000; /* Более темный фон для контраста */
+            padding: 15px 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue); /* Двойная тень */
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         .nav-bar a { 
-            color: #fff; 
-            padding: 14px 20px; 
+            color: var(--text-color); 
+            padding: 14px 25px; 
             text-decoration: none; 
-            font-size: 18px; 
-            font-weight: bold; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s; /* Плавные переходы */
+            border-radius: 5px;
         }
         .nav-bar a:hover { 
-            background-color: #575757; 
+            color: var(--accent-pink); 
+            text-shadow: 0 0 10px var(--accent-pink); 
+            background-color: rgba(255, 51, 204, 0.1);
         }
 
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
-        .main-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 30px;
-            background-color: #1a1a1a;
-            border-radius: 15px;
-            border: 3px solid #00FFFF;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-        }
-
-        /* ПРИВЕТСТВИЕ */
-        h1 { 
-            color: #FFFF00; 
-            text-shadow: 0 0 10px #FFFF00; 
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-        
-        /* СОСТОЯНИЕ ВХОДА (динамический блок) */
-        #auth-status {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-        
-        /* Стили для зарегистрированного пользователя */
-        .logged-in {
-            background-color: #00800033;
-            color: #00FF00;
-            border: 1px solid #00FF00;
-        }
-        
-        /* Стили для гостя */
-        .logged-out {
-            background-color: #8B000033;
-            color: #FFD700;
-            border: 1px solid #FFD700;
-        }
-
-        /* КНОПКА ИГР */
-        .cta-button {
-            display: inline-block;
-            padding: 15px 30px;
-            font-size: 1.8em;
-            font-weight: bold;
-            background-color: #FF4500;
-            color: #FFF;
-            text-decoration: none;
-            border-radius: 10px;
-            box-shadow: 0 5px #CC3700;
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-        .cta-button:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px #CC3700;
-        }
-
-        /* ИНФОБЛОК */
-        .info-block {
-            text-align: left;
-            margin-top: 40px;
+        /* ОСНОВНОЙ КОНТЕНТ */
+        .main-content {
+            max-width: 1000px;
+            margin: 80px auto 40px auto;
             padding: 20px;
-            background-color: #2a2a2a;
-            border-radius: 8px;
-            border-left: 5px solid #00FFFF;
         }
-        .info-block h3 {
-            color: #00FFFF;
+
+        /* КАРТОЧКИ ФУНКЦИЙ (Пункт 2 и 3) */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
         }
-        .info-block ul {
-            list-style: none;
-            padding: 0;
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 15px rgba(51, 204, 255, 0.5); /* Неоновая граница */
+            transition: transform 0.4s ease-out, box-shadow 0.4s ease-out; /* Анимация */
         }
-        .info-block li::before {
-            content: "🎮 ";
-            color: #FFFF00;
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
+        .feature-card:hover {
+            transform: scale(1.05); /* Легкое увеличение при наведении */
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 25px var(--accent-pink), 0 0 50px rgba(255, 51, 204, 0.3); /* Яркая тень */
         }
         
+        /* КНОПКИ (Пункт 2) */
+        .action-button {
+            display: inline-block;
+            padding: 12px 30px;
+            margin-top: 30px;
+            background-color: var(--accent-pink);
+            color: var(--bg-color);
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 900;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+            border: none;
+            box-shadow: 0 0 15px var(--accent-pink);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+        }
+        .action-button:hover {
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 20px var(--accent-blue), 0 0 30px rgba(51, 204, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* СТИЛЬ БАЛАНСА */
+        #user-balance {
+            font-size: 1.3em;
+            color: var(--button-color); /* Зеленый для денег */
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+        }
+
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
-        @media (max-width: 600px) {
-            h1 { font-size: 2em; }
-            .cta-button { font-size: 1.5em; padding: 12px 20px; }
-            .main-container { margin: 0 10px; padding: 20px; }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+            .nav-bar a {
+                padding: 10px 15px;
+            }
         }
     </style>
 </head>
@@ -130,68 +149,94 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <div class="main-container">
-        <h1>Ручка Гения v1.0</h1>
+    <div class="main-content">
+        <h1>👁️ РУЧКА ГЕНИЯ: ДОБРО ПОЖАЛОВАТЬ</h1>
         
-        <div id="auth-status" class="logged-out">
-            Привет, Гость! Войди или зарегистрируйся, чтобы начать играть!
-            <a href="login.html" style="color: #FFFF00; margin-left: 10px;">(Войти)</a>
-        </div>
-        <a href="games.html" class="cta-button">Начать Игры на Мани!</a>
+        <p id="user-status" style="font-size: 1.3em; color: var(--accent-blue);">
+            Ты не вошел в систему. Войди, чтобы начать зарабатывать Мани.
+        </p>
+        
+        <div id="user-info-area">
+            </div>
 
-        <div class="info-block">
-            <h3>Что такое "Ручка Гения"?</h3>
-            <p>Это коллекция простейших азартных игр, созданных Денисом Казаковым для тренировки навыков веб-разработки (HTML/CSS/JS).</p>
-            <ul>
-                <li>Баланс "Мани" сохраняется локально в Вашем браузере.</li>
-                <li>Ваш баланс и логин привязываются к имени пользователя.</li>
-                <li>Все игры работают на чистом JavaScript, без серверов!</li>
-            </ul>
+        <a href="games.html" class="action-button">НАЧАТЬ ЗАРАБАТЫВАТЬ</a>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h2>⚡ Экономическая Модель</h2>
+                <p>Наша система "Мани" полностью уникальна и построена на проверенных принципах... где Вы всегда в выигрыше.</p>
+            </div>
+            <div class="feature-card">
+                <h2>🎲 Азарт и Риск</h2>
+                <p>Классические игры: Слоты и Блэкджек. Рискуйте, ищите удачу, но помните, что дом всегда знает больше.</p>
+            </div>
+            <div class="feature-card">
+                <h2>🧠 Технологии Будущего</h2>
+                <p>Защита баланса построена на сложнейших алгоритмах "контрольной суммы". Чит не пройдет. Проверено Гением.</p>
+            </div>
         </div>
     </div>
 
     <script>
-        window.onload = function() {
-            const AUTH_STATUS_DIV = document.getElementById('auth-status');
-            const CURRENT_USER_KEY = 'denisKazakovUser'; 
+        // --- ЛОГИКА БАЛАНСА (Для отображения на главной) ---
+        const currentUsername = localStorage.getItem('denisKazakovUser');
+        const isUserLoggedIn = !!currentUsername;
+        const SECRET_KEY = 952; 
+        const MONEY_PREFIX = 'money_';
+        const CHECKSUM_PREFIX = 'checksum_';
+        const INITIAL_MONEY = 100;
+        const ANTI_CHEAT_RESET_AMOUNT = 10; 
+
+        function getMoneyKey(username) { return MONEY_PREFIX + username; }
+        function getChecksumKey(username) { return CHECKSUM_PREFIX + username; }
+        
+        function setMoney(amount) {
+            // Эта функция тут только для совместимости, на главной она не нужна
+            if (!isUserLoggedIn) return 0; 
+            const moneyKey = getMoneyKey(currentUsername);
+            const checksumKey = getChecksumKey(currentUsername);
+            const safeAmount = Math.max(0, amount); 
+            const newChecksum = safeAmount + SECRET_KEY;
+            localStorage.setItem(moneyKey, safeAmount);
+            localStorage.setItem(checksumKey, newChecksum);
+            return safeAmount;
+        }
+
+        function getMoney() {
+            if (!isUserLoggedIn) return 0;
+
+            const moneyKey = getMoneyKey(currentUsername);
+            const checksumKey = getChecksumKey(currentUsername);
+
+            let storedMoney = parseInt(localStorage.getItem(moneyKey));
+            let storedChecksum = parseInt(localStorage.getItem(checksumKey));
             
-            // --- ПЕРЕМЕННЫЕ БАЛАНСА ---
-            const SECRET_KEY = 952;
-            const MONEY_PREFIX = 'money_';
-            const CHECKSUM_PREFIX = 'checksum_';
-            // --- КОНЕЦ ПЕРЕМЕННЫХ БАЛАНСА ---
-
-            const storedUser = localStorage.getItem(CURRENT_USER_KEY);
-            
-            // Функция для безопасного получения баланса
-            function getMoney(username) {
-                const moneyKey = MONEY_PREFIX + username;
-                const checksumKey = CHECKSUM_PREFIX + username;
-
-                const storedMoney = parseInt(localStorage.getItem(moneyKey));
-                const storedChecksum = parseInt(localStorage.getItem(checksumKey));
-
-                // Проверка целостности (анти-чит)
-                if (storedMoney + SECRET_KEY !== storedChecksum) {
-                    return 'Баланс: <span style="color:#FF0000; font-weight:bold;">НЕДЕЙСТВИТЕЛЕН</span>';
-                }
-                return `Баланс: ${storedMoney} Мани`;
+            if (isNaN(storedMoney) || isNaN(storedChecksum)) {
+                return setMoney(INITIAL_MONEY);
             }
+            
+            if (storedMoney + SECRET_KEY !== storedChecksum) {
+                return setMoney(ANTI_CHEAT_RESET_AMOUNT); 
+            }
+            
+            return Math.max(0, storedMoney);
+        }
 
-            if (storedUser) {
-                // Если пользователь вошел
-                const moneyInfo = getMoney(storedUser);
-
-                AUTH_STATUS_DIV.classList.remove('logged-out');
-                AUTH_STATUS_DIV.classList.add('logged-in');
-                AUTH_STATUS_DIV.innerHTML = `
-                    Привет, **Гений ${storedUser}**! <br> 
-                    ${moneyInfo}
-                    <a href="login.html" style="color: #FFFF00; margin-left: 10px; text-decoration: underline;">(Выход)</a>
+        // --- ЛОГИКА ОТОБРАЖЕНИЯ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusElement = document.getElementById('user-status');
+            const infoArea = document.getElementById('user-info-area');
+            
+            if (isUserLoggedIn) {
+                const money = getMoney();
+                statusElement.textContent = `Добро пожаловать, ${currentUsername}!`;
+                statusElement.style.color = 'var(--accent-pink)'; // Меняем цвет на Розовый
+                
+                infoArea.innerHTML = `
+                    <p id="user-balance">Твой Баланс: ${money} Мани</p>
                 `;
             }
-            // Если пользователя нет, то отображается стандартный 'logged-out' текст из HTML
-        };
+        });
     </script>
 </body>
 </html>
