@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Денис Казаков, гений МММ | 2D Sandbox Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* CSS для оформления страницы */
         body { 
@@ -47,7 +48,7 @@
         }
         #inventory-display {
             position: absolute;
-            top: 100px; /* Смещено вниз из-за навигационной панели */
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -82,6 +83,24 @@
             padding: 0 2px;
             border-radius: 3px;
         }
+
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 850px) {
+            h2 { font-size: 1.2em; }
+            .controls p { font-size: 0.8em; }
+            
+            canvas { 
+                max-width: 95vw;
+                height: auto; 
+            }
+            
+            /* Уменьшаем инвентарь */
+            .slot {
+                width: 50px; 
+                height: 40px;
+                font-size: 0.8em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -90,6 +109,7 @@
         <a href="games.html">Игры</a>
         <a href="about.html">Автор</a>
     </div>
+    
     <h2>Денис Казаков, гений МММ, представляет 2D Сэндбокс!</h2>
     <div class="controls">
         <p>Управление: **A/D** (Движение), **W/Space** (Прыжок) | Инвентарь: **1, 2, 3**</p>
@@ -99,16 +119,13 @@
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
     <script>
-        // --- !!! ВАЖНОЕ ИСПРАВЛЕНИЕ: Оборачиваем весь код в window.onload !!! ---
         window.onload = function() {
             
-            // --- Инициализация ---
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
             const invDisplay = document.getElementById('inventory-display');
             let lastTime = 0;
 
-            // --- Константы ---
             const SCREEN_WIDTH = canvas.width;
             const SCREEN_HEIGHT = canvas.height;
             const TILE_SIZE = 40; 
@@ -117,7 +134,6 @@
             const GROUND_LEVEL = Math.floor(WORLD_ROWS * 0.4); 
             const GRAVITY = 9.8 * TILE_SIZE * 0.5;
 
-            // --- Типы Блоков ---
             const TILES = { AIR: 0, GRASS: 1, WOOD: 2, STONE: 3, LEAF: 4 };
             const SOLID_TILES = [TILES.GRASS, TILES.WOOD, TILES.STONE, TILES.LEAF]; 
             const COLLECTIBLE_TILES = [TILES.GRASS, TILES.WOOD, TILES.STONE]; 
@@ -130,7 +146,6 @@
                 [TILES.STONE]: 'Камень', [TILES.LEAF]: 'Листва'
             };
 
-            // --- Игрок ---
             let player = {
                 x: TILE_SIZE * 5,
                 y: TILE_SIZE * 5, 
@@ -142,10 +157,8 @@
                 isGrounded: false
             };
             
-            // --- Камера ---
             let camera = { x: 0, y: 0 };
 
-            // --- Инвентарь ---
             let inventory = {
                 slots: [
                     { type: TILES.GRASS, count: 50, maxStack: 99 },
@@ -155,7 +168,6 @@
                 activeIndex: 0 
             };
             
-            // --- Сущность (Слайм) ---
             class Slime {
                 constructor(x, y) {
                     this.x = x; this.y = y;
@@ -186,7 +198,6 @@
                 checkAndResolveCollision(dt) {
                     this.isGrounded = false;
 
-                    // 1. Коллизии по X
                     let newX = this.x + this.vx * dt;
                     let collisionX = checkCollision(newX, this.y, this.width, this.height);
                     if (collisionX.length === 0) {
@@ -202,7 +213,6 @@
                         }
                     }
 
-                    // 2. Коллизии по Y
                     let newY = this.y + this.vy * dt;
                     let collisionY = checkCollision(this.x, newY, this.width, this.height);
                     
@@ -232,7 +242,6 @@
 
             let entities = [];
 
-            // --- Генерация Мира ---
             let world = [];
             function generateWorld() {
                 for (let y = 0; y < WORLD_ROWS; y++) { world[y] = Array(WORLD_COLS).fill(TILES.AIR); }
@@ -255,7 +264,6 @@
                     }
                 }
                 
-                // Генерация Деревьев
                 for (let x = 5; x < WORLD_COLS - 5; x += 10) {
                     if (Math.random() < 0.6) {
                         let surfaceY = -1;
@@ -290,8 +298,6 @@
                 entities.push(new Slime(TILE_SIZE * 50, TILE_SIZE * 10));
             }
 
-            // --- Логика Коллизий ---
-
             function checkCollision(x, y, w, h) {
                 const tiles = [];
                 const x1 = Math.floor(x / TILE_SIZE);
@@ -309,7 +315,6 @@
                 return tiles;
             }
             
-            // Надёжная проверка земли с допуском
             function checkIsGrounded() {
                 const groundTolerance = 2; 
                 const tilesBelow = checkCollision(
@@ -323,7 +328,6 @@
 
 
             function resolvePlayerCollision(dt) {
-                // 1. Коллизии по X
                 let newX = player.x + player.vx * dt;
                 let collisionX = checkCollision(newX, player.y, player.width, player.height);
                 
@@ -338,7 +342,6 @@
                     player.vx = 0;
                 }
 
-                // 2. Коллизии по Y
                 let newY = player.y + player.vy * dt;
                 let collisionY = checkCollision(player.x, newY, player.width, player.height);
                 
@@ -353,8 +356,6 @@
                     player.vy = 0; 
                 }
             }
-
-            // --- Обновление Игры ---
 
             function update(dt) {
                 player.vx = 0;
@@ -384,8 +385,6 @@
                 
                 player.isGrounded = checkIsGrounded(); 
             }
-
-            // --- Инвентарь и Отрисовка ---
 
             function findSlot(tileType) {
                 if (!COLLECTIBLE_TILES.includes(tileType)) return null; 
@@ -546,7 +545,6 @@
                 }
             });
 
-            // --- ЗАПУСК ---
             generateWorld();
             updateInventoryDisplay();
             gameLoop(0); 
