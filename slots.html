@@ -16,7 +16,7 @@
             --jackpot-color: #FFFF00;
             --loss-color: #FF0000;
             --reel-size: 100px; /* Размер символа */
-            --visible-rows: 3; /* Количество видимых рядов */
+            /* --visible-rows: 1; - Убран, так как рамка теперь 1x */
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -102,14 +102,14 @@
             perspective: 800px;
         }
 
-        /* РАМКА БАРАБАНА (показывает 3 символа) */
+        /* РАМКА БАРАБАНА (показывает ТОЛЬКО 1 символ) */
         .reel-frame {
             width: var(--reel-size);
-            height: calc(var(--reel-size) * var(--visible-rows)); /* 300px */
+            height: var(--reel-size); /* Высота равна размеру одного символа */
             background-color: #000;
             border: 3px solid var(--accent-pink);
             border-radius: 5px;
-            overflow: hidden; /* Показывает только 3 символа */
+            overflow: hidden; /* Показывает только 1 символ */
             box-shadow: 0 0 15px var(--accent-pink), 0 0 5px var(--accent-blue) inset;
             
             /* Наклон для эффекта машины */
@@ -117,16 +117,15 @@
             position: relative;
         }
         
-        /* ИНДИКАТОР ВЫИГРЫШНОЙ ЛИНИИ (Центральный ряд) */
+        /* ИНДИКАТОР ВЫИГРЫШНОЙ ЛИНИИ: УБРАН (вся рамка теперь линия) */
         .reel-frame::after {
             content: '';
             position: absolute;
-            top: var(--reel-size); /* Начало центрального ряда */
-            height: var(--reel-size);
+            top: 0; 
+            height: 100%;
             width: 100%;
-            /* Визуальная рамка для выигрышной линии */
-            border-top: 3px solid var(--jackpot-color);
-            border-bottom: 3px solid var(--jackpot-color);
+            /* Добавляем мигание, чтобы показать, что это линия */
+            border: 3px solid var(--jackpot-color); 
             opacity: 0.6;
             pointer-events: none;
             z-index: 5; 
@@ -134,7 +133,7 @@
 
         /* Элементы внутри барабана для анимации */
         .reel-inner {
-            /* Transform сбрасывается в JS. Начальное состояние - 0px, в init - -100px */
+            /* Transform сбрасывается в JS. Теперь не требуется сложная логика центрирования */
             transform: translateY(0); 
             will-change: transform; 
         }
@@ -263,7 +262,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.2.3: ФИНАЛЬНЫЙ FIX]</h1>
+    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.3.0: ТОЛЬКО ЦЕНТР]</h1>
 
     <div id="game-area">
         <div class="slot-container">
@@ -442,25 +441,19 @@
                 BALANCE_DISPLAY.textContent = `БАЛАНС: ${money.toLocaleString('ru-RU')}`;
             }
 
-            function generateReelStrip(finalSymbol, length = 35) {
+            // Упрощенный генератор полосы для одного видимого слота
+            function generateReelStrip(finalSymbol, length = 15) {
                 let strip = [];
-                // Добавляем 3 случайных символа, которые будут видны в начале
-                strip.push(getRandomSymbol(), getRandomSymbol(), getRandomSymbol()); 
-                
                 // Добавляем случайные символы
-                for (let i = 0; i < length - 6; i++) { 
+                for (let i = 0; i < length - 1; i++) { 
                     strip.push(getRandomSymbol()); 
                 }
-                
-                // Добавляем 3 символа, которые окружают выигрышный в конце спина:
-                strip.push(getRandomSymbol()); // Символ, который окажется наверху
-                strip.push(finalSymbol);       // Выигрышный символ (окажется в центре)
-                strip.push(getRandomSymbol()); // Символ, который окажется внизу
-                
+                // Добавляем финальный символ
+                strip.push(finalSymbol); 
                 return strip;
             }
 
-            // --- ЛОГИКА АНИМАЦИИ (3D-Слоты) ---
+            // --- ЛОГИКА АНИМАЦИИ (ТОЛЬКО ОДИН СИМВОЛ) ---
 
             function spinReel(reelElement, finalSymbol, delay) {
                 return new Promise(resolve => {
@@ -468,11 +461,11 @@
                     const symbolHeight = 100;
                     const stripLength = strip.length;
                     
+                    // Помещаем всю полосу
                     reelElement.innerHTML = strip.map(s => `<div>${s}</div>`).join('');
                     
-                    // Расчет дистанции для центрирования finalSymbol (который находится на предпоследней позиции в strip)
-                    // Total Scroll = (stripLength - 2) * H
-                    const finalTranslateY = (stripLength - 2) * symbolHeight;
+                    // Прокручиваем полосу так, чтобы последний (финальный) символ оказался вверху
+                    const finalTranslateY = (stripLength - 1) * symbolHeight;
                     const duration = 2500 + delay; 
 
                     reelElement.style.transition = `transform ${duration}ms cubic-bezier(0.1, 0.9, 0.4, 1)`;
@@ -483,28 +476,21 @@
                         // Сброс анимации
                         reelElement.style.transition = 'none';
                         
-                        // ФИНАЛЬНАЯ ПОЗИЦИЯ: Показываем только 3 символа, которые реально остановились.
-                        const finalSymbolsToShow = [
-                            strip[stripLength - 3], // Символ выше центра
-                            strip[stripLength - 2], // Центр (финальный)
-                            strip[stripLength - 1]  // Символ ниже центра
-                        ];
-
-                        reelElement.innerHTML = finalSymbolsToShow.map(s => `<div>${s}</div>`).join('');
-                        // Сдвиг на -100px: Сдвигает первый символ (Верхний) за пределы видимости.
-                        // Это оставляет ВИДИМЫМИ Средний и Нижний, и центрирует Средний.
-                        reelElement.style.transform = `translateY(-${symbolHeight}px)`; 
+                        // ФИНАЛЬНАЯ ПОЗИЦИЯ: Устанавливаем только финальный символ
+                        reelElement.innerHTML = `<div>${finalSymbol}</div>`;
+                        // Сброс сдвига. Так как рамка 100px и символ 100px, он будет виден
+                        reelElement.style.transform = `translateY(0)`; 
                         
-                        // Возвращаем только центральный (выигрышный) символ
+                        // Возвращаем выигрышный символ
                         resolve(finalSymbol); 
                     }, duration);
                 });
             }
 
-            // --- ЛОГИКА ВЫИГРЫША (СЧИТАЕТ ТОЛЬКО ЦЕНТР) ---
+            // --- ЛОГИКА ВЫИГРЫША ---
 
             function checkWin(results, bet) {
-                // results теперь содержит только 3 центральных символа
+                // results содержит только 3 центральных символа (поскольку теперь они единственные)
                 const counts = {};
                 results.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
                 const uniqueCount = Object.keys(counts).length;
@@ -638,11 +624,10 @@
                 // Изначальное отображение символов в центре
                 REELS.forEach(reel => {
                     const initialSymbol = getRandomSymbol();
-                    // Показываем 3 символа, чтобы была видна рамка
-                    const initialStrip = [getRandomSymbol(), initialSymbol, getRandomSymbol()];
-                    reel.innerHTML = initialStrip.map(s => `<div>${s}</div>`).join('');
-                    // Сдвиг на -100px центрирует middleSymbol (индекс 1)
-                    reel.style.transform = `translateY(-100px)`; 
+                    // Показываем только один символ
+                    reel.innerHTML = `<div>${initialSymbol}</div>`;
+                    // Сдвиг не нужен
+                    reel.style.transform = `translateY(0)`; 
                 });
 
                 updateDisplay();
