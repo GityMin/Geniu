@@ -264,7 +264,14 @@
                 deck = [];
                 for (let suit of suits) {
                     for (let rank of ranks) {
-                        deck.push({ rank, suit, symbol: `${rank}${suit}` });
+                        // Используем юникодные символы для карт, так как они хорошо поддерживаются
+                        let symbol = rank;
+                        if (rank === 'J') symbol = 'J';
+                        if (rank === 'Q') symbol = 'Q';
+                        if (rank === 'K') symbol = 'K';
+                        if (rank === 'A') symbol = 'A';
+                        
+                        deck.push({ rank, suit, symbol: `${symbol}${suit}` });
                     }
                 }
                 // Перемешивание (Fisher-Yates)
@@ -351,6 +358,7 @@
                 
                 if (calculateScore(playerHand) === 21) {
                     MESSAGE_DISPLAY.textContent = "БЛЭКДЖЕК! Ждём Дилера...";
+                    MESSAGE_DISPLAY.style.color = '#00FF00';
                     setTimeout(stand, 1500);
                 } else {
                     MESSAGE_DISPLAY.textContent = "Твой ход: Ещё или Хватит?";
@@ -369,6 +377,7 @@
                     endGame();
                 } else if (score === 21) {
                     MESSAGE_DISPLAY.textContent = "21! Ждём Дилера...";
+                    MESSAGE_DISPLAY.style.color = '#00FF00';
                     setTimeout(stand, 1500);
                 }
             }
