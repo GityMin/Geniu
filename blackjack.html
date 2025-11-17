@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Блэкджек | [СИСТЕМА] v.3.2 (3D & ЦВЕТ & КЛИКЕР)</title>
+    <title>Блэкджек | [СИСТЕМА] v.3.3 (С правилами)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -64,9 +64,60 @@
             padding-top: 30px;
         }
         
-        .game-area {
-            max-width: 1000px;
+        /* ОБЩИЙ КОНТЕЙНЕР ДЛЯ ПРАВИЛ И ИГРЫ */
+        .game-wrapper {
+            max-width: 1250px; 
             margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 0;
+        }
+        
+        /* ПАНЕЛЬ ПРАВИЛ */
+        .rules-panel {
+            width: 300px; 
+            margin-right: 30px;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            border: 3px solid var(--accent-blue); 
+            box-shadow: 0 0 20px rgba(51, 204, 255, 0.4);
+            text-align: left;
+            transform: perspective(1000px) rotateX(4deg) translateZ(-10px); 
+            height: fit-content; 
+        }
+        .rules-panel h2 {
+            color: var(--accent-pink);
+            font-size: 1.5em;
+            margin-top: 0;
+            text-shadow: 0 0 10px var(--accent-pink);
+        }
+        .rules-panel ul {
+            list-style-type: none;
+            padding-left: 0;
+            font-size: 0.9em;
+        }
+        .rules-panel li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+            position: relative;
+        }
+        .rules-panel li::before {
+            content: '▶';
+            color: var(--win-color);
+            position: absolute;
+            left: -10px;
+            font-size: 0.8em;
+        }
+        .rules-panel strong {
+            color: var(--red-suit);
+        }
+        
+        /* ГЛАВНАЯ ОБЛАСТЬ ИГРЫ */
+        .game-area {
+            width: 100%;
+            max-width: 900px;
             padding: 20px;
             background-color: #002233; 
             border-radius: 15px;
@@ -194,7 +245,19 @@
 
 
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
+            .game-wrapper {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+            }
+            .rules-panel {
+                width: 90%;
+                margin-right: 0;
+                margin-bottom: 20px;
+                transform: none;
+                order: -1; /* Правила сверху */
+            }
             .game-area {
                 padding: 10px;
                 margin: 0 10px;
@@ -217,26 +280,51 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.2 ♥</h1>
+    <h1>♠ БЛЭКДЖЕК | [СИСТЕМА] v.3.3 ♥</h1>
 
-    <div class="game-area">
-        <div id="balance-display">КРЕДИТ: 100 М</div>
-        <input type="number" id="bet-input" value="10" min="10" step="10" placeholder="Ставка" style="padding: 8px; margin-bottom: 20px; font-family: 'Orbitron', sans-serif; background-color: #282828; color: var(--text-color); border: 2px solid var(--accent-blue); border-radius: 5px; text-align: center;">
+    <div id="balance-display">КРЕДИТ: 100 М</div>
 
-        <div class="score-display" style="color: var(--accent-pink); text-shadow: 0 0 10px var(--accent-pink);">ДИЛЕР [ <span id="dealer-score">0</span> ]</div>
-        <div class="hand" id="dealer-hand">
-            </div>
-
-        <div class="score-display" style="color: var(--accent-blue); text-shadow: 0 0 10px var(--accent-blue);">ИГРОК [ <span id="player-score">0</span> ]</div>
-        <div class="hand" id="player-hand">
-            </div>
+    <div class="game-wrapper">
+        <div class="rules-panel">
+            <h2>ПРАВИЛА ИГРЫ</h2>
+            <ul>
+                <li><strong>ЦЕЛЬ:</strong> Набрать счет ближе к 21, чем у дилера, не превышая 21.</li>
+                <li><strong>СЧЕТ КАРТ:</strong>
+                    <ul>
+                        <li>2-10: Номинал.</li>
+                        <li>J, Q, K: 10 очков.</li>
+                        <li><strong>Туз (A):</strong> 11 или 1 очко.</li>
+                    </ul>
+                </li>
+                <li><strong>ХОД ДИЛЕРА:</strong> Дилер обязан брать карту, пока его счет не достигнет 17 или более.</li>
+                <li><strong>ВЫПЛАТЫ:</strong>
+                    <ul>
+                        <li><span style="color: var(--win-color)">Победа:</span> Ставка x 2.</li>
+                        <li><span style="color: var(--win-color)">Блэкджек (21 с 2 карт):</span> Ставка x 2.5.</li>
+                        <li><span style="color: var(--accent-blue)">Ничья:</span> Ставка возвращается.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
         
-        <p id="message-display" class="info">НАЖМИТЕ [НОВАЯ ИГРА], ЧТОБЫ НАЧАТЬ.</p>
+        <div class="game-area">
+            <input type="number" id="bet-input" value="10" min="10" step="10" placeholder="Ставка" style="padding: 8px; margin-bottom: 20px; font-family: 'Orbitron', sans-serif; background-color: #282828; color: var(--text-color); border: 2px solid var(--accent-blue); border-radius: 5px; text-align: center;">
 
-        <div class="controls">
-            <button class="control-button" id="new-game-button">НОВАЯ ИГРА</button>
-            <button class="control-button" id="hit-button" disabled>ЕЩЕ</button>
-            <button class="control-button" id="stand-button" disabled>ХВАТИТ</button>
+            <div class="score-display" style="color: var(--accent-pink); text-shadow: 0 0 10px var(--accent-pink);">ДИЛЕР [ <span id="dealer-score">0</span> ]</div>
+            <div class="hand" id="dealer-hand">
+                </div>
+
+            <div class="score-display" style="color: var(--accent-blue); text-shadow: 0 0 10px var(--accent-blue);">ИГРОК [ <span id="player-score">0</span> ]</div>
+            <div class="hand" id="player-hand">
+                </div>
+            
+            <p id="message-display" class="info">НАЖМИТЕ [НОВАЯ ИГРА], ЧТОБЫ НАЧАТЬ.</p>
+
+            <div class="controls">
+                <button class="control-button" id="new-game-button">НОВАЯ ИГРА</button>
+                <button class="control-button" id="hit-button" disabled>ЕЩЕ</button>
+                <button class="control-button" id="stand-button" disabled>ХВАТИТ</button>
+            </div>
         </div>
     </div>
 
