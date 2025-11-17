@@ -154,12 +154,16 @@
         window.onload = function() {
             const AUTH_STATUS_DIV = document.getElementById('auth-status');
             const CURRENT_USER_KEY = 'denisKazakovUser'; 
+            
+            // --- ПЕРЕМЕННЫЕ БАЛАНСА ---
             const SECRET_KEY = 952;
             const MONEY_PREFIX = 'money_';
             const CHECKSUM_PREFIX = 'checksum_';
+            // --- КОНЕЦ ПЕРЕМЕННЫХ БАЛАНСА ---
 
             const storedUser = localStorage.getItem(CURRENT_USER_KEY);
             
+            // Функция для безопасного получения баланса
             function getMoney(username) {
                 const moneyKey = MONEY_PREFIX + username;
                 const checksumKey = CHECKSUM_PREFIX + username;
@@ -167,14 +171,15 @@
                 const storedMoney = parseInt(localStorage.getItem(moneyKey));
                 const storedChecksum = parseInt(localStorage.getItem(checksumKey));
 
-                // Проверка целостности
+                // Проверка целостности (анти-чит)
                 if (storedMoney + SECRET_KEY !== storedChecksum) {
-                    return 'Баланс: НЕДЕЙСТВИТЕЛЕН (нужна перерегистрация)';
+                    return 'Баланс: <span style="color:#FF0000; font-weight:bold;">НЕДЕЙСТВИТЕЛЕН</span>';
                 }
                 return `Баланс: ${storedMoney} Мани`;
             }
 
             if (storedUser) {
+                // Если пользователь вошел
                 const moneyInfo = getMoney(storedUser);
 
                 AUTH_STATUS_DIV.classList.remove('logged-out');
@@ -185,7 +190,7 @@
                     <a href="login.html" style="color: #FFFF00; margin-left: 10px; text-decoration: underline;">(Выход)</a>
                 `;
             }
-            // Если пользователя нет, то отображается стандартный `logged-out` текст из HTML
+            // Если пользователя нет, то отображается стандартный 'logged-out' текст из HTML
         };
     </script>
 </body>
