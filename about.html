@@ -1,95 +1,154 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Автор | Денис Казаков</title>
+    <title>Автор | ЛИЧНОЕ ДЕЛЬТА-ДОСЬЕ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЕ СТИЛИ */
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #0d0d0d; 
-            color: #E0E0E0; 
-            text-align: center; 
-            padding-top: 50px; 
-            line-height: 1.6;
-        }
-        .nav-bar { 
-            background-color: #333; 
-            padding: 10px 0; 
-            margin-bottom: 50px; 
-        }
-        .nav-bar a { 
-            color: #fff; 
-            padding: 14px 20px; 
-            text-decoration: none; 
-            font-size: 18px; 
-            font-weight: bold; 
-        }
-        .nav-bar a:hover { 
-            background-color: #575757; 
-        }
-        
-        /* КОНТЕЙНЕР АВТОРА */
-        .author-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #1a1a1a;
-            padding: 30px;
-            border-radius: 15px;
-            border: 3px solid #FF00FF;
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
-        }
-        
-        /* ЗАГОЛОВКИ */
-        h1 { 
-            color: #FF00FF; 
-            text-shadow: 0 0 10px #FF00FF; 
-            margin-bottom: 5px;
-        }
-        #greeting-message {
-            font-size: 1.2em;
-            color: #00FF00;
-            margin-bottom: 25px;
-            font-weight: bold;
+        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
+        :root {
+            --bg-color: #0A0A0A; 
+            --text-color: #F0F0F0; 
+            --accent-pink: #FF33CC; 
+            --accent-blue: #33CCFF; 
+            --card-bg: #181818; 
         }
 
-        /* ФОТОГРАФИЯ */
-        .author-photo {
-            width: 150px;
-            height: 150px;
+        /* ОСНОВНЫЕ СТИЛИ */
+        body { 
+            font-family: 'Orbitron', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            text-align: center; 
+            padding-top: 80px; 
+            margin: 0;
+            min-height: 100vh;
+            background-image: repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px), 
+                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
+        }
+        
+        /* НАВИГАЦИЯ */
+        .nav-bar { 
+            background-color: #000000;
+            padding: 15px 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-bar a { 
+            color: var(--text-color); 
+            padding: 14px 25px; 
+            text-decoration: none; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s;
+            border-radius: 5px;
+        }
+        .nav-bar a:hover { 
+            color: var(--accent-pink); 
+            text-shadow: 0 0 10px var(--accent-pink); 
+            background-color: rgba(255, 51, 204, 0.1);
+        }
+
+        h1 { 
+            color: var(--accent-pink); 
+            font-size: 3em; 
+            font-weight: 900;
+            text-shadow: 0 0 25px rgba(255, 51, 204, 1); 
+            margin-bottom: 40px;
+        }
+        
+        /* КОНТЕЙНЕР ДОСЬЕ */
+        .dossier-card {
+            max-width: 750px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            border: 4px solid var(--accent-blue);
+            box-shadow: 0 0 40px rgba(51, 204, 255, 0.5), 0 0 15px var(--accent-pink) inset;
+            transform: perspective(1000px) rotateY(-1deg);
+            position: relative;
+        }
+        
+        /* ГОЛОГРАФИЧЕСКИЙ ПОРТРЕТ */
+        .profile-photo-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
             border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+            /* Неоновая рамка */
+            box-shadow: 0 0 15px var(--accent-pink), 0 0 30px var(--accent-pink) inset;
+            border: 5px solid var(--accent-pink);
+            
+            /* Эффект голограммы/скана */
+            animation: pulse-border 2s infinite alternate ease-in-out;
+        }
+        .profile-photo-container img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border: 5px solid #FFD700;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            filter: grayscale(10%) contrast(120%) brightness(100%);
+            transition: filter 0.5s;
         }
-        
-        /* ИНФОРМАЦИЯ */
-        .bio p {
-            font-size: 1.1em;
+        .profile-photo-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(51, 204, 255, 0.5), transparent, rgba(255, 51, 204, 0.5));
+            mix-blend-mode: overlay;
+            animation: scanline 4s infinite linear;
+        }
+
+        /* ОПИСАНИЕ */
+        .description-block {
             text-align: left;
-            padding: 0 20px;
+            border-top: 2px dashed var(--accent-blue);
+            padding-top: 20px;
+            margin-top: 20px;
         }
-        .bio strong {
-            color: #00FFFF;
+        .description-block h2 {
+            color: var(--accent-blue);
+            font-size: 1.8em;
+            text-shadow: 0 0 10px var(--accent-blue);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .description-block p {
+            line-height: 1.6;
+            font-size: 1.1em;
+            color: var(--text-color);
+        }
+        .description-block strong {
+            color: var(--accent-pink);
+            font-weight: 700;
         }
         
-        /* ССЫЛКИ */
-        .social-links {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px dashed #555;
+        /* АНИМАЦИИ */
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 15px var(--accent-pink), 0 0 30px var(--accent-pink) inset; }
+            100% { box-shadow: 0 0 25px var(--accent-blue), 0 0 45px var(--accent-blue) inset; }
         }
-        .social-links a {
-            color: #00FFFF;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 0 15px;
-            font-size: 1.1em;
-            transition: color 0.2s;
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
         }
-        .social-links a:hover {
-            color: #FF00FF;
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            .dossier-card {
+                margin: 0 10px;
+                padding: 20px;
+                transform: none;
+            }
         }
     </style>
 </head>
@@ -101,36 +160,35 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <div class="author-container">
-        <h1>👋 Привет от Дениса Казакова!</h1>
-        <p id="greeting-message">Гений, добро пожаловать!</p>
+    <h1>👤 ЛИЧНОЕ ДЕЛЬТА-ДОСЬЕ [CREATOR: DENIS]</h1>
 
-        <img src="kazak.jpg" alt="Фотография Дениса Казакова" class="author-photo">
+    <div class="dossier-card">
         
-        <div class="bio">
-            <p>Я — <strong>Денис Казаков</strong>, создатель этой простой, но увлекательной коллекции азартных игр. Этот проект создан для изучения JavaScript, HTML и CSS.</p>
-            <p>Я стараюсь создавать понятный и чистый код. Все игры на этой платформе полностью работают на клиентской стороне (в браузере) и используют <strong>localStorage</strong> для сохранения Вашего баланса "Мани".</p>
-            <p><strong>Важно:</strong> Это учебный проект, и Мани не являются реальной валютой. Играйте ответственно!</p>
+        <div class="profile-photo-container">
+            <img src="kazak.jpg" alt="Фотография Дениса Казакова">
         </div>
 
-        <div class="social-links">
-            <a href="mailto:denis.kazakov@example.com">📩 Написать мне</a>
-            <a href="#">🔗 Мой GitHub (если есть)</a>
+        <div class="description-block">
+            <h2>> ОСНОВНАЯ ИНФОРМАЦИЯ</h2>
+            <p>
+                <strong>Айди:</strong> DENIS-KAZAKOV-777<br>
+                <strong>Роль в Системе:</strong> Главный Архитектор и Кодер (The Architect).
+            </p>
+            
+            <h2>> ОПИСАНИЕ СУБЪЕКТА</h2>
+            <p>
+                Денис Казаков — это не просто разработчик, это кибернетический энтузиаст, создавший **[СИСТЕМУ]** с нуля. 
+                Он верит в мощь чистого кода, эстетику неоновых огней и максимальную защиту данных.
+                Этот проект — демонстрация его мастерства в синтезе **киберпанк-стиля** с увлекательным игровым процессом, 
+                включая высокоуровневую систему **античита** и управление балансом, вдохновленное реальными системами безопасности. 
+                Его цель: создать идеальный виртуальный мир, где правила задает только код, а выигрыш зависит от удачи и стратегии.
+            </p>
+            
+            <p style="color: var(--accent-pink); margin-top: 25px;">
+                > "Код — это закон. А закон должен быть безупречен."
+            </p>
         </div>
+        
     </div>
-
-    <script>
-        window.onload = function() {
-            const GREETING_MESSAGE = document.getElementById('greeting-message');
-            const CURRENT_USER_KEY = 'denisKazakovUser';
-            const storedUser = localStorage.getItem(CURRENT_USER_KEY);
-
-            if (storedUser) {
-                GREETING_MESSAGE.textContent = `Привет, Гений ${storedUser}! Спасибо, что зашел!`;
-            } else {
-                GREETING_MESSAGE.textContent = 'Привет, Гость! Войди, чтобы получить больше Мани!';
-            }
-        };
-    </script>
 </body>
 </html>
