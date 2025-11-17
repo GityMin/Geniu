@@ -90,7 +90,7 @@
         }
         .cards {
             min-height: 50px;
-            font-size: 2.2em; /* Крупнее карты */
+            font-size: 2.2em;
             margin-bottom: 10px;
             letter-spacing: 5px;
             font-weight: 900;
@@ -123,6 +123,7 @@
             background-color: #555 !important;
             box-shadow: none !important;
             cursor: not-allowed;
+            transform: none;
         }
 
         /* ЦВЕТА КНОПОК */
@@ -210,6 +211,47 @@
         #clicker-button:hover {
             background-color: var(--accent-pink);
             box-shadow: 0 0 10px var(--accent-pink);
+        }
+        
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ (Добавлено) */
+        @media (max-width: 600px) {
+            .blackjack-table {
+                padding: 15px;
+            }
+            .hand-area {
+                padding: 10px 0;
+            }
+            .cards {
+                font-size: 1.8em;
+                letter-spacing: 3px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                padding-top: 10px;
+            }
+            .bet-info {
+                justify-content: space-between;
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            #bet-input {
+                width: 100px;
+            }
+            .game-buttons {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+            .game-buttons button {
+                padding: 10px 15px;
+                margin: 0 5px;
+                font-size: 1em;
+                flex-grow: 1;
+            }
+            #message-display {
+                font-size: 1.2em;
+            }
         }
     </style>
 </head>
