@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <title>Слоты МММ V2 | Денис Казаков, Гений</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* ГЛОБАЛЬНЫЕ СТИЛИ */
         body { font-family: 'Arial', sans-serif; background-color: #0d0d0d; color: #E0E0E0; text-align: center; padding-top: 50px; }
@@ -81,6 +82,32 @@
 
         /* Сообщение */
         #result-message { font-size: 1.8em; margin-top: 30px; min-height: 40px; color: #FF00FF; text-shadow: 0 0 5px #FF00FF; }
+
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 550px) {
+            h1 { font-size: 1.6em; }
+            
+            .slot-machine {
+                width: 100%;
+                padding: 10px;
+                gap: 3px;
+                flex-direction: column;
+            }
+
+            .reel-housing {
+                width: 80px;
+                height: 100px;
+            }
+            .slot-reel {
+                font-size: 3em;
+                line-height: 100px;
+            }
+
+            .controls {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -125,7 +152,6 @@
             const BET_INPUT = document.getElementById('bet-input');
             const RESULT_MESSAGE = document.getElementById('result-message');
             
-            // Символы: 7 (самый редкий), 💎, 💰, ⭐ (самый частый)
             const SYMBOLS = ['7️⃣', '💎', '💰', '⭐'];
             const SYMBOL_HEIGHT = 120;
             
@@ -147,7 +173,6 @@
                 SPIN_BUTTON.disabled = money < bet || isSpinning;
             }
             
-            // Инициализация
             setMoney(getMoney());
             BET_INPUT.addEventListener('input', () => setMoney(getMoney()));
 
@@ -155,7 +180,6 @@
 
             function generateSymbolStrip(totalSymbols) {
                 let strip = [];
-                // Частота символов (7 - редкий, ⭐ - частый)
                 const frequency = [1, 2, 3, 4];
                 
                 for (let i = 0; i < totalSymbols; i++) {
@@ -194,36 +218,31 @@
             function spin() {
                 const bet = parseInt(BET_INPUT.value);
                 
-                // Проверка условий перед списанием
                 if (money < bet || bet <= 0 || isSpinning) {
                     RESULT_MESSAGE.textContent = "Недостаточно Мани или ставка неверна!";
                     return;
                 }
 
-                // 1. Снимаем ставку и блокируем
                 isSpinning = true;
-                setMoney(money - bet); // Обновляем баланс и сохраняем
+                setMoney(money - bet);
                 RESULT_MESSAGE.textContent = "КРУТИМ...";
                 SPIN_BUTTON.classList.add('pulling');
                 
-                // Финальные результаты
                 const finalResults = [
                     SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
                     SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
                     SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
                 ];
 
-                // 2. Запуск анимации для каждого барабана
                 REELS.forEach((reel, index) => {
                     animateReel(index, finalResults[index]);
                 });
 
-                // 3. Задержка и проверка выигрыша
                 setTimeout(() => {
                     SPIN_BUTTON.classList.remove('pulling');
                     checkWin(finalResults, bet);
                     isSpinning = false;
-                    setMoney(money); // Обновляем кнопку после расчета
+                    setMoney(money);
                 }, 3000); 
             }
 
@@ -235,7 +254,6 @@
                 let message = `Проигрыш. (${r1} | ${r2} | ${r3})`;
 
                 if (r1 === r2 && r2 === r3) {
-                    // Тройное совпадение
                     if (r1 === '7️⃣') {
                         winAmount = bet * 50;
                         message = `🤯🤯🤯 ДЖЕКПОТ ГЕНИЯ! ТРИ 7️⃣! Выигрыш: +${winAmount} Мани!`;
@@ -244,11 +262,9 @@
                         message = `🎉 ТРИ ${r1}! Гениальный выигрыш: +${winAmount} Мани!`;
                     }
                 } else if (r1 === r2 || r2 === r3) {
-                    // Двойное совпадение (Средний выигрыш)
                     winAmount = bet * 3;
                     message = `✅ Двойной ${r2}! Выигрыш: +${winAmount} Мани.`;
                 } else if (r1 === r3) {
-                    // Уникальное совпадение R1 и R3
                     winAmount = bet * 2;
                     message = `👌 Совпадение R1 и R3. Выигрыш: +${winAmount} Мани.`;
                 }
