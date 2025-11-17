@@ -27,15 +27,18 @@
     <button id="click-button">КЛИКНИ И ПРИУМНОЖЬ!</button>
 
     <script>
-        let money = 0;
-        const display = document.getElementById('money-display');
-        const button = document.getElementById('click-button');
+        // --- !!! ВАЖНОЕ ИСПРАВЛЕНИЕ: Оборачиваем код в window.onload !!! ---
+        window.onload = function() {
+            let money = 0;
+            const display = document.getElementById('money-display');
+            const button = document.getElementById('click-button');
 
-        button.addEventListener('click', () => {
-            // Гениальная формула приумножения
-            money += Math.floor(Math.random() * 5) + 1; 
-            display.textContent = `Мани: ${money}`;
-        });
+            button.addEventListener('click', () => {
+                // Гениальная формула приумножения
+                money += Math.floor(Math.random() * 5) + 1; 
+                display.textContent = `Мани: ${money}`;
+            });
+        };
     </script>
 </body>
 </html>
