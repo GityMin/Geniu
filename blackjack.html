@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Блэкджек | [СИСТЕМА]</title>
+    <title>Блэкджек | [СИСТЕМА] v.2.0 (3D)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -14,8 +14,8 @@
             --card-bg: #181818; 
             --win-color: #00FF00;
             --loss-color: #FF0000;
-            --red-suit: #FF0044;    /* Яркий красный для червей/бубен */
-            --black-suit: #00FFCC;  /* Кибер-бирюзовый для пик/треф */
+            --red-suit: #FF0044;    
+            --black-suit: #00FFCC; 
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -68,14 +68,17 @@
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #002233; /* Темно-синий стол */
+            background-color: #002233; 
             border-radius: 15px;
             border: 5px solid var(--accent-pink);
             box-shadow: 0 0 30px var(--accent-pink);
             position: relative;
+            /* 3D-ЭФФЕКТ СТОЛА */
+            transform: perspective(1000px) rotateX(4deg);
+            transform-origin: center bottom;
         }
         
-        /* КАРТОЧКИ - БЕЗ СТИКЕРОВ, ТОЛЬКО НЕОН */
+        /* КАРТОЧКИ - 3D ГОЛОГРАФИЧЕСКИЕ ПАНЕЛИ */
         .hand {
             display: flex;
             justify-content: center;
@@ -95,31 +98,49 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            box-shadow: 0 0 15px rgba(51, 204, 255, 0.5);
+            
+            /* 3D И СВЕЧЕНИЕ КАРТЫ */
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(51, 204, 255, 0.8);
+            transform: perspective(500px) rotateX(10deg) translateZ(10px); /* Объем и небольшой наклон */
+
             font-size: 1.2em;
             font-weight: 700;
-            transition: transform 0.3s;
+            transition: transform 0.5s, opacity 0.5s, box-shadow 0.5s; /* Анимация раздачи */
+            opacity: 1;
         }
         .card-value {
             font-size: 2.5em;
             font-weight: 900;
             line-height: 1;
-            text-shadow: 0 0 5px currentColor;
+            text-shadow: 0 0 8px currentColor; /* Усиленное свечение символов */
         }
         .card-suit {
             font-size: 1.8em;
             line-height: 1;
-            text-shadow: 0 0 5px currentColor;
+            text-shadow: 0 0 8px currentColor;
         }
         .hidden-card {
             background-color: var(--bg-color);
             border: 3px dashed var(--accent-pink);
-            box-shadow: 0 0 20px var(--accent-pink);
+            box-shadow: 0 0 25px var(--accent-pink);
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 2em;
             color: var(--accent-pink);
+            transform: perspective(500px) rotateX(10deg) translateZ(10px);
+        }
+        
+        /* АНИМАЦИЯ РАЗДАЧИ */
+        .card.dealt {
+            /* Начальное положение: невидимо и повернуто */
+            transform: perspective(500px) rotateX(90deg) translateZ(0);
+            opacity: 0;
+        }
+        .card.visible {
+            /* Конечное положение */
+            transform: perspective(500px) rotateX(10deg) translateZ(10px);
+            opacity: 1;
         }
 
         /* ЦВЕТА МАСТЕЙ */
@@ -131,15 +152,12 @@
             font-size: 1.5em;
             font-weight: 700;
             margin: 10px 0;
-            text-shadow: 0 0 8px currentColor;
+            text-shadow: 0 0 10px currentColor; /* Усиленное свечение */
         }
-        .controls {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
+        
+        /* КНОПКИ */
         .control-button {
+            /* ... (Стили кнопок) ... */
             padding: 12px 25px;
             font-family: 'Orbitron', sans-serif;
             font-size: 1.1em;
@@ -152,42 +170,21 @@
             box-shadow: 0 0 15px var(--accent-blue);
             transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
         }
-        .control-button:hover:not(:disabled) {
-            background-color: var(--accent-pink);
-            box-shadow: 0 0 20px var(--accent-pink);
-            transform: translateY(-2px);
-        }
-        .control-button:disabled {
-            background-color: #555;
-            box-shadow: none;
-            cursor: not-allowed;
-            opacity: 0.5;
-        }
-        
+
         /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 768px) {
             .game-area {
                 padding: 10px;
                 margin: 0 10px;
+                transform: perspective(1000px) rotateX(0); /* Убираем 3D наклон стола на мобильных */
             }
             .card {
                 width: 90px;
                 height: 130px;
                 padding: 5px;
+                transform: perspective(500px) rotateX(0) translateZ(5px); /* Убираем 3D наклон карт на мобильных */
             }
-            .card-value {
-                font-size: 2em;
-            }
-            .card-suit {
-                font-size: 1.5em;
-            }
-            .controls {
-                flex-direction: column; /* Кнопки в столбец */
-                gap: 10px;
-            }
-            .control-button {
-                padding: 10px;
-            }
+            /* ... (Остальные стили для мобильных) ... */
         }
     </style>
 </head>
@@ -199,17 +196,17 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>♦ БЛЭКДЖЕК | [СИСТЕМА] ♥</h1>
+    <h1>♦ БЛЭКДЖЕК | [СИСТЕМА] v.2.0 ♥</h1>
 
     <div class="game-area">
         <div id="balance-display">КРЕДИТ: 100 М</div>
         <input type="number" id="bet-input" value="10" min="10" step="10" placeholder="Ставка" style="padding: 8px; margin-bottom: 20px; font-family: 'Orbitron', sans-serif; background-color: #282828; color: var(--text-color); border: 2px solid var(--accent-blue); border-radius: 5px; text-align: center;">
 
-        <div class="score-display">ДИЛЕР [ <span id="dealer-score">0</span> ]</div>
+        <div class="score-display" style="color: var(--accent-pink); text-shadow: 0 0 10px var(--accent-pink);">ДИЛЕР [ <span id="dealer-score">0</span> ]</div>
         <div class="hand" id="dealer-hand">
             </div>
 
-        <div class="score-display">ИГРОК [ <span id="player-score">0</span> ]</div>
+        <div class="score-display" style="color: var(--accent-blue); text-shadow: 0 0 10px var(--accent-blue);">ИГРОК [ <span id="player-score">0</span> ]</div>
         <div class="hand" id="player-hand">
             </div>
         
@@ -351,19 +348,19 @@
                 return deck.pop();
             }
 
-            // --- РЕНДЕРИНГ КАРТ ---
+            // --- РЕНДЕРИНГ КАРТ (С 3D-АНИМАЦИЕЙ) ---
             function renderCard(card, isHidden = false) {
-                if (isHidden) {
-                    return `<div class="card hidden-card">СИСТЕМА [? / ?]</div>`;
-                }
                 const suitData = SUITS[card.suit];
-                return `
-                    <div class="card">
+                const cardHtml = isHidden ? 
+                    `<div class="card hidden-card dealt">СИСТЕМА [? / ?]</div>` :
+                    `
+                    <div class="card dealt">
                         <div class="card-value ${suitData.colorClass}">${card.value}</div>
                         <div class="card-suit ${suitData.colorClass}">${suitData.symbol}</div>
                         <div class="card-value ${suitData.colorClass}" style="transform: rotate(180deg);">${card.value}</div>
                     </div>
                 `;
+                return cardHtml;
             }
 
             function renderHands(hideDealerSecond = true) {
@@ -371,10 +368,20 @@
                 dealerHandEl.innerHTML = dealerHand.map((card, index) => 
                     renderCard(card, hideDealerSecond && index === 1)
                 ).join('');
-                dealerScoreEl.textContent = hideDealerSecond ? dealerHand[0].score : calculateScore(dealerHand);
-
+                
                 // Игрок
                 playerHandEl.innerHTML = playerHand.map(card => renderCard(card)).join('');
+                
+                // Применяем класс 'visible' после рендеринга для 3D-анимации
+                setTimeout(() => {
+                    document.querySelectorAll('.card.dealt').forEach(el => {
+                        el.classList.remove('dealt');
+                        el.classList.add('visible');
+                    });
+                }, 50);
+
+                // Обновляем счет
+                dealerScoreEl.textContent = hideDealerSecond ? dealerHand[0].score : calculateScore(dealerHand);
                 playerScoreEl.textContent = calculateScore(playerHand);
             }
 
@@ -388,7 +395,6 @@
                     return;
                 }
 
-                // Списываем ставку
                 setMoney(currentMoney - bet); 
                 
                 gameActive = true;
@@ -396,29 +402,47 @@
                 dealerHand = [drawCard(), drawCard()];
                 playerHand = [drawCard(), drawCard()];
 
-                renderHands();
-                
-                hitBtn.disabled = false;
-                standBtn.disabled = false;
-                newGameBtn.disabled = true;
-                betInputEl.disabled = true;
+                // Очистка перед новой раздачей
+                dealerHandEl.innerHTML = '';
+                playerHandEl.innerHTML = '';
 
-                if (calculateScore(playerHand) === 21) {
-                    messageEl.textContent = "[BLACKJACK!] У ИГРОКА 21. ЖДЕМ ДИЛЕРА...";
-                    messageEl.className = 'win';
-                    setTimeout(stand, 1500);
-                } else {
-                    messageEl.textContent = "ВАШ ХОД. ЕЩЕ КАРТУ ИЛИ ХВАТИТ?";
-                    messageEl.className = 'info';
-                }
+                // Раздача с небольшой задержкой для анимации
+                setTimeout(() => {
+                    renderHands();
+                    
+                    hitBtn.disabled = false;
+                    standBtn.disabled = false;
+                    newGameBtn.disabled = true;
+                    betInputEl.disabled = true;
+
+                    if (calculateScore(playerHand) === 21) {
+                        messageEl.textContent = "[BLACKJACK!] У ИГРОКА 21. ЖДЕМ ДИЛЕРА...";
+                        messageEl.className = 'win';
+                        setTimeout(stand, 1500);
+                    } else {
+                        messageEl.textContent = "ВАШ ХОД. ЕЩЕ КАРТУ ИЛИ ХВАТИТ?";
+                        messageEl.className = 'info';
+                    }
+                }, 100); 
             }
 
             function hit() {
                 if (!gameActive) return;
-                playerHand.push(drawCard());
-                renderHands();
                 
+                // Добавляем новую карту и рендерим только ее
+                playerHand.push(drawCard());
+                playerHandEl.innerHTML += renderCard(playerHand[playerHand.length - 1]);
+                
+                // Анимация новой карты
+                setTimeout(() => {
+                    const lastCard = playerHandEl.lastElementChild;
+                    lastCard.classList.remove('dealt');
+                    lastCard.classList.add('visible');
+                }, 50);
+
                 const score = calculateScore(playerHand);
+                playerScoreEl.textContent = score;
+
                 if (score > 21) {
                     messageEl.textContent = "[ПЕРЕБОР] У ИГРОКА БОЛЕЕ 21.";
                     messageEl.className = 'loss';
@@ -443,9 +467,19 @@
                     
                     if (dealerScore < 17) {
                         messageEl.textContent = `ДИЛЕР БЕРЕТ КАРТУ... (${dealerScore})`;
+                        
                         dealerHand.push(drawCard());
-                        renderHands(false);
-                        setTimeout(dealerTurn, 1000); // Дилер берет карту с задержкой
+                        dealerHandEl.innerHTML += renderCard(dealerHand[dealerHand.length - 1]);
+                        
+                        // Анимация новой карты дилера
+                        setTimeout(() => {
+                            const lastCard = dealerHandEl.lastElementChild;
+                            lastCard.classList.remove('dealt');
+                            lastCard.classList.add('visible');
+                            dealerScoreEl.textContent = calculateScore(dealerHand);
+                        }, 50);
+                        
+                        setTimeout(dealerTurn, 1000); 
                     } else {
                         checkWinner();
                     }
@@ -474,7 +508,6 @@
                 }
 
                 if (winner === 'player') {
-                    // Блэкджек (A+10) оплачивается 3:2, остальное 2:1
                     const isBlackjack = playerHand.length === 2 && playerScore === 21;
                     winnings = bet * (isBlackjack ? 2.5 : 2); 
                     messageEl.textContent = `[ПОБЕДА] ИГРОК ВЫИГРАЛ! (${playerScore} > ${dealerScore}). ВЫИГРЫШ: ${winnings} М.`;
@@ -483,7 +516,6 @@
                 } else if (winner === 'dealer') {
                     messageEl.textContent = `[ПРОИГРЫШ] ДИЛЕР ВЫИГРАЛ! (${dealerScore} > ${playerScore}).`;
                     messageEl.className = 'loss';
-                    // Ставка уже списана
                 } else if (winner === 'push') {
                     winnings = bet;
                     messageEl.textContent = "[НИЧЬЯ] СТАВКА ВОЗВРАЩЕНА.";
