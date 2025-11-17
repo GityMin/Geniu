@@ -13,6 +13,7 @@
             --accent-blue: #33CCFF; 
             --card-bg: #181818; 
             --success-color: #00FF00;
+            --dev-color: #FFFF00; /* Новый цвет для DEV-статуса */
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -156,6 +157,7 @@
         }
         .success { color: var(--success-color); text-shadow: 0 0 10px var(--success-color); }
         .error { color: var(--accent-pink); text-shadow: 0 0 10px var(--accent-pink); }
+        .dev-message { color: var(--dev-color); text-shadow: 0 0 10px var(--dev-color); } /* Стиль для Dev-сообщения */
         
         /* АНИМАЦИИ ДЛЯ СТАТУСА */
         .status-box {
@@ -170,6 +172,10 @@
         .status-box.logged-in {
             border-color: var(--success-color);
             box-shadow: 0 0 15px var(--success-color);
+        }
+        .status-box.dev-mode { /* Новый статус для Dev-аккаунта */
+            border-color: var(--dev-color);
+            box-shadow: 0 0 20px var(--dev-color);
         }
 
         @media (max-width: 768px) {
@@ -190,7 +196,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🔐 СИСТЕМА АВТОРИЗАЦИИ v.3.1</h1>
+    <h1>🔐 СИСТЕМА АВТОРИЗАЦИИ v.3.2 (DEV READY)</h1>
 
     <div class="auth-card">
         
@@ -218,7 +224,7 @@
 
         <div id="logout-panel" style="display: none;">
             <h2 id="welcome-message"></h2>
-            <p>Вы успешно подключены к **[СИСТЕМЕ]**. Ваш игровой процесс защищен Античит-протоколом.</p>
+            <p id="dev-status-text">Вы успешно подключены к **[СИСТЕМЕ]**. Ваш игровой процесс защищен Античит-протоколом.</p>
             <button id="logout-button" class="action-button" style="background-color: var(--accent-pink); box-shadow: 0 0 15px var(--accent-pink);">ДЕАКТИВИРОВАТЬ ДОСТУП</button>
         </div>
 
@@ -243,6 +249,7 @@
             const AUTH_FORM = document.getElementById('auth-form');
             const LOGOUT_PANEL = document.getElementById('logout-panel');
             const WELCOME_MESSAGE = document.getElementById('welcome-message');
+            const DEV_STATUS_TEXT = document.getElementById('dev-status-text');
             const STATUS_DISPLAY = document.getElementById('status-display');
             const STATUS_TEXT = document.getElementById('status-text');
             const FORM_TITLE = document.getElementById('form-title');
@@ -253,6 +260,10 @@
             const MONEY_PREFIX = 'money_';
             const CHECKSUM_PREFIX = 'checksum_';
             const SECRET_KEY = 952; 
+            
+            // --- АККАУНТ РАЗРАБОТЧИКА ---
+            const DEV_USERNAME = 'DenisKazakov';
+            const DEV_PASSWORD = '4aika4jo';
 
             let authMode = 'register'; // 'register' или 'login'
 
@@ -300,6 +311,13 @@
 
             // --- ОБРАБОТЧИК РЕГИСТРАЦИИ ---
             function handleRegister(username, password, confirmPassword) {
+                // ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
+                if (username === DEV_USERNAME) {
+                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] ОШИБКА: Этот АЙДИ зарезервирован для разработчика.`;
+                    MESSAGE_DISPLAY.className = 'error';
+                    return;
+                }
+                
                 if (getStoredPassword(username)) {
                     MESSAGE_DISPLAY.textContent = `ОТКАЗ: Пользователь с АЙДИ [${username}] уже существует. Используйте ВХОД.`;
                     MESSAGE_DISPLAY.className = 'error';
@@ -331,24 +349,34 @@
 
             // --- ОБРАБОТЧИК ВХОДА ---
             function handleLogin(username, password) {
-                const storedPassword = getStoredPassword(username);
-
-                if (!storedPassword) {
-                    MESSAGE_DISPLAY.textContent = `ОТКАЗ: АЙДИ [${username}] не найден. Используйте РЕГИСТРАЦИЮ.`;
-                    MESSAGE_DISPLAY.className = 'error';
-                    return;
-                }
+                let status = 'user'; // По умолчанию обычный пользователь
                 
-                if (storedPassword !== password) {
-                    MESSAGE_DISPLAY.textContent = 'ОТКАЗ В ДОСТУПЕ. Неверный пароль.';
-                    MESSAGE_DISPLAY.className = 'error';
-                    return;
+                // ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
+                if (username === DEV_USERNAME && password === DEV_PASSWORD) {
+                    status = 'dev';
+                    // Устанавливаем статус разработчика в localStorage, чтобы его можно было проверить позже (например, в играх)
+                    localStorage.setItem('userStatus', 'dev'); 
+                } else {
+                    const storedPassword = getStoredPassword(username);
+
+                    if (!storedPassword) {
+                        MESSAGE_DISPLAY.textContent = `ОТКАЗ: АЙДИ [${username}] не найден. Используйте РЕГИСТРАЦИЮ.`;
+                        MESSAGE_DISPLAY.className = 'error';
+                        return;
+                    }
+                    
+                    if (storedPassword !== password) {
+                        MESSAGE_DISPLAY.textContent = 'ОТКАЗ В ДОСТУПЕ. Неверный пароль.';
+                        MESSAGE_DISPLAY.className = 'error';
+                        return;
+                    }
+                    localStorage.setItem('userStatus', 'user');
                 }
 
                 // Успешный вход
                 localStorage.setItem(USER_KEY, username);
                 MESSAGE_DISPLAY.textContent = `СИСТЕМА: Пользователь ${username} ИДЕНТИФИЦИРОВАН.`;
-                MESSAGE_DISPLAY.className = 'success';
+                MESSAGE_DISPLAY.className = (status === 'dev') ? 'dev-message' : 'success';
                 
                 // Очистка полей
                 USERNAME_INPUT.value = '';
@@ -384,6 +412,7 @@
                 const username = localStorage.getItem(USER_KEY);
                 
                 localStorage.removeItem(USER_KEY);
+                localStorage.removeItem('userStatus'); // Удаляем статус при выходе
                 removeGameData(); 
 
                 MESSAGE_DISPLAY.textContent = `СИСТЕМА: Доступ ${username} деактивирован. Данные сброшены.`;
@@ -397,6 +426,7 @@
             // --- ПРОВЕРКА СТАТУСА ---
             function checkLoginStatus() {
                 const username = localStorage.getItem(USER_KEY);
+                const status = localStorage.getItem('userStatus');
                 
                 if (username) {
                     // Пользователь авторизован
@@ -404,10 +434,24 @@
                     LOGOUT_PANEL.style.display = 'block';
                     WELCOME_MESSAGE.textContent = `> ДОБРО ПОЖАЛОВАТЬ, ${username.toUpperCase()}`;
                     
-                    STATUS_TEXT.textContent = 'ДОСТУП АКТИВИРОВАН';
-                    STATUS_TEXT.style.color = 'var(--success-color)';
-                    STATUS_DISPLAY.classList.add('logged-in');
+                    if (status === 'dev') {
+                        // Режим разработчика
+                        STATUS_TEXT.textContent = 'ДОСТУП АКТИВИРОВАН [РЕЖИМ РАЗРАБОТЧИКА]';
+                        STATUS_TEXT.style.color = 'var(--dev-color)';
+                        STATUS_DISPLAY.className = 'status-box dev-mode';
+                        DEV_STATUS_TEXT.textContent = 'ВНИМАНИЕ: Активирован режим разработчика. Имеет полный доступ.';
+                        DEV_STATUS_TEXT.style.color = 'var(--dev-color)';
+                    } else {
+                        // Обычный пользователь
+                        STATUS_TEXT.textContent = 'ДОСТУП АКТИВИРОВАН';
+                        STATUS_TEXT.style.color = 'var(--success-color)';
+                        STATUS_DISPLAY.className = 'status-box logged-in';
+                        DEV_STATUS_TEXT.textContent = 'Вы успешно подключены к **[СИСТЕМЕ]**. Ваш игровой процесс защищен Античит-протоколом.';
+                        DEV_STATUS_TEXT.style.color = 'var(--text-color)';
+                    }
+                    
                     MESSAGE_DISPLAY.textContent = '';
+
                 } else {
                     // Пользователь не авторизован
                     AUTH_FORM.style.display = 'block';
@@ -415,9 +459,8 @@
                     
                     STATUS_TEXT.textContent = 'ОЖИДАНИЕ...';
                     STATUS_TEXT.style.color = 'var(--accent-pink)';
-                    STATUS_DISPLAY.classList.remove('logged-in');
+                    STATUS_DISPLAY.className = 'status-box';
                     
-                    // Убедимся, что форма в режиме регистрации по умолчанию
                     if (authMode !== 'register') {
                         toggleMode(); 
                     }
@@ -429,7 +472,6 @@
             LOGOUT_BUTTON.addEventListener('click', handleLogout);
             MODE_TOGGLE_BUTTON.addEventListener('click', toggleMode);
             
-            // Инициализация при загрузке страницы
             checkLoginStatus();
         };
     </script>
