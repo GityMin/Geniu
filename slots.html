@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты МММ V4 | Лента Выигрышей Гения</title>
+    <title>Слоты МММ V4 | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* ГЛОБАЛЬНЫЕ СТИЛИ */
@@ -141,6 +141,13 @@
         .lever-handle:active {
             cursor: grabbing;
         }
+        .lever-handle.disabled {
+            background: #555 !important;
+            cursor: not-allowed !important;
+            border-color: #333 !important;
+            box-shadow: none !important;
+            pointer-events: none;
+        }
 
         /* Ставка */
         .bet-control { 
@@ -159,6 +166,10 @@
             background-color: #222; 
             color: white; 
             border-radius: 5px; 
+        }
+        #bet-input:disabled {
+            background-color: #444;
+            color: #AAA;
         }
 
         /* Сообщение */
@@ -227,10 +238,42 @@
             text-shadow: 0 0 3px #00FF00;
         }
 
-        @keyframes new-win {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- СТИЛИ ДЛЯ КЛИКЕРА --- */
+        .clicker-panel {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
+        .clicker-panel h2 {
+            color: #FFD700;
+            text-shadow: 0 0 5px #FFD700;
+            margin-top: 0;
+        }
+        #clicker-button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            background-color: #FFD700;
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.1s, transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 5px #C4A100;
+        }
+        #clicker-button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px #C4A100;
+        }
+        #clicker-message {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #EEE;
+        }
+
 
         /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
         @media (max-width: 650px) {
@@ -283,6 +326,10 @@
                 transform: translateY(3px) !important;
                 box-shadow: 0 2px #4400AA;
             }
+            .lever-handle.disabled::before {
+                content: "ВОЙДИ";
+            }
+
             .jackpot-feed {
                 margin: 20px auto;
                 padding: 10px;
@@ -327,7 +374,12 @@
     <div class="jackpot-feed">
         <h2>🏆 Лента Выигрышей Гениев 🏆</h2>
         <ul id="win-list">
-            </ul>
+        </ul>
+    </div>
+    <div class="clicker-panel">
+        <h2>⚡ Кликер Мани (Получи стартовый капитал!) ⚡</h2>
+        <button id="clicker-button">Кликнуть за 1 Мани!</button>
+        <p id="clicker-message">Каждый клик приносит 1 Мани. Используй это!</p>
     </div>
     <script>
         window.onload = function() {
@@ -341,8 +393,11 @@
             const RESULT_MESSAGE = document.getElementById('result-message');
             const LEVER_HANDLE = document.getElementById('lever-handle');
             const LEVER_ARM = document.getElementById('lever-arm');
-            const WIN_LIST = document.getElementById('win-list'); // Новая DOM-переменная
+            const WIN_LIST = document.getElementById('win-list');
             
+            const CLICKER_BUTTON = document.getElementById('clicker-button'); 
+            const CLICKER_MESSAGE = document.getElementById('clicker-message');
+
             const SYMBOLS = ['7️⃣', '💎', '💰', '⭐'];
             const SYMBOL_HEIGHT = 120;
             const LEVER_MAX_PULL_Y = 150; 
@@ -353,43 +408,105 @@
             let startY = 0;
             let currentPullY = 0;
             
-            // --- НОВЫЕ ДАННЫЕ ---
+            // --- ДАННЫЕ ДЛЯ ЛЕНТЫ ---
             const RANDOM_NAMES = ['Анна', 'Борис', 'Света', 'Михаил', 'Алиса', 'Денис (Другой)', 'Кирилл', 'Вика', 'Олег', 'Настя'];
             const AVATAR_COLORS = ['#FF00FF', '#00FFFF', '#FFFF00', '#FF0000', '#00FF00'];
             
-            // --- ФУНКЦИИ БАЛАНСА С ЗАЩИТОЙ ---
+            // --- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ ---
+            const currentUsername = localStorage.getItem('denisKazakovUser');
+            const isUserLoggedIn = !!currentUsername;
+            
+            // --- ФУНКЦИИ БАЛАНСА С ПРИВЯЗКОЙ К ЛОГИНУ ---
             const SECRET_KEY = 952; 
+            const MONEY_PREFIX = 'money_';
+            const CHECKSUM_PREFIX = 'checksum_';
 
+            function getMoneyKey(username) { return MONEY_PREFIX + username; }
+            function getChecksumKey(username) { return CHECKSUM_PREFIX + username; }
+
+            // Эта функция теперь возвращает 0, если пользователь не вошел.
             function getMoney() {
-                const storedMoney = parseInt(localStorage.getItem('denisKazakovMoney')) || 100;
-                const storedChecksum = parseInt(localStorage.getItem('denisKazakovChecksum')) || (storedMoney + SECRET_KEY);
+                if (!isUserLoggedIn) return 0;
+                
+                const moneyKey = getMoneyKey(currentUsername);
+                const checksumKey = getChecksumKey(currentUsername);
+
+                const storedMoney = parseInt(localStorage.getItem(moneyKey)) || 100;
+                const storedChecksum = parseInt(localStorage.getItem(checksumKey)) || (storedMoney + SECRET_KEY);
 
                 if (storedMoney + SECRET_KEY !== storedChecksum) {
                     console.warn("Обнаружена попытка изменения баланса. Баланс сброшен.");
-                    return setMoney(10);
+                    return setMoney(10); 
                 }
                 return storedMoney;
             }
 
+            // Эта функция не сохраняет ничего, если пользователь не вошел.
             function setMoney(amount) {
+                if (!isUserLoggedIn) {
+                    updateControls();
+                    return 0;
+                }
+
+                const moneyKey = getMoneyKey(currentUsername);
+                const checksumKey = getChecksumKey(currentUsername);
+                
                 const safeAmount = Math.max(10, amount);
                 const newChecksum = safeAmount + SECRET_KEY;
                 
-                localStorage.setItem('denisKazakovMoney', safeAmount);
-                localStorage.setItem('denisKazakovChecksum', newChecksum);
+                localStorage.setItem(moneyKey, safeAmount);
+                localStorage.setItem(checksumKey, newChecksum);
                 
                 MONEY_DISPLAY.textContent = `Баланс: ${safeAmount} Мани`;
-                
-                const isMobileButton = window.matchMedia("(max-width: 650px)").matches;
-                
-                if (isMobileButton) {
-                    LEVER_HANDLE.disabled = safeAmount < parseInt(BET_INPUT.value) || isSpinning;
-                }
+                updateControls();
                 
                 return safeAmount;
             }
-            // --- КОНЕЦ ФУНКЦИЙ БАЛАНСА С ЗАЩИТОЙ ---
-            
+
+            // --- ФУНКЦИЯ БЛОКИРОВКИ КНОПОК ---
+            function updateControls() {
+                const currentMoney = getMoney();
+                const bet = parseInt(BET_INPUT.value);
+                
+                if (!isUserLoggedIn) {
+                    MONEY_DISPLAY.textContent = 'Баланс: 🔒 Войди!';
+                    RESULT_MESSAGE.textContent = 'Войдите в аккаунт, чтобы играть на Мани!';
+                    
+                    BET_INPUT.disabled = true;
+                    LEVER_HANDLE.classList.add('disabled');
+                    return;
+                }
+
+                // Активация кнопок, если пользователь вошел
+                BET_INPUT.disabled = isSpinning;
+                LEVER_HANDLE.classList.remove('disabled');
+
+                if (currentMoney < bet || bet <= 0) {
+                    RESULT_MESSAGE.textContent = "Недостаточно Мани или ставка неверна!";
+                    LEVER_HANDLE.classList.add('disabled');
+                } else if (!isSpinning) {
+                    RESULT_MESSAGE.textContent = "Проверь свою удачу, гений!";
+                }
+            }
+            // --- КОНЕЦ ФУНКЦИИ ---
+
+
+            // --- ФУНКЦИИ КЛИКЕРА ---
+            function handleCick() {
+                if (!isUserLoggedIn) {
+                    CLICKER_MESSAGE.textContent = 'Вы не вошли. Ваши Мани не сохраняются! Войдите, чтобы копить!';
+                    CLICKER_MESSAGE.style.color = '#FFD700';
+                    return;
+                }
+
+                setMoney(getMoney() + 1);
+                CLICKER_BUTTON.textContent = `Кликнуть за 1 Мани! (Баланс: ${getMoney()})`; 
+                CLICKER_MESSAGE.textContent = `+1 Мани! Текущий баланс: ${getMoney()} Мани`;
+                CLICKER_MESSAGE.style.color = '#00FF00';
+            }
+            CLICKER_BUTTON.addEventListener('click', handleCick);
+            // --- КОНЕЦ ФУНКЦИЙ КЛИКЕРА ---
+
             // --- ФУНКЦИИ ЛЕНТЫ ВЫИГРЫШЕЙ ---
 
             function addWinToFeed(name, amount) {
@@ -404,29 +521,25 @@
                     </div>
                 `;
                 
-                // Добавляем новый выигрыш в начало списка
                 if (WIN_LIST.firstChild) {
                     WIN_LIST.insertBefore(listItem, WIN_LIST.firstChild);
                 } else {
                     WIN_LIST.appendChild(listItem);
                 }
 
-                // Ограничиваем список 5-ю выигрышами для чистоты
                 while (WIN_LIST.children.length > 5) {
                     WIN_LIST.removeChild(WIN_LIST.lastChild);
                 }
             }
 
             function generateFakeWin() {
-                // Шанс на крупный выигрыш 1 из 4
-                const isBigWin = Math.random() < 0.25; 
-                
-                let minAmount = 50;
-                let maxAmount = 200;
+                const isBigWin = Math.random() < 0.20; 
+                let minAmount = 30;
+                let maxAmount = 150;
 
                 if (isBigWin) {
-                    minAmount = 500;
-                    maxAmount = 2500;
+                    minAmount = 400;
+                    maxAmount = 2000;
                 }
 
                 const amount = Math.floor(Math.random() * (maxAmount - minAmount + 1)) + minAmount;
@@ -435,10 +548,8 @@
                 addWinToFeed(name, amount);
             }
             
-            // Генерируем фейковый выигрыш каждые 5-10 секунд
             let fakeWinInterval = setInterval(generateFakeWin, Math.random() * 5000 + 5000); 
 
-            // Инициализируем ленту 3-мя стартовыми выигрышами
             for(let i=0; i<3; i++) {
                 generateFakeWin();
             }
@@ -450,7 +561,8 @@
 
             function generateSymbolStrip(totalSymbols) {
                 let strip = [];
-                const frequency = [1, 2, 3, 4];
+                // Уменьшаем частоту выпадения дорогих символов (7, Алмаз)
+                const frequency = [1, 2, 4, 6]; // 7️⃣=1, 💎=2, 💰=4, ⭐=6 (Сумма: 13)
                 
                 for (let i = 0; i < totalSymbols; i++) {
                     let totalWeight = frequency.reduce((a, b) => a + b, 0);
@@ -469,7 +581,8 @@
 
             function animateReel(reelIndex, finalSymbol) {
                 const reel = REELS[reelIndex];
-                const strip = generateSymbolStrip(20 + reelIndex * 5);
+                // Увеличим сложность полосы для более реалистичного ощущения
+                const strip = generateSymbolStrip(25 + reelIndex * 8); 
                 
                 strip.push(finalSymbol);
                 
@@ -480,7 +593,7 @@
                 const finalPosition = -(strip.length - 1) * SYMBOL_HEIGHT;
                 
                 setTimeout(() => {
-                    reel.style.transition = `transform ${3 + reelIndex * 0.7}s cubic-bezier(0.1, 0.7, 0.4, 1)`;
+                    reel.style.transition = `transform ${3.5 + reelIndex * 0.9}s cubic-bezier(0.1, 0.7, 0.4, 1)`;
                     reel.style.transform = `translateY(${finalPosition}px)`;
                 }, 50);
             }
@@ -489,8 +602,8 @@
                 const bet = parseInt(BET_INPUT.value);
                 const currentMoney = getMoney();
                 
-                if (currentMoney < bet || bet <= 0 || isSpinning) {
-                    RESULT_MESSAGE.textContent = "Недостаточно Мани или ставка неверна!";
+                if (!isUserLoggedIn || currentMoney < bet || bet <= 0 || isSpinning) {
+                    updateControls(); 
                     return false;
                 }
 
@@ -498,11 +611,18 @@
                 setMoney(currentMoney - bet); 
                 RESULT_MESSAGE.textContent = "КРУТИМ...";
                 
-                const finalResults = [
-                    SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-                    SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-                    SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
-                ];
+                // Шанс на тройной выигрыш - 1 к 100
+                let finalResults = [];
+                if (Math.random() < 0.01) { 
+                    const symbol = SYMBOLS[Math.floor(Math.random() * 4)];
+                    finalResults = [symbol, symbol, symbol];
+                } else {
+                    finalResults = [
+                        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+                        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
+                        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
+                    ];
+                }
 
                 document.querySelectorAll('.reel-housing').forEach(r => r.classList.remove('win'));
                 
@@ -514,7 +634,7 @@
                     checkWin(finalResults, bet);
                     isSpinning = false;
                     setMoney(getMoney()); 
-                }, 4500); 
+                }, 5000); 
                 
                 return true; 
             }
@@ -530,14 +650,17 @@
                     document.querySelectorAll('.reel-housing').forEach(r => r.classList.add('win'));
 
                     if (r1 === '7️⃣') {
-                        winAmount = bet * 50;
+                        winAmount = bet * 75; 
                         message = `🤯🤯🤯 ДЖЕКПОТ ГЕНИЯ! ТРИ 7️⃣! Выигрыш: +${winAmount} Мани!`;
                     } else if (r1 === '💎') {
-                        winAmount = bet * 30;
+                        winAmount = bet * 40;
                         message = `💎💎💎 ТРИ АЛМАЗА! Крупный выигрыш: +${winAmount} Мани!`;
-                    } else {
-                        winAmount = bet * 15;
-                        message = `🎉 ТРИ ${r1}! Гениальный выигрыш: +${winAmount} Мани!`;
+                    } else if (r1 === '💰') {
+                        winAmount = bet * 25;
+                        message = `💰💰💰 ТРИ ДЕНЬГИ! Выигрыш: +${winAmount} Мани!`;
+                    } else if (r1 === '⭐') {
+                         winAmount = bet * 15;
+                        message = `🎉🎉🎉 ТРИ ЗВЕЗДЫ! Выигрыш: +${winAmount} Мани!`;
                     }
                 } else if (r1 === r2 || r2 === r3) {
                     if (r1 === r2) {
@@ -549,7 +672,7 @@
                         REELS[2].parentElement.classList.add('win');
                     }
 
-                    winAmount = bet * 3;
+                    winAmount = bet * 3; 
                     message = `✅ Двойное совпадение! Выигрыш: +${winAmount} Мани.`;
                 } else if (r1 === r3) {
                     REELS[0].parentElement.classList.add('win');
@@ -564,10 +687,8 @@
                     RESULT_MESSAGE.style.color = '#00FF00';
                     RESULT_MESSAGE.style.textShadow = '0 0 10px #00FF00';
                     
-                    // --- ДОБАВЛЕНИЕ РЕАЛЬНОГО ВЫИГРЫША ---
-                    const username = localStorage.getItem('denisKazakovUsername') || 'Ты, Гений';
+                    const username = isUserLoggedIn ? currentUsername : 'Гость';
                     addWinToFeed(username, winAmount);
-                    // ------------------------------------
 
                 } else {
                     RESULT_MESSAGE.style.color = '#FFD700';
@@ -579,10 +700,10 @@
             // --- ЛОГИКА РЫЧАГА (Для ПК) ---
             
             function handleStart(e) {
+                if (LEVER_HANDLE.classList.contains('disabled')) return;
+                
                 if (window.matchMedia("(max-width: 650px)").matches) {
-                    if (!LEVER_HANDLE.disabled) {
-                        spin();
-                    }
+                    spin();
                     return;
                 }
                 
@@ -635,9 +756,10 @@
             document.addEventListener('touchmove', handleMove);
             document.addEventListener('touchend', handleEnd);
 
-            BET_INPUT.addEventListener('input', () => setMoney(getMoney()));
+            BET_INPUT.addEventListener('input', updateControls);
 
             setMoney(getMoney()); 
+            updateControls();
         };
     </script>
 </body>
