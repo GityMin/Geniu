@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <title>Автор: Денис Казаков, Гений МММ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #121212; color: #E0E0E0; text-align: center; padding-top: 50px; line-height: 1.6; }
         .nav-bar { background-color: #333; padding: 10px 0; margin-bottom: 50px; }
@@ -15,26 +16,26 @@
         .photo-comparison {
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Выравнивание по верхнему краю, чтобы подписи были прямо под фото */
-            gap: 40px; /* Расстояние между фото */
-            margin-bottom: 40px; /* Отступ снизу */
-            flex-wrap: wrap; /* Перенос на новую строку на маленьких экранах */
+            align-items: flex-start;
+            gap: 40px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
         }
         .photo-item {
             text-align: center;
-            flex: 1 1 250px; /* Гибкий размер, минимум 250px */
+            flex: 1 1 250px;
             max-width: 300px;
         }
 
         /* Стили для фото */
         .photo-item img {
             width: 200px; 
-            height: 200px; /* Фиксированная высота для идеального круга */
-            object-fit: cover; /* Обрезка, если нужно, чтобы вписаться в круг */
-            border-radius: 50%; /* Делаем фото круглым */
-            border: 5px solid #FFD700; /* Золотая рамка */
-            margin-bottom: 10px; /* Отступ между фото и подписью */
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); /* Сияние */
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid #FFD700;
+            margin-bottom: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
         }
         .photo-item .caption {
             font-size: 0.9em;
@@ -42,10 +43,24 @@
             margin-top: 5px;
         }
         
-        /* Особый стиль для второго фото, если нужно подчеркнуть его */
+        /* Стиль для второго фото */
         #kazak-photo {
-            border-color: #00BFFF; /* Голубая рамка для контраста */
-            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7); /* Голубое сияние */
+            border-color: #00BFFF;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+        }
+        
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 650px) {
+            h1 { font-size: 2em; }
+            .content { padding: 15px; }
+            /* Размещаем фото вертикально */
+            .photo-comparison {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .photo-item {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
