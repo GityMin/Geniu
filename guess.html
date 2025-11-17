@@ -2,17 +2,24 @@
 <html lang="ru">
 <head>
     <title>Угадай Число | Денис Казаков</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #121212; color: #E0E0E0; text-align: center; padding-top: 50px; }
         .nav-bar { background-color: #333; padding: 10px 0; margin-bottom: 50px; }
         .nav-bar a { color: #fff; padding: 14px 20px; text-decoration: none; font-size: 18px; font-weight: bold; }
         .nav-bar a:hover { background-color: #575757; }
-        h1 { color: #FF69B4; }
-        .game-area { margin-top: 30px; }
-        #message { font-size: 1.5em; margin: 20px; min-height: 30px; }
-        #guess-input { padding: 10px; font-size: 1.2em; width: 80px; text-align: center; }
-        #guess-button { padding: 10px 20px; font-size: 1.2em; background-color: #FF69B4; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px; }
-        #guess-button:hover { background-color: #E05BA2; }
+        h1 { color: #3498DB; }
+        .game-container { max-width: 400px; margin: 0 auto; background-color: #1E1E1E; padding: 25px; border-radius: 10px; }
+        #guess-input { padding: 10px; margin-right: 10px; width: 100px; border: 2px solid #3498DB; background-color: #282828; color: white; border-radius: 5px; }
+        #submit-button { padding: 10px 15px; background-color: #3498DB; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #message { margin-top: 20px; font-size: 1.2em; min-height: 20px; }
+        
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            .game-container { padding: 15px; }
+            #guess-input { width: 80%; }
+        }
     </style>
 </head>
 <body>
@@ -22,51 +29,58 @@
         <a href="about.html">Автор</a>
     </div>
 
-    <h1>🧠 Угадай Число: Тест на Интеллект от Гения</h1>
-    <h2>Я загадал число от 1 до 100. Попробуй его найти!</h2>
+    <h1>🧠 Угадай Секретное Число</h1>
 
-    <div class="game-area">
-        <p>Попытки: <span id="attempts">0</span></p>
+    <div class="game-container">
+        <p>Я загадал число от 1 до 100. Попробуй его угадать!</p>
         <input type="number" id="guess-input" min="1" max="100">
-        <button id="guess-button">Угадать</button>
+        <button id="submit-button">Угадать</button>
         <p id="message"></p>
+        <p>Попыток: <span id="attempts-count">0</span></p>
     </div>
 
     <script>
-        let secretNumber = Math.floor(Math.random() * 100) + 1;
-        let attempts = 0;
-        const input = document.getElementById('guess-input');
-        const button = document.getElementById('guess-button');
-        const message = document.getElementById('message');
-        const attemptsDisplay = document.getElementById('attempts');
+        window.onload = function() {
+            let secretNumber = Math.floor(Math.random() * 100) + 1;
+            let attempts = 0;
+            const input = document.getElementById('guess-input');
+            const button = document.getElementById('submit-button');
+            const message = document.getElementById('message');
+            const attemptsCount = document.getElementById('attempts-count');
 
-        button.addEventListener('click', checkGuess);
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') checkGuess();
-        });
+            button.addEventListener('click', checkGuess);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkGuess();
+                }
+            });
 
-        function checkGuess() {
-            const userGuess = parseInt(input.value);
+            function checkGuess() {
+                const guess = parseInt(input.value);
+                
+                if (isNaN(guess) || guess < 1 || guess > 100) {
+                    message.textContent = "Введи корректное число от 1 до 100.";
+                    return;
+                }
 
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
-                message.textContent = "Введи корректное число от 1 до 100!";
-                return;
+                attempts++;
+                attemptsCount.textContent = attempts;
+
+                if (guess === secretNumber) {
+                    message.textContent = `🎉 ПОБЕДА! Ты угадал число ${secretNumber} за ${attempts} попыток!`;
+                    message.style.color = '#00FF00';
+                    button.disabled = true;
+                } else if (guess < secretNumber) {
+                    message.textContent = "Слишком мало. Попробуй число побольше.";
+                    message.style.color = '#FFD700';
+                } else {
+                    message.textContent = "Слишком много. Попробуй число поменьше.";
+                    message.style.color = '#FFD700';
+                }
+                input.value = '';
+                input.focus();
             }
-
-            attempts++;
-            attemptsDisplay.textContent = attempts;
-            input.value = '';
-
-            if (userGuess === secretNumber) {
-                message.innerHTML = `**🎉 ПОБЕДА!** Ты угадал число ${secretNumber} за ${attempts} попыток. Твой мозг работает почти как мой!`;
-                button.disabled = true;
-                input.disabled = true;
-            } else if (userGuess < secretNumber) {
-                message.textContent = "Секретное число БОЛЬШЕ. Ищи выше!";
-            } else {
-                message.textContent = "Секретное число МЕНЬШЕ. Ищи ниже!";
-            }
-        }
+        };
     </script>
 </body>
 </html>
