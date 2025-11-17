@@ -244,7 +244,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.4: WORKING & FIXED]</h1>
+    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.5: WORKING & FIXED]</h1>
 
     <div id="game-area">
         <div class="slot-container">
@@ -298,6 +298,9 @@
             ];
             const GAME_AREA = document.getElementById('game-area');
             const LOGIN_WARNING = document.getElementById('login-warning');
+            
+            // --- ФЛАГ ДЛЯ ПРЕДОТВРАЩЕНИЯ ДВОЙНОГО СПИНА (ИСПРАВЛЕНО) ---
+            let isSpinning = false;
 
             // --- КОНСТАНТЫ И БЕЗОПАСНОСТЬ ---
             const USER_KEY = 'denisKazakovUser'; 
@@ -311,8 +314,8 @@
             const DEV_MONEY = 999999999; 
             
             // --- СИМВОЛЫ И ВЫПЛАТЫ ---
-            const RARE_SYMBOLS = ['💰', '👾', '⚡']; // Самые редкие
-            const COMMON_SYMBOLS = ['7️⃣', '💥']; // Обычные/Фрукты
+            const RARE_SYMBOLS = ['💰', '👾', '⚡']; 
+            const COMMON_SYMBOLS = ['7️⃣', '💥']; 
             const ALL_SYMBOLS = [...RARE_SYMBOLS, ...COMMON_SYMBOLS];
 
             // ===================================================
@@ -397,10 +400,7 @@
             }
 
             function getRandomSymbol() {
-                // Шансы (веса): 
-                // 💰: 2, 👾: 3, ⚡: 4
-                // 7️⃣: 8, 💥: 8
-                // Всего 25 весовых единиц
+                // Шансы (веса): 💰: 2, 👾: 3, ⚡: 4, 7️⃣: 8, 💥: 8
                 let weightedSymbols = [
                     ...Array(2).fill('💰'),
                     ...Array(3).fill('👾'),
@@ -422,7 +422,7 @@
                 return strip;
             }
 
-            // --- ЛОГИКА АНИМАЦИИ (ИСПРАВЛЕНО) ---
+            // --- ЛОГИКА АНИМАЦИИ ---
 
             function spinReel(reelElement, finalSymbol, delay) {
                 return new Promise(resolve => {
@@ -430,23 +430,19 @@
                     const symbolHeight = 100;
                     const totalSpinHeight = strip.length * symbolHeight;
                     
-                    // Дублирование для эффекта "бесконечной" прокрутки
                     reelElement.innerHTML = [...strip, ...strip].map(s => `<div>${s}</div>`).join('');
                     
                     const duration = 3000 + delay; 
 
-                    // ВОССТАНОВЛЕНИЕ ПЛАВНОЙ КРУТКИ
                     reelElement.style.transition = `transform ${duration}ms cubic-bezier(0.1, 0.9, 0.4, 1)`;
                     const finalTranslateY = totalSpinHeight; 
                     reelElement.style.transform = `translateY(-${finalTranslateY}px)`;
 
 
                     setTimeout(() => {
-                        // Сброс и установка финального символа
                         reelElement.style.transition = 'none';
                         reelElement.style.transform = `translateY(0)`;
                         
-                        // Установка только финального символа
                         reelElement.innerHTML = `<div>${finalSymbol}</div>`;
                         
                         resolve(finalSymbol);
@@ -505,7 +501,7 @@
                 // 4. Проверка на два одинаковых символа (1.5x)
                 for (const symbol in counts) {
                     if (counts[symbol] === 2) { 
-                        // Применяем 1.5x, только если не сработали более высокие множители (5x, 20x, 40x, 60x)
+                        // Применяем 1.5x только если не сработали более высокие множители
                         if (winMultiplier === 0) {
                             winMultiplier = 1.5;
                             winMessage = '2 ОДИНАКОВЫХ! x1.5';
@@ -515,14 +511,11 @@
                     }
                 }
                 
-                // Финальная корректировка сообщения
-                if (winMultiplier === 1.5 && messageClass === 'loss') {
-                     winMessage = '2 ОДИНАКОВЫХ! x1.5';
-                     messageClass = 'win';
-                }
-                if (winMultiplier === 2 && messageClass === 'loss') {
-                     winMessage = '3 РАЗНЫХ! x2';
-                     messageClass = 'win';
+                // Финальная корректировка сообщения (если множитель есть, а класс не установлен)
+                if (winMultiplier > 0 && messageClass === 'loss') {
+                     if (winMultiplier === 3) messageClass = 'win';
+                     if (winMultiplier === 2) messageClass = 'win';
+                     if (winMultiplier === 1.5) messageClass = 'win';
                 }
 
                 const winAmount = bet * winMultiplier;
@@ -530,7 +523,7 @@
                 return { winAmount, winMessage, messageClass };
             }
 
-            // --- ОСНОВНАЯ ФУНКЦИЯ ИГРЫ ---
+            // --- ОСНОВНАЯ ФУНКЦИЯ ИГРЫ (ИСПОЛЬЗУЕМ ASYNC/AWAIT) ---
 
             async function spin() {
                 if (isSpinning) return;
@@ -541,7 +534,7 @@
 
                 if (isNaN(bet) || bet < 1) {
                     MESSAGE_DISPLAY.textContent = 'ОШИБКА: Некорректная ставка.';
-                    MESSAGE_DISPLAY.className = 'error';
+                    MESSAGE_DISPLAY.className = 'loss';
                     return;
                 }
                 if (currentMoney < bet) {
@@ -550,6 +543,7 @@
                     return;
                 }
 
+                // --- НАЧАЛО СПИНА ---
                 isSpinning = true;
                 SPIN_BUTTON.disabled = true;
                 
@@ -568,8 +562,10 @@
                     spinReel(REELS[index], result, index * 500) 
                 );
                 
+                // ЖДЕМ ОКОНЧАНИЯ ВСЕХ АНИМАЦИЙ
                 const actualResults = await Promise.all(reelPromises);
 
+                // --- ОКОНЧАНИЕ СПИНА ---
                 isSpinning = false;
                 SPIN_BUTTON.disabled = false;
 
@@ -597,7 +593,6 @@
                 GAME_AREA.style.display = 'block';
                 LOGIN_WARNING.style.display = 'none';
                 
-                // Убеждаемся, что барабаны готовы
                 REELS.forEach(reel => {
                     reel.innerHTML = `<div>${ALL_SYMBOLS[0]}</div>`;
                 });
