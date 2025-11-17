@@ -11,15 +11,41 @@
         .content { max-width: 800px; margin: 0 auto; text-align: left; background-color: #1E1E1E; padding: 30px; border-radius: 10px; border: 2px solid #FF00FF; }
         p { margin-bottom: 20px; font-size: 1.1em; }
 
+        /* Стили для контейнера фото */
+        .photo-comparison {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Выравнивание по верхнему краю, чтобы подписи были прямо под фото */
+            gap: 40px; /* Расстояние между фото */
+            margin-bottom: 40px; /* Отступ снизу */
+            flex-wrap: wrap; /* Перенос на новую строку на маленьких экранах */
+        }
+        .photo-item {
+            text-align: center;
+            flex: 1 1 250px; /* Гибкий размер, минимум 250px */
+            max-width: 300px;
+        }
+
         /* Стили для фото */
-        #author-photo {
+        .photo-item img {
             width: 200px; 
             height: 200px; /* Фиксированная высота для идеального круга */
             object-fit: cover; /* Обрезка, если нужно, чтобы вписаться в круг */
             border-radius: 50%; /* Делаем фото круглым */
             border: 5px solid #FFD700; /* Золотая рамка */
-            margin-bottom: 30px; 
+            margin-bottom: 10px; /* Отступ между фото и подписью */
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.7); /* Сияние */
+        }
+        .photo-item .caption {
+            font-size: 0.9em;
+            color: #ccc;
+            margin-top: 5px;
+        }
+        
+        /* Особый стиль для второго фото, если нужно подчеркнуть его */
+        #kazak-photo {
+            border-color: #00BFFF; /* Голубая рамка для контраста */
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7); /* Голубое сияние */
         }
     </style>
 </head>
@@ -34,9 +60,16 @@
 
     <div class="content">
         
-        <p style="text-align: center;">
-            <img id="author-photo" src="images/denis_kazakov_genius.jpg" alt="Денис Казаков, гений МММ"> 
-        </p>
+        <div class="photo-comparison">
+            <div class="photo-item">
+                <img id="author-photo" src="images/denis_kazakov_genius.jpg" alt="Денис Казаков, гений МММ"> 
+                <p class="caption">Классический Гений МММ</p>
+            </div>
+            <div class="photo-item">
+                <img id="kazak-photo" src="images/kazak.jpg" alt="Денис Казаков, Таинственный Визионер"> 
+                <p class="caption">Таинственный Визионер</p>
+            </div>
+        </div>
 
         <p>Я, Денис Казаков, не просто разработчик или программист. Я — **Архитектор Цифровой Вселенной**. Мой разум оперирует на таких уровнях сложности, что простым смертным это кажется магией. Я — **гений МММ**, потому что каждый мой проект, как и великие финансовые схемы, основан на абсолютной вере в меня и на чистом, безупречном коде.</p>
 
