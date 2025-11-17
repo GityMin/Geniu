@@ -3,45 +3,75 @@
 <head>
     <title>Слоты | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ГЛОБАЛЬНЫЕ СТИЛИ */
+        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
+        :root {
+            --bg-color: #111111; /* Графит */
+            --text-color: #F0F0F0; /* Белый */
+            --accent-pink: #FF33CC; /* Яркий Розовый (Фуксия) */
+            --accent-blue: #33CCFF; /* Электрический Голубой */
+            --card-bg: #1F1F1F; /* Темнее для контейнера */
+            --win-color: #00FF00; /* Зеленый */
+            --loss-color: #FF0000; /* Красный */
+        }
+
+        /* ОСНОВНЫЕ СТИЛИ */
         body { 
-            font-family: 'Arial', sans-serif; 
-            background-color: #0d0d0d; 
-            color: #E0E0E0; 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
             text-align: center; 
             padding-top: 50px; 
+            margin: 0;
+            background-image: repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px), 
+                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
         }
+        
+        /* НАВИГАЦИОННЫЙ БАР */
         .nav-bar { 
-            background-color: #333; 
-            padding: 10px 0; 
-            margin-bottom: 30px; 
+            background-color: #000000;
+            padding: 15px 0; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
         .nav-bar a { 
-            color: #fff; 
-            padding: 14px 20px; 
+            color: var(--text-color); 
+            padding: 14px 25px; 
             text-decoration: none; 
-            font-size: 18px; 
-            font-weight: bold; 
+            font-size: 16px; 
+            font-weight: 700; 
+            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s;
+            border-radius: 5px;
         }
         .nav-bar a:hover { 
-            background-color: #575757; 
+            color: var(--accent-pink); 
+            text-shadow: 0 0 10px var(--accent-pink); 
+            background-color: rgba(255, 51, 204, 0.1);
         }
+
+        /* ЗАГОЛОВКИ */
         h1 { 
-            color: #FFD700; 
-            text-shadow: 0 0 10px #FFD700; 
+            color: var(--accent-pink); 
+            font-size: 3em;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255, 51, 204, 0.8);
             margin-bottom: 30px;
+            padding-top: 30px;
         }
 
         /* ИГРОВОЙ КОНТЕЙНЕР */
         .slot-container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             padding: 30px;
-            background-color: #1a1a1a;
+            background-color: var(--card-bg);
             border-radius: 15px;
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+            border: 2px solid var(--accent-blue);
+            box-shadow: 0 0 25px rgba(51, 204, 255, 0.5);
         }
 
         /* ДИСПЛЕЙ БАРАБАНОВ */
@@ -51,19 +81,18 @@
             margin-bottom: 30px;
         }
         .reel {
-            font-size: 3em; /* Уменьшаем размер, так как теперь это текст */
-            width: 100px;
-            height: 100px;
-            line-height: 100px;
-            background-color: #333;
-            border-radius: 10px;
-            border: 5px solid #555;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
-            font-weight: 900; /* Жирный текст */
+            font-size: 3.5em; /* Немного крупнее */
+            width: 110px;
+            height: 110px;
+            line-height: 110px;
+            background-color: #000000; /* Черный фон для контраста */
+            border-radius: 8px;
+            border: 4px solid var(--accent-pink); /* Розовая рамка */
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 1), 0 0 10px var(--accent-pink);
+            font-weight: 900;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            /* Добавлено для лучшего рендеринга на iOS */
             -webkit-font-smoothing: antialiased; 
-            transition: color 0.1s; /* Плавный переход цвета */
+            transition: color 0.1s;
         }
 
         /* УПРАВЛЕНИЕ ИГРОЙ */
@@ -71,74 +100,92 @@
             margin-bottom: 20px;
         }
         #bet-input {
-            padding: 10px;
+            padding: 12px;
             font-size: 1.2em;
-            width: 100px;
+            width: 120px;
             text-align: center;
-            margin-right: 10px;
+            margin-right: 15px;
             background-color: #282828;
-            color: white;
-            border: 1px solid #555;
+            color: var(--text-color);
+            border: 2px solid var(--accent-blue);
             border-radius: 5px;
         }
         #spin-button {
-            padding: 10px 30px;
-            font-size: 1.2em;
-            background-color: #FF4500;
-            color: white;
+            padding: 12px 35px;
+            font-size: 1.3em;
+            background-color: var(--accent-pink);
+            color: var(--bg-color);
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.1s;
+            font-weight: 900;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px var(--accent-pink);
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
         }
         #spin-button:hover {
-            background-color: #CC3700;
+            background-color: var(--accent-blue);
+            box-shadow: 0 0 15px var(--accent-blue);
+            transform: translateY(-2px);
+        }
+        #spin-button:disabled {
+            background-color: #555;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* БАЛАНС И СООБЩЕНИЯ */
         #balance-display {
             font-size: 1.5em;
-            font-weight: bold;
-            color: #00FF00;
+            font-weight: 700;
+            color: var(--win-color);
             margin-bottom: 15px;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
         }
         #message-display {
             min-height: 30px;
-            font-size: 1.3em;
-            font-weight: bold;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-top: 15px;
         }
 
-        /* КЛИКЕР-ПАНЕЛЬ (Встроенная) */
+        /* ЦВЕТА РЕЗУЛЬТАТОВ */
+        .win { color: var(--win-color); text-shadow: 0 0 15px rgba(0, 255, 0, 0.8); }
+        .loss { color: var(--loss-color); text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+        .info { color: var(--accent-blue); text-shadow: 0 0 15px rgba(51, 204, 255, 0.8); }
+
+        /* КЛИКЕР-ПАНЕЛЬ */
         .clicker-section {
             margin-top: 30px;
             padding: 20px;
             background-color: #282828;
-            border: 2px dashed #00FFFF;
+            border: 2px dashed var(--accent-blue);
             border-radius: 10px;
-            color: #00FFFF;
+            color: var(--accent-blue);
         }
         #clicker-button {
             padding: 10px 20px;
             margin-top: 10px;
             font-size: 1.1em;
-            background-color: #00FFFF;
+            background-color: var(--accent-blue);
             color: #111;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
+            box-shadow: 0 0 10px var(--accent-blue);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        #clicker-button:hover {
+            background-color: var(--accent-pink);
+            box-shadow: 0 0 10px var(--accent-pink);
         }
         
-        /* ЦВЕТА РЕЗУЛЬТАТОВ */
-        .win { color: #00FF00; }
-        .loss { color: #FF0000; }
-        .info { color: #00FFFF; }
-
-        /* АНИМАЦИЯ ВРАЩЕНИЯ */
+        /* АНИМАЦИЯ ВРАЩЕНИЯ (сохраняем, но делаем визуально интереснее) */
         @keyframes spin {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { opacity: 0.5; transform: rotateX(0deg); }
+            100% { opacity: 1; transform: rotateX(360deg); }
         }
         .spinning {
             animation: spin 0.1s infinite alternate;
@@ -192,7 +239,8 @@
             const CLICKER_PANEL = document.getElementById('clicker-panel');
             const CLICKER_BUTTON = document.getElementById('clicker-button');
 
-            // --- КОНСТАНТЫ ИГРЫ (ИЗМЕНЕНЫ ДЛЯ СОВМЕСТИМОСТИ) ---
+            // --- КОНСТАНТЫ ИГРЫ ---
+            // Сохраняем наше исправление с текстом для совместимости
             const SYMBOLS = [
                 { text: 'CH', color: '#FF0000' },     // Вишня (Красный)
                 { text: 'L', color: '#FFD700' },      // Лимон (Желтый)
@@ -207,7 +255,7 @@
             };
             const MIN_BET = 10;
             
-            // --- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ (ИСПРАВЛЕННАЯ ЛОГИКА) ---
+            // --- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ ---
             const currentUsername = localStorage.getItem('denisKazakovUser');
             const isUserLoggedIn = !!currentUsername;
             const SECRET_KEY = 952; 
@@ -219,30 +267,24 @@
             function getMoneyKey(username) { return MONEY_PREFIX + username; }
             function getChecksumKey(username) { return CHECKSUM_PREFIX + username; }
 
-            // 1. ФУНКЦИЯ ЗАПИСИ (Баланс может быть 0)
+            // 1. ФУНКЦИЯ ЗАПИСИ
             function setMoney(amount) {
                 if (!isUserLoggedIn) return 0; 
-
                 const moneyKey = getMoneyKey(currentUsername);
                 const checksumKey = getChecksumKey(currentUsername);
-                
                 const safeAmount = Math.max(0, amount); 
                 const newChecksum = safeAmount + SECRET_KEY;
-                
                 localStorage.setItem(moneyKey, safeAmount);
                 localStorage.setItem(checksumKey, newChecksum);
-                
                 updateBalanceDisplay(safeAmount);
                 return safeAmount;
             }
 
-            // 2. ФУНКЦИЯ ЧТЕНИЯ (Сброс только при чите)
+            // 2. ФУНКЦИЯ ЧТЕНИЯ 
             function getMoney() {
                 if (!isUserLoggedIn) return 0;
-
                 const moneyKey = getMoneyKey(currentUsername);
                 const checksumKey = getChecksumKey(currentUsername);
-
                 let storedMoney = parseInt(localStorage.getItem(moneyKey));
                 let storedChecksum = parseInt(localStorage.getItem(checksumKey));
                 
@@ -308,10 +350,9 @@
                 setTimeout(() => {
                     REELS.forEach(reel => reel.classList.remove('spinning'));
                     
-                    // Создаем массив объектов {text, color}
                     const results = REELS.map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
                     
-                    // ПРИСВОЕНИЕ ТЕКСТА И ЦВЕТА (ИСПРАВЛЕНО!)
+                    // ПРИСВОЕНИЕ ТЕКСТА И ЦВЕТА
                     results.forEach((item, index) => {
                         REELS[index].textContent = item.text;
                         REELS[index].style.color = item.color;
@@ -335,7 +376,7 @@
                 } 
                 // 2 одинаковых (небольшой выигрыш)
                 else if (r1.text === r2.text || r2.text === r3.text || r1.text === r3.text) {
-                    let text = (r1.text === r2.text) ? r1.text : r3.text; // Берем символ, который повторился
+                    let text = (r1.text === r2.text) ? r1.text : (r2.text === r3.text ? r2.text : r1.text); 
                     winnings = bet * 0.5; // Выплата 50% от ставки
                     MESSAGE_DISPLAY.textContent = `💰 Почти! Два "${text}". Вы выиграли ${winnings} Мани.`;
                     MESSAGE_DISPLAY.className = 'win';
@@ -346,7 +387,6 @@
                     MESSAGE_DISPLAY.className = 'loss';
                 }
 
-                // Зачисляем выигрыш (если он есть)
                 if (winnings > 0) {
                     setMoney(getMoney() + winnings);
                 }
