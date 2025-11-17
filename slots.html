@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты | [СИСТЕМА] v.4.6 (Финализированные выплаты)</title>
+    <title>СЛОТЫ | [СИСТЕМА] ИГРОВАЯ ЗОНА</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -12,9 +12,9 @@
             --accent-pink: #FF33CC; 
             --accent-blue: #33CCFF; 
             --card-bg: #181818; 
-            --win-color: #00FF00; 
+            --win-color: #00FF00;
+            --jackpot-color: #FFFF00;
             --loss-color: #FF0000;
-            --lever-drop-height: 80px; 
         }
 
         /* ОСНОВНЫЕ СТИЛИ */
@@ -23,12 +23,13 @@
             background-color: var(--bg-color); 
             color: var(--text-color); 
             text-align: center; 
-            padding-top: 50px; 
+            padding-top: 80px; 
             margin: 0;
-            background-image: linear-gradient(0deg, transparent 95%, rgba(51, 204, 255, 0.1) 100%), 
-                              linear-gradient(90deg, transparent 95%, rgba(51, 204, 255, 0.1) 100%), 
-                              repeating-linear-gradient(0deg, var(--bg-color), var(--bg-color) 49px, rgba(255, 51, 204, 0.05) 50px), 
-                              repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(255, 51, 204, 0.05) 50px);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: radial-gradient(circle at center, rgba(255, 51, 204, 0.1) 0%, transparent 50%);
         }
         
         /* НАВИГАЦИЯ */
@@ -47,325 +48,175 @@
             text-decoration: none; 
             font-size: 16px; 
             font-weight: 700; 
-            transition: color 0.3s, text-shadow 0.3s, background-color 0.3s;
+            transition: color 0.3s, text-shadow 0.3s;
             border-radius: 5px;
         }
         .nav-bar a:hover { 
             color: var(--accent-pink); 
             text-shadow: 0 0 10px var(--accent-pink); 
-            background-color: rgba(255, 51, 204, 0.1);
         }
 
         h1 { 
             color: var(--accent-pink); 
-            font-size: 3.5em; 
+            font-size: 3em; 
             font-weight: 900;
-            text-shadow: 0 0 25px rgba(255, 51, 204, 1), 0 0 10px rgba(0, 0, 0, 0.9); 
-            margin-bottom: 30px;
-            padding-top: 30px;
+            text-shadow: 0 0 25px rgba(255, 51, 204, 1); 
+            margin-bottom: 40px;
         }
         
-        /* ОБЩИЙ КОНТЕЙНЕР ДЛЯ ПРАВИЛ И ИГРЫ */
-        .slot-wrapper {
-            max-width: 1200px; 
-            margin: 0 auto;
-            display: flex; 
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px 0;
-        }
+        /* КОНТЕЙНЕР СЛОТОВ */
         .slot-container {
-            width: 600px; 
-            padding: 30px 20px;
+            width: 90%;
+            max-width: 600px;
             background-color: var(--card-bg);
-            border-radius: 15px;
-            border: 3px solid var(--accent-blue);
-            box-shadow: 0 0 35px rgba(51, 204, 255, 0.7);
-            position: relative;
-            transform: perspective(1000px) rotateX(2deg); 
-            margin-right: 30px; 
-        }
-        
-        /* ПАНЕЛЬ ПРАВИЛ (Обновлены выплаты) */
-        .rules-panel {
-            width: 250px; 
+            border: 4px solid var(--accent-blue);
+            box-shadow: 0 0 30px rgba(51, 204, 255, 0.5);
             padding: 20px;
-            background-color: var(--card-bg);
-            border-radius: 15px;
-            border: 3px solid var(--accent-pink);
-            box-shadow: 0 0 20px rgba(255, 51, 204, 0.4);
-            text-align: left;
-            transform: perspective(1000px) rotateX(2deg) translateZ(-10px); 
-            height: fit-content;
-        }
-        .rules-panel h2 {
-            color: var(--accent-blue);
-            font-size: 1.5em;
-            margin-top: 0;
-            text-shadow: 0 0 10px var(--accent-blue);
-        }
-        .rules-panel ul {
-            list-style-type: none;
-            padding-left: 0;
-            font-size: 0.9em;
-        }
-        .rules-panel li {
-            margin-bottom: 12px;
-            padding-left: 10px;
+            border-radius: 10px;
+            margin-bottom: 30px;
             position: relative;
         }
-        .rules-panel li::before {
-            content: '➤';
-            color: var(--accent-pink);
-            position: absolute;
-            left: -10px;
-            font-size: 0.8em;
-        }
-        .rules-panel strong {
-            color: var(--win-color);
+
+        /* ДИСПЛЕЙ БАЛАНСА */
+        #balance-display {
+            color: var(--jackpot-color);
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            border: 2px dashed var(--jackpot-color);
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            text-shadow: 0 0 10px var(--jackpot-color);
         }
 
-
-        /* 3D-БАРАБАНЫ - СТИЛИЗОВАННЫЕ ПОД ЭМОДЗИ */
-        .reels {
+        /* ПОЛЕ СЛОТОВ */
+        #slot-reels {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 30px;
-            gap: 15px;
-        }
-        .reel {
-            font-size: 4.5em; 
-            width: 140px;
-            height: 140px;
-            line-height: 140px;
-            background-color: #000000; 
-            border-radius: 5px;
-            border: 5px outset var(--accent-pink); 
-            box-shadow: inset 0 0 20px rgba(51, 204, 255, 0.5), 0 0 10px var(--accent-pink);
-            font-weight: 700; 
-            color: var(--accent-blue);
-            text-shadow: none; 
-            transition: all 0.2s;
-            overflow: hidden; 
-            transform: skewX(-5deg); 
-        }
-        .reel.win-glow {
-            border-color: var(--win-color);
-            box-shadow: 0 0 30px var(--win-color), inset 0 0 15px var(--win-color);
-            transform: scale(1.05) skewX(-5deg);
-        }
-        .reel span {
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.9));
-            display: block;
-            line-height: inherit;
-        }
-
-
-        /* ДЕТАЛИЗИРОВАННАЯ 3D-РУЧКА */
-        #lever-wrapper {
-            padding-top: 25px;
-            position: relative; 
-            height: 250px; 
-            transform: perspective(800px) rotateY(-5deg) rotateX(5deg); 
-        }
-        .lever-arm-base {
-            width: 30px; 
-            height: 150px; 
-            background: linear-gradient(#444, #222); 
-            border-radius: 5px;
-            border: 3px solid #666;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1;
-        }
-        #lever-arm {
-            position: absolute;
-            width: 25px;
-            height: 120px; 
-            background: linear-gradient(#777, #444); 
-            border: 2px solid #999;
-            border-radius: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 0;
-            z-index: 2;
-            cursor: grab;
-            transition: top 0.1s ease-out; 
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-        }
-        #lever-arm.dragging {
-            cursor: grabbing;
-        }
-        #lever-handle {
-            width: 50px; 
-            height: 50px;
-            background-color: var(--accent-pink);
-            border-radius: 50%;
-            border: 5px solid #FFDDFF;
-            box-shadow: 0 0 30px var(--accent-pink), inset 0 0 10px rgba(0, 0, 0, 0.5); 
-            position: absolute;
-            top: -25px; 
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 3;
-            pointer-events: none; 
-            transition: box-shadow 0.2s;
-        }
-        
-        /* УПРАВЛЕНИЕ И ДИСПЛЕИ */
-        #balance-display {
-            font-size: 1.8em;
-            font-weight: 900;
-            color: var(--win-color);
             margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
-        }
-        #message-display {
-            min-height: 30px;
-            font-size: 1.6em;
-            font-weight: 700;
-            margin-top: 15px;
-        }
-        .info { color: var(--accent-blue); text-shadow: 0 0 15px rgba(51, 204, 255, 0.9); }
-        .win { color: var(--win-color); text-shadow: 0 0 15px rgba(0, 255, 0, 0.9); }
-        .loss { color: var(--loss-color); text-shadow: 0 0 15px rgba(255, 0, 0, 0.9); }
-        
-        .controls input[type="number"] {
-            font-family: 'Orbitron', sans-serif;
-            background-color: #333;
-            color: var(--text-color);
-            border: 2px solid var(--accent-pink);
-            padding: 5px 10px;
-            width: 80px;
-            border-radius: 3px;
-            text-align: center;
-        }
-        
-        /* --- СТИЛИ КЛИКЕРА --- */
-        .clicker-section {
-            margin-top: 30px;
-            padding: 15px;
-            background-color: #150020; 
-            border: 3px solid var(--accent-pink);
-            border-radius: 10px;
-            box-shadow: 0 0 20px var(--accent-pink), 0 0 10px rgba(0, 0, 0, 0.5) inset;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transform: perspective(1000px) rotateX(2deg);
         }
 
-        .clicker-section p {
-            font-size: 1.2em;
-            color: var(--accent-blue);
-            text-shadow: 0 0 10px var(--accent-blue);
-            margin-bottom: 15px;
+        .reel {
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            font-size: 3em;
+            background-color: #000;
+            border: 3px solid var(--accent-pink);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 0 10px var(--accent-pink);
         }
-        #clicker-button {
-            padding: 10px 25px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1em;
-            font-weight: 700;
+
+        /* Элементы внутри барабана для анимации */
+        .reel-inner {
+            transform: translateY(0);
+            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        /* УПРАВЛЕНИЕ ИГРОЙ */
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            padding: 15px 30px;
             background-color: var(--accent-blue);
             color: var(--bg-color);
-            border: 3px solid var(--accent-pink);
+            border: none;
             border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2em;
+            font-weight: 700;
             cursor: pointer;
             box-shadow: 0 0 15px var(--accent-blue);
-            transition: transform 0.1s, box-shadow 0.2s;
+            transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
         }
-        #clicker-button:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 5px var(--accent-blue);
+        .action-button:hover:not(:disabled) {
+            background-color: var(--accent-pink);
+            box-shadow: 0 0 20px var(--accent-pink);
+            color: var(--text-color);
         }
-
-
-        /* АНИМАЦИИ */
-        @keyframes spin {
-            0% { transform: translateY(0%); }
-            100% { transform: translateY(-100%); }
+        .action-button:active:not(:disabled) {
+            transform: scale(0.98);
         }
-        .spinning {
-             animation: spin 0.05s infinite alternate; 
-             opacity: 0.5;
-        }
-        
-        @keyframes glitch {
-            0% { clip-path: inset(10% 0 85% 0); transform: translate(3px, 1px); opacity: 0.8; }
-            20% { clip-path: inset(5% 0 80% 0); transform: translate(-5px, 0); opacity: 1; }
-            40% { clip-path: inset(30% 0 60% 0); transform: translate(1px, -3px); opacity: 0.7; }
-            60% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 2px); opacity: 1; }
-            80% { clip-path: inset(80% 0 5% 0); transform: translate(4px, -1px); opacity: 0.8; }
-            100% { clip-path: inset(0 0 0 0); transform: translate(0); opacity: 1; }
-        }
-        .glitch-active {
-            animation: glitch 0.3s steps(1) 5;
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        /* МОБИЛЬНАЯ ВЕРСИЯ */
-        @media (max-width: 768px) {
-            .slot-wrapper {
-                flex-direction: column;
-                align-items: center;
-                padding: 10px;
-            }
-            .rules-panel {
-                width: 90%;
-                margin-right: 0;
-                margin-bottom: 20px;
-                transform: none;
-                order: -1; 
-            }
-            .slot-container {
-                width: 100%;
-                max-width: 400px;
-                margin-bottom: 20px;
-                transform: none; 
-                margin-right: 0;
-            }
-            .reels {
-                gap: 5px;
-            }
-            .reel {
-                font-size: 3.5em; 
-                width: 90px;
-                height: 90px;
-                line-height: 90px;
-                transform: none;
-            }
-            #lever-wrapper {
-                margin-left: 0;
-                padding-top: 0;
-                height: 200px; 
-                transform: none;
-            }
-            .lever-arm-base {
-                 height: 120px;
-            }
-            #lever-arm {
-                height: 90px;
-            }
-            #lever-handle {
-                width: 35px;
-                height: 35px;
-            }
-            :root {
-                --lever-drop-height: 60px;
-            }
-            
-            .clicker-section p {
-                font-size: 1.2em;
-            }
-            #clicker-button {
-                font-size: 1.2em;
-                padding: 10px 20px;
-            }
+        /* ИНПУТ СТАВКИ */
+        #bet-input {
+            width: 100px;
+            padding: 10px;
+            text-align: center;
+            background-color: #000;
+            color: var(--win-color);
+            border: 2px solid var(--accent-blue);
+            border-radius: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1em;
+        }
+
+        /* СООБЩЕНИЯ */
+        #message-display {
+            font-size: 1.4em;
+            min-height: 30px;
+            margin-top: 20px;
+            font-weight: 700;
+        }
+        .win { color: var(--win-color); text-shadow: 0 0 10px var(--win-color); }
+        .jackpot { color: var(--jackpot-color); text-shadow: 0 0 15px var(--jackpot-color), 0 0 25px var(--jackpot-color); animation: pulse-jackpot 1s infinite alternate; }
+        .loss { color: var(--loss-color); text-shadow: 0 0 10px var(--loss-color); }
+        .info { color: var(--accent-blue); text-shadow: 0 0 10px var(--accent-blue); }
+
+        @keyframes pulse-jackpot {
+            from { opacity: 1; }
+            to { opacity: 0.7; }
+        }
+
+        /* ТАБЛИЦА ВЫПЛАТ */
+        .paytable {
+            max-width: 600px;
+            margin: 20px auto 0;
+            padding: 20px;
+            background-color: #000;
+            border: 1px dashed var(--accent-pink);
+            text-align: left;
+        }
+        .paytable h2 {
+            color: var(--accent-pink);
+            text-align: center;
+            margin-top: 0;
+            border-bottom: 1px solid var(--accent-pink);
+            padding-bottom: 10px;
+        }
+        .paytable ul {
+            list-style: none;
+            padding: 0;
+        }
+        .paytable li {
+            font-size: 1em;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+        .paytable li strong {
+            color: var(--win-color);
+            float: right;
+        }
+
+        /* СТАТУС ВХОДА */
+        .login-warning {
+            color: var(--loss-color);
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-top: 50px;
+            padding: 20px;
+            border: 2px solid var(--loss-color);
+            background-color: rgba(255, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -377,346 +228,362 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>СЛОТЫ | [СИСТЕМА] v.4.6</h1>
+    <h1>🎰 КИБЕРПАНК-СЛОТЫ [v.1.0]</h1>
 
-    <div id="balance-display">КРЕДИТ: 0 М</div>
-
-    <div class="slot-wrapper">
-        
-        <div class="rules-panel">
-            <h2>ПРАВИЛА СИСТЕМЫ</h2>
-            <ul>
-                <li><strong>ЦЕЛЬ:</strong> Собрать 3 одинаковых символа по центральной линии.</li>
-                <li><strong>СТАВКА:</strong> Минимум 10 М. Снимается перед каждым спином.</li>
-                <li><strong>ВЫПЛАТЫ (3х Совпадения):</strong>
-                    <ul>
-                        <li><span style="color: #FFD700">3х ⚡️:</span> Ставка x 3.</li>
-                        <li><span style="color: #FF0000">3х 🍎:</span> Ставка x 6.</li>
-                        <li><span style="color: #00FFFF">3х 💎:</span> Ставка x 20.</li>
-                        <li><span style="color: #FFFF00">3х ⭐️:</span> Ставка x 50 (МЕГА).</li>
-                    </ul>
-                </li>
-                <li><strong style="color: var(--accent-blue)">2х Совпадения:</strong> Ставка x 1.5 (Чистый выигрыш 50%).</li>
-                <li><span style="color: var(--loss-color)">ПРОИГРЫШ</span> = 0.</li>
-            </ul>
-        </div>
-        
+    <div id="game-area">
         <div class="slot-container">
-            <div style="position: absolute; top: 93px; left: 0; width: 100%; height: 5px; background: var(--accent-pink); box-shadow: 0 0 10px var(--accent-pink); z-index: 1;"></div>
+            <div id="balance-display">БАЛАНС: --</div>
             
-            <div class="reels">
-                <div class="reel" id="reel1">?</div>
-                <div class="reel" id="reel2">?</div>
-                <div class="reel" id="reel3">?</div>
+            <div id="slot-reels">
+                <div class="reel"><div id="reel1" class="reel-inner"></div></div>
+                <div class="reel"><div id="reel2" class="reel-inner"></div></div>
+                <div class="reel"><div id="reel3" class="reel-inner"></div></div>
             </div>
+
+            <div id="message-display" class="info">Готовность. Сделайте ставку.</div>
 
             <div class="controls">
-                <label for="bet-input" style="font-weight: 700;">СТАВКА [КРЕДИТ]:</label>
-                <input type="number" id="bet-input" value="10" min="10" step="10">
-                <button id="spin-button" style="display: none;"></button> 
-            </div>
-            
-            <p id="message-display" class="info">ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].</p>
-        </div>
-        
-        <div id="lever-wrapper">
-            <div class="lever-arm-base"></div>
-            <div id="lever-arm">
-                <div id="lever-handle" title="ТЯНИ ВНИЗ!"></div>
+                <label for="bet-input" style="color: var(--accent-blue); font-weight: 700;">СТАВКА:</label>
+                <input type="number" id="bet-input" value="10" min="1" max="50">
+                <button id="spin-button" class="action-button">СПИН</button>
             </div>
         </div>
 
+        <div class="paytable">
+            <h2>ТАБЛИЦА ВЫПЛАТ</h2>
+            <ul>
+                <li>⚡⚡⚡ (ДЖЕКПОТ) <strong>x20</strong></li>
+                <li>👾👾👾 <strong>x10</strong></li>
+                <li>💰💰💰 <strong>x5</strong></li>
+                <li>💥💥💥 <strong>x3</strong></li>
+                <li>Любые два ⚡ <strong>x2</strong></li>
+            </ul>
+            <p style="font-size: 0.8em; color: #888; margin-top: 15px;">*Выплаты указаны как множитель к вашей ставке.</p>
+        </div>
     </div>
-
-    <div class="clicker-section" id="clicker-panel" style="display: none;">
-        <p>КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.</p>
-        <button id="clicker-button">КЛИКНИ +1 М</button>
+    
+    <div id="login-warning" class="login-warning" style="display: none;">
+        ❌ ОШИБКА АВТОРИЗАЦИИ: Для игры необходимо войти в систему.
+        <br><a href="login.html" style="color: var(--accent-pink); text-decoration: none; font-weight: 900;">ПЕРЕЙТИ К ВХОДУ</a>
     </div>
-
 
     <script>
         window.onload = function() {
+            // --- ЭЛЕМЕНТЫ DOM ---
+            const BALANCE_DISPLAY = document.getElementById('balance-display');
+            const MESSAGE_DISPLAY = document.getElementById('message-display');
+            const BET_INPUT = document.getElementById('bet-input');
+            const SPIN_BUTTON = document.getElementById('spin-button');
             const REELS = [
                 document.getElementById('reel1'),
                 document.getElementById('reel2'),
                 document.getElementById('reel3')
             ];
-            const BET_INPUT = document.getElementById('bet-input');
-            const BALANCE_DISPLAY = document.getElementById('balance-display');
-            const MESSAGE_DISPLAY = document.getElementById('message-display');
-            const CLICKER_PANEL = document.getElementById('clicker-panel');
-            const CLICKER_BUTTON = document.getElementById('clicker-button');
+            const GAME_AREA = document.getElementById('game-area');
+            const LOGIN_WARNING = document.getElementById('login-warning');
 
-            // --- ЭЛЕМЕНТЫ РУЧКИ ---
-            const LEVER_WRAPPER = document.getElementById('lever-wrapper');
-            const LEVER_ARM = document.getElementById('lever-arm'); 
-            const INITIAL_LEVER_TOP = 0;
-            const DROP_THRESHOLD = LEVER_WRAPPER.offsetHeight * 0.4; 
-            let isDragging = false;
-            let startY = 0;
-            let currentTop = 0;
-            let isSpinning = false;
-
-            // --- СИМВОЛЫ ИГРЫ (ЭМОДЗИ) С ФИНАЛЬНЫМИ ВЫПЛАТАМИ ---
-            const SYMBOLS = [
-                // 3х ⚡️ = 3x
-                { text: '⚡️', payout: 3, color: '#FFD700', weight: 10 }, 
-                // 3х 🍎 = 6x
-                { text: '🍎', payout: 6, color: '#FF0000', weight: 6 },    
-                // 3х 💎 = 20x
-                { text: '💎', payout: 20, color: '#00FFFF', weight: 4 },   
-                // 3х ⭐️ = 50x 
-                { text: '⭐️', payout: 50, color: '#FFFF00', weight: 5 }    
-            ];
-            const MIN_BET = 10;
-
-            // --- СОЗДАНИЕ ВЗВЕШЕННОГО МАССИВА СИМВОЛОВ ---
-            const WEIGHTED_SYMBOLS = [];
-            SYMBOLS.forEach(symbol => {
-                for (let i = 0; i < symbol.weight; i++) {
-                    WEIGHTED_SYMBOLS.push(symbol);
-                }
-            });
-            
-            // --- ЛОГИКА БАЛАНСА ---
-            const currentUsername = localStorage.getItem('denisKazakovUser');
-            const isUserLoggedIn = !!currentUsername;
-            const SECRET_KEY = 952; 
+            // --- КОНСТАНТЫ И БЕЗОПАСНОСТЬ ---
+            const USER_KEY = 'denisKazakovUser'; 
             const MONEY_PREFIX = 'money_';
             const CHECKSUM_PREFIX = 'checksum_';
+            const SECRET_KEY = 952; 
             const INITIAL_MONEY = 100;
-            const ANTI_CHEAT_RESET_AMOUNT = 10; 
 
-            function getMoneyKey(username) { return MONEY_PREFIX + username; }
-            function getChecksumKey(username) { return CHECKSUM_PREFIX + username; }
-            function setMoney(amount) {
-                if (!isUserLoggedIn) return 0; 
-                const moneyKey = getMoneyKey(currentUsername);
-                const checksumKey = getChecksumKey(currentUsername);
-                const safeAmount = Math.max(0, amount); 
-                const newChecksum = safeAmount + SECRET_KEY;
-                localStorage.setItem(moneyKey, safeAmount);
+            // --- АККАУНТ РАЗРАБОТЧИКА (ЧИТ-РЕЖИМ) ---
+            const DEV_USERNAME = 'DenisKazakov';
+            const DEV_MONEY = 999999999; // Бесконечный баланс для разработчика
+
+            // --- СИМВОЛЫ И ВЫПЛАТЫ ---
+            // Символы: ⚡(Джекпот), 👾, 💰, 💥
+            const SYMBOLS = ['⚡', '👾', '💰', '💥', '7️⃣']; // 7️⃣ - низкоуровневый символ
+            const PAYOUTS = {
+                '⚡,⚡,⚡': 20, // Джекпот
+                '👾,👾,👾': 10,
+                '💰,💰,💰': 5,
+                '💥,💥,💥': 3,
+                '⚡,⚡,_': 2, // Любые два Джекпота
+            };
+            
+            let isSpinning = false;
+            let initialised = false;
+            
+            // ===================================================
+            // === ОБНОВЛЕННЫЕ ФУНКЦИИ БАЛАНСА С ЧИТ-ЛОГИКОЙ ===
+            // ===================================================
+
+            function setInitialMoney(username) {
+                const moneyKey = MONEY_PREFIX + username;
+                const checksumKey = CHECKSUM_PREFIX + username;
+                const newChecksum = INITIAL_MONEY + SECRET_KEY;
+                localStorage.setItem(moneyKey, INITIAL_MONEY);
                 localStorage.setItem(checksumKey, newChecksum);
-                updateBalanceDisplay(safeAmount);
-                return safeAmount;
             }
 
+            /**
+             * Получает текущий баланс. Если пользователь — разработчик, возвращает DEV_MONEY.
+             */
             function getMoney() {
-                if (!isUserLoggedIn) return 0;
-                const moneyKey = getMoneyKey(currentUsername);
-                const checksumKey = getChecksumKey(currentUsername);
-                let storedMoney = parseInt(localStorage.getItem(moneyKey));
-                let storedChecksum = parseInt(localStorage.getItem(checksumKey));
-                
-                if (isNaN(storedMoney) || isNaN(storedChecksum)) {
-                    return setMoney(INITIAL_MONEY);
+                const username = localStorage.getItem(USER_KEY);
+                const status = localStorage.getItem('userStatus');
+
+                // 1. ПРОВЕРКА СТАТУСА РАЗРАБОТЧИКА
+                if (status === 'dev' && username === DEV_USERNAME) {
+                    return DEV_MONEY; // Возвращаем чит-баланс
                 }
-                
-                if (storedMoney + SECRET_KEY !== storedChecksum) {
-                    MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ОШИБКА. КРЕДИТ СБРОШЕН.";
-                    MESSAGE_DISPLAY.className = 'loss';
-                    return setMoney(ANTI_CHEAT_RESET_AMOUNT); 
+
+                // 2. Обычный пользователь (с проверкой на существование)
+                if (username) {
+                    const moneyKey = MONEY_PREFIX + username;
+                    let money = parseInt(localStorage.getItem(moneyKey), 10);
+                    
+                    if (isNaN(money)) {
+                        setInitialMoney(username);
+                        money = INITIAL_MONEY;
+                    }
+                    return money;
                 }
-                
-                return Math.max(0, storedMoney);
+                return 0; // Не авторизован
             }
-            
-            // --- УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ---
 
-            function updateBalanceDisplay(currentMoney) {
-                BALANCE_DISPLAY.textContent = `КРЕДИТ: ${currentMoney} М`;
+            /**
+             * Устанавливает новый баланс. Игнорирует действие, если пользователь — разработчик.
+             */
+            function setMoney(amount) {
+                const username = localStorage.getItem(USER_KEY);
+                const status = localStorage.getItem('userStatus');
+
+                // 1. ЗАЩИТА: Аккаунт разработчика не сохраняет и не тратит деньги
+                if (status === 'dev' && username === DEV_USERNAME) {
+                    return; 
+                }
+
+                // 2. Обычный пользователь
+                if (username) {
+                    const moneyKey = MONEY_PREFIX + username;
+                    const checksumKey = CHECKSUM_PREFIX + username;
+                    
+                    // Установка и обновление контрольной суммы
+                    const newChecksum = amount + SECRET_KEY;
+                    localStorage.setItem(moneyKey, amount);
+                    localStorage.setItem(checksumKey, newChecksum);
+                }
+            }
+
+            /**
+             * Проверяет контрольную сумму. Всегда возвращает true для разработчика.
+             */
+            function checkChecksum() {
+                const username = localStorage.getItem(USER_KEY);
+                const status = localStorage.getItem('userStatus');
+
+                // 1. ПРОВЕРКА: Разработчик всегда проходит проверку
+                if (status === 'dev' && username === DEV_USERNAME) {
+                    return true;
+                }
                 
-                const isAffordable = currentMoney >= MIN_BET;
+                // 2. Обычный пользователь
+                const moneyKey = MONEY_PREFIX + username;
+                const checksumKey = CHECKSUM_PREFIX + username;
+                
+                const money = parseInt(localStorage.getItem(moneyKey), 10);
+                const storedChecksum = parseInt(localStorage.getItem(checksumKey), 10);
+                const calculatedChecksum = money + SECRET_KEY;
 
-                // ЛОГИКА ОТОБРАЖЕНИЯ КЛИКЕРА (только если не авторизован или низкий баланс)
-                if (!isUserLoggedIn) {
-                    CLICKER_PANEL.style.display = 'flex';
-                    CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
-                    CLICKER_BUTTON.disabled = true;
-                    CLICKER_PANEL.querySelector('p').textContent = 'ТРЕБУЕТСЯ АВТОРИЗАЦИЯ ДЛЯ ДОЗАПРАВКИ.';
-                } else if (!isAffordable) {
-                    CLICKER_PANEL.style.display = 'flex';
-                    CLICKER_BUTTON.textContent = `КЛИКНИ [+1 М] КРЕДИТ: ${currentMoney}`;
-                    CLICKER_BUTTON.disabled = false;
-                    CLICKER_PANEL.querySelector('p').textContent = 'КРЕДИТ < МИН. СТАВКИ. АКТИВИРУЙТЕ РЕЖИМ ДОЗАПРАВКИ.';
+                if (storedChecksum === calculatedChecksum) {
+                    return true;
                 } else {
-                    CLICKER_PANEL.style.display = 'none';
-                }
-                
-                const shouldDisable = !isAffordable || isSpinning || !isUserLoggedIn;
-                LEVER_ARM.disabled = shouldDisable;
-                BET_INPUT.disabled = shouldDisable;
-
-                if (!isUserLoggedIn) {
-                     MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
-                     MESSAGE_DISPLAY.className = 'info';
-                } else if (!isAffordable && !isSpinning) {
-                     MESSAGE_DISPLAY.textContent = `[СИСТЕМА] КРЕДИТА НЕДОСТАТОЧНО. МИНИМУМ: ${MIN_BET} М.`;
-                     MESSAGE_DISPLAY.className = 'loss';
-                } else if (!isSpinning && isAffordable) {
-                     MESSAGE_DISPLAY.textContent = "ТЯНИТЕ РЫЧАГ ВНИЗ ДЛЯ АКТИВАЦИИ [СПИН].";
-                     MESSAGE_DISPLAY.className = 'info';
+                    // Критическая ошибка: баланс изменен внешне
+                    console.error('Ошибка безопасности: Контрольная сумма не совпадает! Сброс данных.');
+                    localStorage.removeItem(moneyKey);
+                    localStorage.removeItem(checksumKey);
+                    alert('Ошибка безопасности! Данные игры были сброшены.');
+                    return false;
                 }
             }
             
-            // --- УПРАВЛЕНИЕ РУЧКОЙ ---
+            // ===================================================
+            // === КОНЕЦ ФУНКЦИЙ БАЛАНСА ===
+            // ===================================================
+            
+            // --- УТИЛИТЫ ИГРЫ ---
 
-            function handleStart(event) {
-                if (isSpinning || LEVER_ARM.disabled) return;
-                
-                isDragging = true;
-                LEVER_ARM.classList.add('dragging');
-                
-                const clientY = event.clientY || event.touches[0].clientY;
-                startY = clientY;
-                currentTop = parseFloat(LEVER_ARM.style.top) || INITIAL_LEVER_TOP;
-
-                document.addEventListener('mousemove', handleMove);
-                document.addEventListener('mouseup', handleEnd);
-                document.addEventListener('touchmove', handleMove);
-                document.addEventListener('touchend', handleEnd);
-                
-                if (event.type === 'touchstart') event.preventDefault();
+            function updateDisplay() {
+                const money = getMoney();
+                // Форматируем для удобства чтения
+                BALANCE_DISPLAY.textContent = `БАЛАНС: ${money.toLocaleString('ru-RU')}`;
             }
 
-            function handleMove(event) {
-                if (!isDragging) return;
+            function getRandomSymbol(reelIndex) {
+                // Добавляем небольшой вес, чтобы Джекпот (⚡) выпадал реже
+                let weightedSymbols = [...SYMBOLS, ...SYMBOLS, ...SYMBOLS, '7️⃣', '7️⃣']; // 3 повтора обычных, 5 повторов 7️⃣
+                if (reelIndex === 1) weightedSymbols.push('⚡'); // Еще один шанс на джекпот в среднем барабане
                 
-                const clientY = event.clientY || event.touches[0].clientY;
-                const dy = clientY - startY;
-                
-                const newTop = Math.min(Math.max(INITIAL_LEVER_TOP, currentTop + dy), DROP_THRESHOLD);
-                LEVER_ARM.style.top = newTop + 'px';
+                const index = Math.floor(Math.random() * weightedSymbols.length);
+                return weightedSymbols[index];
             }
 
-            function handleEnd(event) {
-                if (!isDragging) return;
-                
-                isDragging = false;
-                LEVER_ARM.classList.remove('dragging');
+            function generateReelStrip(length = 20) {
+                let strip = [];
+                for (let i = 0; i < length; i++) {
+                    strip.push(getRandomSymbol(i % 3)); 
+                }
+                // Гарантируем, что в конце барабана будет основной символ, который остановится
+                strip[length - 1] = getRandomSymbol(0); 
+                return strip;
+            }
 
-                document.removeEventListener('mousemove', handleMove);
-                document.removeEventListener('mouseup', handleEnd);
-                document.removeEventListener('touchmove', handleMove);
-                document.removeEventListener('touchend', handleEnd);
+            // --- ЛОГИКА АНИМАЦИИ ---
 
-                const finalTop = parseFloat(LEVER_ARM.style.top) || INITIAL_LEVER_TOP;
-                
-                if (finalTop >= DROP_THRESHOLD * 0.8) {
-                    spin();
+            function spinReel(reelElement, finalSymbol) {
+                return new Promise(resolve => {
+                    const strip = generateReelStrip(20);
+                    // Убеждаемся, что последний символ в полосе - это нужный нам
+                    strip[strip.length - 1] = finalSymbol; 
+
+                    // Генерируем HTML для полосы с нужными символами
+                    reelElement.innerHTML = strip.map(s => `<div>${s}</div>`).join('');
+                    
+                    const symbolHeight = reelElement.clientHeight;
+                    const totalSpinHeight = strip.length * symbolHeight;
+                    
+                    // Длительность анимации
+                    const duration = 2000 + Math.random() * 1000; // 2.0 - 3.0 секунды
+
+                    // Установка CSS-перехода и запуск анимации
+                    reelElement.style.transition = `transform ${duration}ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
+                    // Сдвигаем на высоту полосы минус один символ (чтобы остановиться на последнем)
+                    reelElement.style.transform = `translateY(-${totalSpinHeight - symbolHeight}px)`;
+
+                    setTimeout(() => {
+                        // Сброс transition для следующего спина и подготовка к следующему символу
+                        reelElement.style.transition = 'none';
+                        // Сброс transform на 0, но с содержимым, где "победный" символ вверху
+                        
+                        // Создаем новую полосу, где победный символ - первый, для сброса позиции
+                        reelElement.innerHTML = `<div>${finalSymbol}</div>` + strip.slice(0, strip.length - 1).map(s => `<div>${s}</div>`).join('');
+                        reelElement.style.transform = `translateY(0)`;
+                        resolve(finalSymbol);
+                    }, duration);
+                });
+            }
+
+            // --- ЛОГИКА ВЫИГРЫША ---
+
+            function checkWin(results, bet) {
+                const rStr = results.join(',');
+                let winMultiplier = 0;
+                let winMessage = 'ПРОИГРЫШ. Попробуйте снова.';
+                let messageClass = 'loss';
+
+                // 1. Проверка полного совпадения (Джекпот и Тройки)
+                if (PAYOUTS[rStr]) {
+                    winMultiplier = PAYOUTS[rStr];
                 } 
-
-                setTimeout(() => {
-                    LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px';
-                }, 100); 
-            }
-            
-            // --- ЛОГИКА ИГРЫ ---
-            
-            function spin() {
-                if (isSpinning || LEVER_ARM.disabled) return; 
-
-                const bet = parseInt(BET_INPUT.value);
-                let currentMoney = getMoney();
+                // 2. Проверка комбинации с двумя Джекпотами
+                else if (rStr.includes('⚡,⚡') || 
+                         rStr.includes('⚡,_,⚡') || 
+                         rStr.includes('_,⚡,⚡') ||
+                         (rStr.split(',').filter(s => s === '⚡').length === 2)) {
+                    winMultiplier = PAYOUTS['⚡,⚡,_'];
+                }
                 
-                if (isNaN(bet) || bet < MIN_BET || bet > currentMoney) {
-                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] НЕДОПУСТИМАЯ СТАВКА.`;
+                const winAmount = bet * winMultiplier;
+                
+                if (winMultiplier > 0) {
+                    if (winMultiplier === 20) {
+                        winMessage = `⚡⚡⚡ ДЖЕКПОТ! Вы выиграли ${winAmount.toLocaleString('ru-RU')}!`;
+                        messageClass = 'jackpot';
+                    } else {
+                        winMessage = `ВЫИГРЫШ! Вы выиграли ${winAmount.toLocaleString('ru-RU')}.`;
+                        messageClass = 'win';
+                    }
+                }
+
+                return { winAmount, winMessage, messageClass };
+            }
+
+            // --- ОСНОВНАЯ ФУНКЦИЯ ИГРЫ ---
+
+            async function spin() {
+                if (isSpinning) return;
+                
+                if (!checkChecksum()) return;
+
+                let bet = parseInt(BET_INPUT.value, 10);
+                let currentMoney = getMoney();
+
+                if (isNaN(bet) || bet < 1) {
+                    MESSAGE_DISPLAY.textContent = 'ОШИБКА: Некорректная ставка.';
+                    MESSAGE_DISPLAY.className = 'error';
+                    return;
+                }
+
+                if (currentMoney < bet) {
+                    MESSAGE_DISPLAY.textContent = 'ОШИБКА: Недостаточно средств на балансе.';
                     MESSAGE_DISPLAY.className = 'loss';
                     return;
                 }
 
-                setMoney(currentMoney - bet);
                 isSpinning = true;
-                updateBalanceDisplay(getMoney()); 
-
-                LEVER_ARM.disabled = true;
-
-                REELS.forEach(reel => {
-                    reel.classList.add('spinning');
-                    reel.classList.remove('win-glow');
-                    reel.classList.remove('glitch-active');
-                    reel.innerHTML = '<span style="color: var(--accent-blue)">?</span>';
-                });
+                SPIN_BUTTON.disabled = true;
                 
-                MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ИДЕТ ОБРАБОТКА ДАННЫХ...";
+                // Списываем ставку (Разработчик игнорируется внутри setMoney)
+                setMoney(currentMoney - bet);
+                updateDisplay();
+                MESSAGE_DISPLAY.textContent = 'ВРАЩЕНИЕ...';
                 MESSAGE_DISPLAY.className = 'info';
 
-                setTimeout(() => {
-                    REELS.forEach(reel => reel.classList.remove('spinning'));
-                    
-                    const results = REELS.map(() => WEIGHTED_SYMBOLS[Math.floor(Math.random() * WEIGHTED_SYMBOLS.length)]);
-                    
-                    results.forEach((item, index) => {
-                        REELS[index].innerHTML = `<span>${item.text}</span>`;
-                        REELS[index].style.borderColor = item.color;
-                        REELS[index].style.boxShadow = `inset 0 0 20px rgba(51, 204, 255, 0.5), 0 0 10px ${item.color}`;
-                    });
-                    
-                    checkResult(results, bet);
-                    
-                    isSpinning = false;
-                    LEVER_ARM.disabled = false;
-                    updateBalanceDisplay(getMoney()); 
-                }, 2000);
-            }
+                // Генерируем результаты спина
+                const finalResults = [
+                    getRandomSymbol(0),
+                    getRandomSymbol(1),
+                    getRandomSymbol(2)
+                ];
 
-            function checkResult(results, bet) {
-                const [r1, r2, r3] = results;
-                let winnings = 0;
+                // Запускаем анимацию для всех барабанов параллельно
+                const reelPromises = finalResults.map((result, index) => 
+                    spinReel(REELS[index], result)
+                );
                 
-                const r1_text = r1.text;
-                const r2_text = r2.text;
-                const r3_text = r3.text;
+                // Ждем завершения всех анимаций
+                const actualResults = await Promise.all(reelPromises);
 
-                const getSymbolPayout = (text) => SYMBOLS.find(s => s.text === text).payout;
+                // --- ПОДСЧЕТ РЕЗУЛЬТАТОВ ---
+                isSpinning = false;
+                SPIN_BUTTON.disabled = false;
 
-                // 1. ПРОВЕРКА НА 3 ОДИНАКОВЫХ (JACKPOT)
-                if (r1_text === r2_text && r2_text === r3_text) {
-                    const payoutMultiplier = getSymbolPayout(r1_text);
-                    winnings = bet * payoutMultiplier;
-                    MESSAGE_DISPLAY.textContent = `[JACKPOT!] ${r1_text} ${r2_text} ${r3_text}. ВЫИГРЫШ: ${winnings} М. (x${payoutMultiplier})`;
-                    MESSAGE_DISPLAY.className = 'win';
-                    REELS.forEach(reel => reel.classList.add('win-glow'));
-                    REELS.forEach(reel => reel.classList.add('glitch-active'));
-                } 
-                // 2. ПРОВЕРКА НА 2 ОДИНАКОВЫХ (1.5x)
-                else if (r1_text === r2_text || r2_text === r3_text || r1_text === r3_text) {
-                    // ИЗМЕНЕНИЕ: 1.5x (Чистый выигрыш 50%)
-                    winnings = bet * 1.5; 
-                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] АКТИВАЦИЯ. ДВЕ СОВПАДЕНИЯ. ВЫИГРЫШ: ${winnings} М. (x1.5)`;
-                    MESSAGE_DISPLAY.className = 'info'; 
-                } 
-                // 3. ПРОИГРЫШ
-                else {
-                    MESSAGE_DISPLAY.textContent = '[СИСТЕМА] ПЕРЕЗАГРУЗКА. ПОПЫТКА №.';
-                    MESSAGE_DISPLAY.className = 'loss';
-                    REELS.forEach(reel => reel.classList.add('glitch-active'));
-                }
-
-                if (winnings > 0) {
-                    setMoney(getMoney() + winnings);
-                }
+                const { winAmount, winMessage, messageClass } = checkWin(actualResults, bet);
+                
+                currentMoney = getMoney(); // Получаем обновленный баланс (или чит-баланс)
+                setMoney(currentMoney + winAmount);
+                
+                updateDisplay();
+                MESSAGE_DISPLAY.textContent = winMessage;
+                MESSAGE_DISPLAY.className = messageClass;
             }
 
-            // --- ЛОГИКА КЛИКЕРА ---
-            function handleCick() {
-                if (isUserLoggedIn && !CLICKER_BUTTON.disabled) {
-                    setMoney(getMoney() + 1);
+            // --- ИНИЦИАЛИЗАЦИЯ ---
+
+            function init() {
+                const username = localStorage.getItem(USER_KEY);
+                
+                if (!username || !checkChecksum()) {
+                    // Пользователь не вошел или античит-проверка не пройдена
+                    GAME_AREA.style.display = 'none';
+                    LOGIN_WARNING.style.display = 'block';
+                    return;
                 }
+
+                // Инициализация прошла успешно
+                GAME_AREA.style.display = 'block';
+                LOGIN_WARNING.style.display = 'none';
+                
+                updateDisplay();
+                SPIN_BUTTON.addEventListener('click', spin);
+                initialised = true;
             }
 
-            // --- Инициализация ---
-            if (isUserLoggedIn) {
-                LEVER_ARM.style.top = INITIAL_LEVER_TOP + 'px'; 
-            } 
-            updateBalanceDisplay(getMoney());
-
-            // СЛУШАТЕЛИ РУЧКИ
-            LEVER_ARM.addEventListener('mousedown', handleStart);
-            LEVER_ARM.addEventListener('touchstart', handleStart);
-
-            BET_INPUT.addEventListener('input', () => updateBalanceDisplay(getMoney()));
-            CLICKER_BUTTON.addEventListener('click', handleCick);
+            init();
         };
     </script>
 </body>
