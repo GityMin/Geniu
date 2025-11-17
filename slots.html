@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Слоты МММ V4 | Ручка Гения</title>
+    <title>Слоты | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         /* ГЛОБАЛЬНЫЕ СТИЛИ */
@@ -28,313 +28,117 @@
             background-color: #575757; 
         }
         h1 { 
-            color: #FF00FF; 
-            text-shadow: 0 0 10px #FF00FF, 0 0 20px #FF00FF; 
-        }
-        
-        /* Панель информации и баланс */
-        .info-panel { 
-            display: flex; 
-            justify-content: center; 
-            gap: 50px; 
-            margin-bottom: 30px; 
-        }
-        #money-display { 
-            font-size: 2.5em; 
-            color: #00FF00; 
-            font-weight: bold;
-            text-shadow: 0 0 5px #00FF00;
-        }
-        
-        /* Основная машина */
-        .slot-machine {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin: 0 auto;
-            width: 90%;
-            max-width: 650px;
-            padding: 30px;
-            background: #111;
-            border-radius: 20px;
-            border: 4px solid #FF00FF;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.8);
-            perspective: 1000px;
-            position: relative; 
-        }
-        
-        /* Барабаны */
-        .reel-housing {
-            overflow: hidden;
-            width: 120px;
-            height: 120px;
-            border: 2px solid #555;
-            background-color: #000;
-            border-radius: 8px;
-            box-shadow: inset 0 0 8px #000;
-            transform: translateZ(0);
-        }
-        .slot-reel {
-            font-size: 4.5em;
-            line-height: 120px;
-            color: #FFD700;
-            transition: transform 0.3s ease-out;
-            will-change: transform;
-        }
-
-        /* АНИМАЦИЯ ВЫИГРЫША */
-        @keyframes win-jump {
-            0%, 100% { transform: translateY(0); box-shadow: 0 0 15px rgba(255, 255, 0, 0); }
-            50% { transform: translateY(-5px); box-shadow: 0 0 15px rgba(255, 255, 0, 1); }
-        }
-        .reel-housing.win {
-            animation: win-jump 0.2s ease-in-out 3;
-            border-color: #FFD700;
-        }
-
-        /* --- Стили для Ручки (Рычага) --- */
-        .controls {
-            position: absolute;
-            right: -50px; 
-            top: 20px;
-            width: 40px;
-            height: 250px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            pointer-events: none; 
-        }
-        .lever-base {
-            width: 25px;
-            height: 20px;
-            background-color: #333;
-            border-radius: 5px;
-            border: 2px solid #555;
-            z-index: 10;
-            pointer-events: auto; 
-        }
-        .lever-arm {
-            width: 10px;
-            height: 150px;
-            background: linear-gradient(to top, #777, #CCC);
-            border-radius: 5px;
-            z-index: 5;
-            transform-origin: top center; 
-            transition: transform 0.1s ease-out;
-            pointer-events: none; 
-        }
-        .lever-handle {
-            width: 40px;
-            height: 40px;
-            background: #FF0000; 
-            border-radius: 50%;
-            border: 3px solid #FFD700;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 255, 255, 0.5);
-            position: absolute;
-            top: 5px; 
-            cursor: grab;
-            transition: transform 0.1s ease-out; 
-            z-index: 15;
-            pointer-events: auto; 
-        }
-        .lever-handle:active {
-            cursor: grabbing;
-        }
-        .lever-handle.disabled {
-            background: #555 !important;
-            cursor: not-allowed !important;
-            border-color: #333 !important;
-            box-shadow: none !important;
-            pointer-events: none;
-        }
-
-        /* Ставка */
-        .bet-control { 
-            margin-top: 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px; 
-        }
-        #bet-input { 
-            padding: 10px; 
-            font-size: 1.1em; 
-            width: 70px; 
-            text-align: center; 
-            border: 2px solid #00FFFF; 
-            background-color: #222; 
-            color: white; 
-            border-radius: 5px; 
-        }
-        #bet-input:disabled {
-            background-color: #444;
-            color: #AAA;
-        }
-
-        /* Сообщение */
-        #result-message { 
-            font-size: 2em; 
-            margin-top: 30px; 
-            min-height: 40px; 
             color: #FFD700; 
-            text-shadow: 0 0 10px #FFD700;
-            font-weight: bold;
-        }
-        
-        /* --- ЛЕНТА ВЫИГРЫШЕЙ --- */
-        .jackpot-feed {
-            max-width: 600px;
-            margin: 40px auto;
-            border: 2px solid #00FFFF;
-            border-radius: 10px;
-            padding: 15px;
-            background-color: #1a1a1a;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-        }
-        .jackpot-feed h2 {
-            color: #00FFFF;
-            text-shadow: 0 0 5px #00FFFF;
-            margin-top: 0;
-            border-bottom: 1px solid #00FFFF44;
-            padding-bottom: 10px;
-            font-size: 1.5em;
-        }
-        #win-list {
-            list-style: none;
-            padding: 0;
-            max-height: 200px;
-            overflow-y: auto;
-            text-align: left;
-        }
-        #win-list li {
-            display: flex;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px dashed #333;
-            animation: new-win 0.5s ease-out;
-        }
-        .win-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            margin-right: 10px;
-            background-color: #FF00FF;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            font-size: 0.8em;
-            color: white;
-            flex-shrink: 0;
-        }
-        .win-details {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-        }
-        .win-amount {
-            color: #00FF00;
-            font-weight: bold;
-            text-shadow: 0 0 3px #00FF00;
+            text-shadow: 0 0 10px #FFD700; 
+            margin-bottom: 30px;
         }
 
-        /* --- СТИЛИ ДЛЯ КЛИКЕРА --- */
-        .clicker-panel {
-            max-width: 400px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            border: 2px solid #FFD700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        /* ИГРОВОЙ КОНТЕЙНЕР */
+        .slot-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
         }
-        .clicker-panel h2 {
-            color: #FFD700;
-            text-shadow: 0 0 5px #FFD700;
-            margin-top: 0;
+
+        /* ДИСПЛЕЙ БАРАБАНОВ */
+        .reels {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .reel {
+            font-size: 4em;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            background-color: #333;
+            border-radius: 10px;
+            border: 5px solid #555;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            color: white;
+            animation: spin-initial 0.5s ease-out;
+        }
+
+        /* УПРАВЛЕНИЕ ИГРОЙ */
+        .controls {
+            margin-bottom: 20px;
+        }
+        #bet-input {
+            padding: 10px;
+            font-size: 1.2em;
+            width: 100px;
+            text-align: center;
+            margin-right: 10px;
+            background-color: #282828;
+            color: white;
+            border: 1px solid #555;
+            border-radius: 5px;
+        }
+        #spin-button {
+            padding: 10px 30px;
+            font-size: 1.2em;
+            background-color: #FF4500;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.1s;
+        }
+        #spin-button:hover {
+            background-color: #CC3700;
+        }
+
+        /* БАЛАНС И СООБЩЕНИЯ */
+        #balance-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00FF00;
+            margin-bottom: 15px;
+        }
+        #message-display {
+            min-height: 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        /* КЛИКЕР-ПАНЕЛЬ (Встроенная) */
+        .clicker-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #282828;
+            border: 2px dashed #00FFFF;
+            border-radius: 10px;
+            color: #00FFFF;
         }
         #clicker-button {
-            padding: 15px 30px;
-            font-size: 1.5em;
-            background-color: #FFD700;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 1.1em;
+            background-color: #00FFFF;
             color: #111;
             border: none;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.1s, transform 0.1s, box-shadow 0.1s;
-            box-shadow: 0 5px #C4A100;
-        }
-        #clicker-button:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px #C4A100;
-        }
-        #clicker-message {
-            margin-top: 15px;
             font-weight: bold;
-            color: #EEE;
         }
+        
+        /* ЦВЕТА РЕЗУЛЬТАТОВ */
+        .win { color: #00FF00; }
+        .loss { color: #FF0000; }
+        .info { color: #00FFFF; }
 
-
-        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
-        @media (max-width: 650px) {
-            h1 { font-size: 1.8em; }
-            
-            .slot-machine {
-                width: 95%;
-                padding: 15px;
-                gap: 5px;
-            }
-            .reel-housing {
-                width: 80px;
-                height: 90px;
-            }
-            .slot-reel {
-                font-size: 3em;
-                line-height: 90px;
-            }
-
-            .controls {
-                position: static;
-                margin: 20px auto 0;
-                width: 100px;
-                height: 100px;
-                flex-direction: row;
-                justify-content: center;
-                align-items: flex-end;
-                gap: 0;
-            }
-            .lever-base, .lever-arm { display: none; }
-
-            .lever-handle {
-                position: static;
-                cursor: pointer;
-                width: 70px;
-                height: 70px;
-                line-height: 70px;
-                font-size: 1.2em;
-                color: white;
-                background-color: #6600FF;
-                border-radius: 10px;
-                box-shadow: 0 5px #4400AA;
-                transition: all 0.1s;
-                transform: none !important; 
-            }
-            .lever-handle::before {
-                content: "СПИН!";
-            }
-            .lever-handle:active {
-                transform: translateY(3px) !important;
-                box-shadow: 0 2px #4400AA;
-            }
-            .lever-handle.disabled::before {
-                content: "ВОЙДИ";
-            }
-
-            .jackpot-feed {
-                margin: 20px auto;
-                padding: 10px;
-                width: 90%;
-            }
+        /* АНИМАЦИЯ ВРАЩЕНИЯ */
+        @keyframes spin {
+            0% { transform: translateY(-50%); opacity: 0.5; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .spinning {
+            animation: spin 0.1s infinite alternate;
         }
     </style>
 </head>
@@ -346,41 +150,31 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🔥 Игровой Автомат: "Ручка Гения" 🔥</h1>
-    
-    <div class="info-panel">
-        <div id="money-display">Баланс: 0</div>
-    </div>
+    <div class="slot-container">
+        <h1>🎰 Слоты Гения</h1>
 
-    <div class="bet-control">
-        <label for="bet-input">Твоя Ставка:</label>
-        <input type="number" id="bet-input" value="10" min="1" step="1">
-    </div>
+        <div id="balance-display">Баланс: 0 Мани</div>
 
-    <div class="slot-machine">
-        <div class="reel-housing"><div class="slot-reel" id="reel1">?</div></div>
-        <div class="reel-housing"><div class="slot-reel" id="reel2">?</div></div>
-        <div class="reel-housing"><div class="slot-reel" id="reel3">?</div></div>
-        
-        <div class="controls">
-            <div class="lever-base"></div>
-            <div class="lever-arm" id="lever-arm"></div>
-            <div class="lever-handle" id="lever-handle"></div>
+        <div class="reels">
+            <div class="reel" id="reel1">?</div>
+            <div class="reel" id="reel2">?</div>
+            <div class="reel" id="reel3">?</div>
         </div>
+
+        <div class="controls">
+            <input type="number" id="bet-input" value="10" min="10" step="10">
+            <button id="spin-button">Крутить (10 Мани)</button>
+        </div>
+
+        <p id="message-display" class="info">Минимальная ставка: 10 Мани</p>
+        
+        <div class="clicker-section" id="clicker-panel" style="display: none;">
+            <p>Упс! Кажется, у тебя закончились Мани.</p>
+            <button id="clicker-button">КЛИКНИ, чтобы получить 1 Мани</button>
+        </div>
+        
     </div>
 
-    <p id="result-message">Проверь свою удачу, гений!</p>
-
-    <div class="jackpot-feed">
-        <h2>🏆 Лента Выигрышей Гениев 🏆</h2>
-        <ul id="win-list">
-        </ul>
-    </div>
-    <div class="clicker-panel">
-        <h2>⚡ Кликер Мани (Получи стартовый капитал!) ⚡</h2>
-        <button id="clicker-button">Кликнуть за 1 Мани!</button>
-        <p id="clicker-message">Каждый клик приносит 1 Мани. Используй это!</p>
-    </div>
     <script>
         window.onload = function() {
             const REELS = [
@@ -388,378 +182,184 @@
                 document.getElementById('reel2'),
                 document.getElementById('reel3')
             ];
-            const MONEY_DISPLAY = document.getElementById('money-display');
             const BET_INPUT = document.getElementById('bet-input');
-            const RESULT_MESSAGE = document.getElementById('result-message');
-            const LEVER_HANDLE = document.getElementById('lever-handle');
-            const LEVER_ARM = document.getElementById('lever-arm');
-            const WIN_LIST = document.getElementById('win-list');
-            
-            const CLICKER_BUTTON = document.getElementById('clicker-button'); 
-            const CLICKER_MESSAGE = document.getElementById('clicker-message');
+            const SPIN_BUTTON = document.getElementById('spin-button');
+            const BALANCE_DISPLAY = document.getElementById('balance-display');
+            const MESSAGE_DISPLAY = document.getElementById('message-display');
+            const CLICKER_PANEL = document.getElementById('clicker-panel');
+            const CLICKER_BUTTON = document.getElementById('clicker-button');
 
-            const SYMBOLS = ['7️⃣', '💎', '💰', '⭐'];
-            const SYMBOL_HEIGHT = 120;
-            const LEVER_MAX_PULL_Y = 150; 
-            const SPIN_THRESHOLD = 100; 
+            // --- КОНСТАНТЫ ИГРЫ ---
+            const SYMBOLS = ['🍒', '🍋', '7️⃣', '💎'];
+            const PAYOUTS = {
+                '🍒': 2,    // Две вишни = 2x
+                '🍋': 5,
+                '7️⃣': 10,
+                '💎': 50   // Джекпот!
+            };
+            const MIN_BET = 10;
             
-            let isSpinning = false; 
-            let isDragging = false;
-            let startY = 0;
-            let currentPullY = 0;
-            
-            // --- ДАННЫЕ ДЛЯ ЛЕНТЫ ---
-            const RANDOM_NAMES = ['Анна', 'Борис', 'Света', 'Михаил', 'Алиса', 'Денис (Другой)', 'Кирилл', 'Вика', 'Олег', 'Настя'];
-            const AVATAR_COLORS = ['#FF00FF', '#00FFFF', '#FFFF00', '#FF0000', '#00FF00'];
-            
-            // --- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ ---
+            // --- ПЕРЕМЕННЫЕ АВТОРИЗАЦИИ (ИСПРАВЛЕННАЯ ЛОГИКА) ---
             const currentUsername = localStorage.getItem('denisKazakovUser');
             const isUserLoggedIn = !!currentUsername;
-            
-            // --- ФУНКЦИИ БАЛАНСА С ПРИВЯЗКОЙ К ЛОГИНУ ---
             const SECRET_KEY = 952; 
             const MONEY_PREFIX = 'money_';
             const CHECKSUM_PREFIX = 'checksum_';
+            const INITIAL_MONEY = 100;
+            const ANTI_CHEAT_RESET_AMOUNT = 10; 
 
             function getMoneyKey(username) { return MONEY_PREFIX + username; }
             function getChecksumKey(username) { return CHECKSUM_PREFIX + username; }
 
-            // Эта функция теперь возвращает 0, если пользователь не вошел.
-            function getMoney() {
-                if (!isUserLoggedIn) return 0;
-                
-                const moneyKey = getMoneyKey(currentUsername);
-                const checksumKey = getChecksumKey(currentUsername);
-
-                const storedMoney = parseInt(localStorage.getItem(moneyKey)) || 100;
-                const storedChecksum = parseInt(localStorage.getItem(checksumKey)) || (storedMoney + SECRET_KEY);
-
-                if (storedMoney + SECRET_KEY !== storedChecksum) {
-                    console.warn("Обнаружена попытка изменения баланса. Баланс сброшен.");
-                    return setMoney(10); 
-                }
-                return storedMoney;
-            }
-
-            // Эта функция не сохраняет ничего, если пользователь не вошел.
+            // 1. ФУНКЦИЯ ЗАПИСИ (Баланс может быть 0)
             function setMoney(amount) {
-                if (!isUserLoggedIn) {
-                    updateControls();
-                    return 0;
-                }
+                if (!isUserLoggedIn) return 0; 
 
                 const moneyKey = getMoneyKey(currentUsername);
                 const checksumKey = getChecksumKey(currentUsername);
                 
-                const safeAmount = Math.max(10, amount);
+                const safeAmount = Math.max(0, amount); 
                 const newChecksum = safeAmount + SECRET_KEY;
                 
                 localStorage.setItem(moneyKey, safeAmount);
                 localStorage.setItem(checksumKey, newChecksum);
                 
-                MONEY_DISPLAY.textContent = `Баланс: ${safeAmount} Мани`;
-                updateControls();
-                
+                updateBalanceDisplay(safeAmount);
                 return safeAmount;
             }
 
-            // --- ФУНКЦИЯ БЛОКИРОВКИ КНОПОК ---
-            function updateControls() {
-                const currentMoney = getMoney();
-                const bet = parseInt(BET_INPUT.value);
+            // 2. ФУНКЦИЯ ЧТЕНИЯ (Сброс только при чите)
+            function getMoney() {
+                if (!isUserLoggedIn) return 0;
+
+                const moneyKey = getMoneyKey(currentUsername);
+                const checksumKey = getChecksumKey(currentUsername);
+
+                let storedMoney = parseInt(localStorage.getItem(moneyKey));
+                let storedChecksum = parseInt(localStorage.getItem(checksumKey));
                 
-                if (!isUserLoggedIn) {
-                    MONEY_DISPLAY.textContent = 'Баланс: 🔒 Войди!';
-                    RESULT_MESSAGE.textContent = 'Войдите в аккаунт, чтобы играть на Мани!';
-                    
-                    BET_INPUT.disabled = true;
-                    LEVER_HANDLE.classList.add('disabled');
-                    return;
+                if (isNaN(storedMoney) || isNaN(storedChecksum)) {
+                    return setMoney(INITIAL_MONEY);
                 }
-
-                // Активация кнопок, если пользователь вошел
-                BET_INPUT.disabled = isSpinning;
-                LEVER_HANDLE.classList.remove('disabled');
-
-                if (currentMoney < bet || bet <= 0) {
-                    RESULT_MESSAGE.textContent = "Недостаточно Мани или ставка неверна!";
-                    LEVER_HANDLE.classList.add('disabled');
-                } else if (!isSpinning) {
-                    RESULT_MESSAGE.textContent = "Проверь свою удачу, гений!";
-                }
-            }
-            // --- КОНЕЦ ФУНКЦИИ ---
-
-
-            // --- ФУНКЦИИ КЛИКЕРА ---
-            function handleCick() {
-                if (!isUserLoggedIn) {
-                    CLICKER_MESSAGE.textContent = 'Вы не вошли. Ваши Мани не сохраняются! Войдите, чтобы копить!';
-                    CLICKER_MESSAGE.style.color = '#FFD700';
-                    return;
-                }
-
-                setMoney(getMoney() + 1);
-                CLICKER_BUTTON.textContent = `Кликнуть за 1 Мани! (Баланс: ${getMoney()})`; 
-                CLICKER_MESSAGE.textContent = `+1 Мани! Текущий баланс: ${getMoney()} Мани`;
-                CLICKER_MESSAGE.style.color = '#00FF00';
-            }
-            CLICKER_BUTTON.addEventListener('click', handleCick);
-            // --- КОНЕЦ ФУНКЦИЙ КЛИКЕРА ---
-
-            // --- ФУНКЦИИ ЛЕНТЫ ВЫИГРЫШЕЙ ---
-
-            function addWinToFeed(name, amount) {
-                const color = AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
                 
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
-                    <div class="win-avatar" style="background-color: ${color};">${name.charAt(0)}</div>
-                    <div class="win-details">
-                        <span>${name} выиграл(а)</span>
-                        <span class="win-amount">+${amount} Мани!</span>
-                    </div>
-                `;
+                // АНТИ-ЧИТ ПРОВЕРКА
+                if (storedMoney + SECRET_KEY !== storedChecksum) {
+                    MESSAGE_DISPLAY.textContent = "Баланс сброшен! Обнаружена ошибка данных.";
+                    MESSAGE_DISPLAY.className = 'loss';
+                    return setMoney(ANTI_CHEAT_RESET_AMOUNT); 
+                }
                 
-                if (WIN_LIST.firstChild) {
-                    WIN_LIST.insertBefore(listItem, WIN_LIST.firstChild);
-                } else {
-                    WIN_LIST.appendChild(listItem);
-                }
-
-                while (WIN_LIST.children.length > 5) {
-                    WIN_LIST.removeChild(WIN_LIST.lastChild);
-                }
-            }
-
-            function generateFakeWin() {
-                const isBigWin = Math.random() < 0.20; 
-                let minAmount = 30;
-                let maxAmount = 150;
-
-                if (isBigWin) {
-                    minAmount = 400;
-                    maxAmount = 2000;
-                }
-
-                const amount = Math.floor(Math.random() * (maxAmount - minAmount + 1)) + minAmount;
-                const name = RANDOM_NAMES[Math.floor(Math.random() * RANDOM_NAMES.length)];
-
-                addWinToFeed(name, amount);
+                return Math.max(0, storedMoney);
             }
             
-            let fakeWinInterval = setInterval(generateFakeWin, Math.random() * 5000 + 5000); 
+            // --- УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ---
 
-            for(let i=0; i<3; i++) {
-                generateFakeWin();
-            }
-
-            // --- КОНЕЦ ФУНКЦИЙ ЛЕНТЫ ВЫИГРЫШЕЙ ---
-
-
-            // --- Функции Анимации и Игры ---
-
-            function generateSymbolStrip(totalSymbols) {
-                let strip = [];
-                // Уменьшаем частоту выпадения дорогих символов (7, Алмаз)
-                const frequency = [1, 2, 4, 6]; // 7️⃣=1, 💎=2, 💰=4, ⭐=6 (Сумма: 13)
+            function updateBalanceDisplay(currentMoney) {
+                BALANCE_DISPLAY.textContent = `Баланс: ${currentMoney} Мани`;
                 
-                for (let i = 0; i < totalSymbols; i++) {
-                    let totalWeight = frequency.reduce((a, b) => a + b, 0);
-                    let randomNum = Math.floor(Math.random() * totalWeight);
-                    
-                    for (let j = 0; j < SYMBOLS.length; j++) {
-                        randomNum -= frequency[j];
-                        if (randomNum < 0) {
-                            strip.push(SYMBOLS[j]);
-                            break;
-                        }
-                    }
+                if (currentMoney < MIN_BET) {
+                    CLICKER_PANEL.style.display = 'block';
+                    SPIN_BUTTON.disabled = true;
+                    BET_INPUT.disabled = true;
+                    MESSAGE_DISPLAY.textContent = `Нужно минимум ${MIN_BET} Мани для игры!`;
+                    MESSAGE_DISPLAY.className = 'loss';
+                } else {
+                    CLICKER_PANEL.style.display = 'none';
+                    SPIN_BUTTON.disabled = false;
+                    BET_INPUT.disabled = false;
+                    SPIN_BUTTON.textContent = `Крутить (${BET_INPUT.value} Мани)`;
                 }
-                return strip;
             }
-
-            function animateReel(reelIndex, finalSymbol) {
-                const reel = REELS[reelIndex];
-                // Увеличим сложность полосы для более реалистичного ощущения
-                const strip = generateSymbolStrip(25 + reelIndex * 8); 
-                
-                strip.push(finalSymbol);
-                
-                reel.style.transition = 'none';
-                reel.style.transform = 'translateY(0)';
-                reel.innerHTML = strip.map(s => `<div>${s}</div>`).join('');
-                
-                const finalPosition = -(strip.length - 1) * SYMBOL_HEIGHT;
-                
-                setTimeout(() => {
-                    reel.style.transition = `transform ${3.5 + reelIndex * 0.9}s cubic-bezier(0.1, 0.7, 0.4, 1)`;
-                    reel.style.transform = `translateY(${finalPosition}px)`;
-                }, 50);
-            }
+            
+            // --- ЛОГИКА ИГРЫ ---
             
             function spin() {
                 const bet = parseInt(BET_INPUT.value);
-                const currentMoney = getMoney();
-                
-                if (!isUserLoggedIn || currentMoney < bet || bet <= 0 || isSpinning) {
-                    updateControls(); 
-                    return false;
-                }
+                let currentMoney = getMoney();
 
-                isSpinning = true;
-                setMoney(currentMoney - bet); 
-                RESULT_MESSAGE.textContent = "КРУТИМ...";
-                
-                // Шанс на тройной выигрыш - 1 к 100
-                let finalResults = [];
-                if (Math.random() < 0.01) { 
-                    const symbol = SYMBOLS[Math.floor(Math.random() * 4)];
-                    finalResults = [symbol, symbol, symbol];
-                } else {
-                    finalResults = [
-                        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-                        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-                        SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
-                    ];
-                }
-
-                document.querySelectorAll('.reel-housing').forEach(r => r.classList.remove('win'));
-                
-                REELS.forEach((reel, index) => {
-                    animateReel(index, finalResults[index]);
-                });
-
-                setTimeout(() => {
-                    checkWin(finalResults, bet);
-                    isSpinning = false;
-                    setMoney(getMoney()); 
-                }, 5000); 
-                
-                return true; 
-            }
-
-            function checkWin(results, bet) {
-                const r1 = results[0];
-                const r2 = results[1];
-                const r3 = results[2];
-                let winAmount = 0;
-                let message = `Проигрыш. (${r1} | ${r2} | ${r3})`;
-
-                if (r1 === r2 && r2 === r3) {
-                    document.querySelectorAll('.reel-housing').forEach(r => r.classList.add('win'));
-
-                    if (r1 === '7️⃣') {
-                        winAmount = bet * 75; 
-                        message = `🤯🤯🤯 ДЖЕКПОТ ГЕНИЯ! ТРИ 7️⃣! Выигрыш: +${winAmount} Мани!`;
-                    } else if (r1 === '💎') {
-                        winAmount = bet * 40;
-                        message = `💎💎💎 ТРИ АЛМАЗА! Крупный выигрыш: +${winAmount} Мани!`;
-                    } else if (r1 === '💰') {
-                        winAmount = bet * 25;
-                        message = `💰💰💰 ТРИ ДЕНЬГИ! Выигрыш: +${winAmount} Мани!`;
-                    } else if (r1 === '⭐') {
-                         winAmount = bet * 15;
-                        message = `🎉🎉🎉 ТРИ ЗВЕЗДЫ! Выигрыш: +${winAmount} Мани!`;
-                    }
-                } else if (r1 === r2 || r2 === r3) {
-                    if (r1 === r2) {
-                        REELS[0].parentElement.classList.add('win');
-                        REELS[1].parentElement.classList.add('win');
-                    }
-                    if (r2 === r3) {
-                        REELS[1].parentElement.classList.add('win');
-                        REELS[2].parentElement.classList.add('win');
-                    }
-
-                    winAmount = bet * 3; 
-                    message = `✅ Двойное совпадение! Выигрыш: +${winAmount} Мани.`;
-                } else if (r1 === r3) {
-                    REELS[0].parentElement.classList.add('win');
-                    REELS[2].parentElement.classList.add('win');
-
-                    winAmount = bet * 2;
-                    message = `👌 Совпадение R1 и R3. Выигрыш: +${winAmount} Мани.`;
-                }
-
-                if (winAmount > 0) {
-                    setMoney(getMoney() + winAmount);
-                    RESULT_MESSAGE.style.color = '#00FF00';
-                    RESULT_MESSAGE.style.textShadow = '0 0 10px #00FF00';
-                    
-                    const username = isUserLoggedIn ? currentUsername : 'Гость';
-                    addWinToFeed(username, winAmount);
-
-                } else {
-                    RESULT_MESSAGE.style.color = '#FFD700';
-                    RESULT_MESSAGE.style.textShadow = '0 0 5px #FFD700';
-                }
-                RESULT_MESSAGE.textContent = message;
-            }
-
-            // --- ЛОГИКА РЫЧАГА (Для ПК) ---
-            
-            function handleStart(e) {
-                if (LEVER_HANDLE.classList.contains('disabled')) return;
-                
-                if (window.matchMedia("(max-width: 650px)").matches) {
-                    spin();
+                if (!isUserLoggedIn) {
+                    MESSAGE_DISPLAY.textContent = "Войдите, чтобы играть на реальные Мани!";
+                    MESSAGE_DISPLAY.className = 'info';
                     return;
                 }
                 
-                const bet = parseInt(BET_INPUT.value);
-                if (isSpinning || getMoney() < bet || bet <= 0) return;
-                
-                isDragging = true;
-                e.preventDefault();
-                startY = e.clientY || e.touches[0].clientY;
-                LEVER_HANDLE.style.transition = 'none';
-                LEVER_ARM.style.transition = 'none';
-            }
-
-            function handleMove(e) {
-                if (!isDragging) return;
-                
-                const currentY = e.clientY || e.touches[0].clientY;
-                const deltaY = currentY - startY;
-                
-                currentPullY = Math.min(Math.max(0, deltaY), LEVER_MAX_PULL_Y);
-
-                LEVER_HANDLE.style.transform = `translateY(${currentPullY}px)`;
-                
-                const rotation = (currentPullY / LEVER_MAX_PULL_Y) * 45; 
-                LEVER_ARM.style.transform = `rotate(${rotation}deg)`;
-            }
-
-            function handleEnd() {
-                if (!isDragging) return;
-                isDragging = false;
-                
-                if (currentPullY >= SPIN_THRESHOLD) {
-                    spin();
+                if (isNaN(bet) || bet < MIN_BET || bet > currentMoney) {
+                    MESSAGE_DISPLAY.textContent = `Ставка должна быть от ${MIN_BET} до ${currentMoney} Мани.`;
+                    MESSAGE_DISPLAY.className = 'loss';
+                    return;
                 }
 
-                LEVER_HANDLE.style.transition = 'transform 0.3s ease-out';
-                LEVER_ARM.style.transition = 'transform 0.3s ease-out';
-                LEVER_HANDLE.style.transform = 'translateY(0)';
-                LEVER_ARM.style.transform = 'rotate(0deg)';
-                currentPullY = 0;
+                // Списываем ставку
+                setMoney(currentMoney - bet);
+
+                // Запускаем анимацию
+                REELS.forEach(reel => reel.classList.add('spinning'));
+                SPIN_BUTTON.disabled = true;
+
+                // Останавливаем через 2 секунды
+                setTimeout(() => {
+                    REELS.forEach(reel => reel.classList.remove('spinning'));
+                    
+                    const results = REELS.map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+                    results.forEach((symbol, index) => REELS[index].textContent = symbol);
+                    
+                    checkResult(results, bet);
+                    SPIN_BUTTON.disabled = false;
+                    updateBalanceDisplay(getMoney()); // Обновляем после всего
+                }, 2000);
             }
 
-            // --- Event Listeners and Initialization ---
-            
-            LEVER_HANDLE.addEventListener('mousedown', handleStart);
-            document.addEventListener('mousemove', handleMove);
-            document.addEventListener('mouseup', handleEnd);
+            function checkResult(results, bet) {
+                const [r1, r2, r3] = results;
+                let winnings = 0;
+                
+                // 3 одинаковых (Джекпот)
+                if (r1 === r2 && r2 === r3) {
+                    winnings = bet * PAYOUTS[r1];
+                    MESSAGE_DISPLAY.textContent = `🎉 ДЖЕКПОТ! ${r1}${r2}${r3}! Вы выиграли ${winnings} Мани!`;
+                    MESSAGE_DISPLAY.className = 'win';
+                } 
+                // 2 одинаковых (небольшой выигрыш)
+                else if (r1 === r2 || r2 === r3 || r1 === r3) {
+                    let symbol = (r1 === r2) ? r1 : r3; // Берем символ, который повторился
+                    winnings = bet * 0.5; // Выплата 50% от ставки
+                    MESSAGE_DISPLAY.textContent = `💰 Почти! Два "${symbol}". Вы выиграли ${winnings} Мани.`;
+                    MESSAGE_DISPLAY.className = 'win';
+                } 
+                // Проигрыш
+                else {
+                    MESSAGE_DISPLAY.textContent = '❌ Не повезло. Попробуй еще раз, Гений!';
+                    MESSAGE_DISPLAY.className = 'loss';
+                }
 
-            LEVER_HANDLE.addEventListener('touchstart', handleStart);
-            document.addEventListener('touchmove', handleMove);
-            document.addEventListener('touchend', handleEnd);
+                // Зачисляем выигрыш (если он есть)
+                if (winnings > 0) {
+                    setMoney(getMoney() + winnings);
+                }
+            }
 
-            BET_INPUT.addEventListener('input', updateControls);
+            // --- ЛОГИКА КЛИКЕРА ---
+            function handleCick() {
+                if (isUserLoggedIn) {
+                    setMoney(getMoney() + 1);
+                    CLICKER_BUTTON.textContent = `+1 Мани! Баланс: ${getMoney()}`;
+                }
+            }
 
-            setMoney(getMoney()); 
-            updateControls();
+            // --- Инициализация ---
+            if (!isUserLoggedIn) {
+                 MESSAGE_DISPLAY.textContent = "Войдите, чтобы играть!";
+                 CLICKER_PANEL.style.display = 'block';
+                 CLICKER_BUTTON.textContent = 'Войдите на страницу "Вход/Выход"';
+                 CLICKER_BUTTON.disabled = true;
+            } else {
+                updateBalanceDisplay(getMoney());
+            }
+
+            // СЛУШАТЕЛИ
+            SPIN_BUTTON.addEventListener('click', spin);
+            BET_INPUT.addEventListener('input', () => updateBalanceDisplay(getMoney()));
+            CLICKER_BUTTON.addEventListener('click', handleCick);
         };
     </script>
 </body>
