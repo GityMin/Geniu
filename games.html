@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <title>Игры от Дениса Казакова</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #121212; color: #E0E0E0; text-align: center; padding-top: 50px; }
         .nav-bar { background-color: #333; padding: 10px 0; margin-bottom: 50px; }
@@ -11,6 +12,13 @@
         .game-list { max-width: 600px; margin: 0 auto; text-align: left; }
         .game-list a { display: block; background-color: #282828; color: #fff; padding: 15px; margin: 10px 0; border-radius: 8px; text-decoration: none; font-size: 1.2em; transition: background-color 0.3s; }
         .game-list a:hover { background-color: #4CAF50; }
+
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5em; } 
+            .game-list { width: 90%; } 
+            .game-list a { padding: 18px 10px; font-size: 1.1em; } 
+        }
     </style>
 </head>
 <body>
