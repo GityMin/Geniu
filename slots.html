@@ -3,16 +3,16 @@
 <head>
     <title>Слоты | Ручка Гения</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900;600&display=swap" rel="stylesheet">
     <style>
         /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
         :root {
             --bg-color: #111111;
             --text-color: #F0F0F0;
-            --accent-pink: #FF33CC;
+            --accent-pink: #FF33CC; 
             --accent-blue: #33CCFF;
             --card-bg: #1F1F1F;
-            --win-color: #00FF00;
+            --win-color: #00FF00; 
             --loss-color: #FF0000;
         }
 
@@ -28,7 +28,6 @@
                               repeating-linear-gradient(-90deg, var(--bg-color), var(--bg-color) 49px, rgba(51, 204, 255, 0.05) 50px);
         }
         
-        /* НАВИГАЦИОННЫЙ БАР (Оставим без изменений) */
         .nav-bar { 
             background-color: #000000;
             padding: 15px 0; 
@@ -53,7 +52,6 @@
             background-color: rgba(255, 51, 204, 0.1);
         }
 
-        /* ЗАГОЛОВКИ */
         h1 { 
             color: var(--accent-pink); 
             font-size: 3em;
@@ -63,77 +61,97 @@
             padding-top: 30px;
         }
 
-        /* ИГРОВОЙ КОНТЕЙНЕР */
         .slot-wrapper {
             max-width: 800px;
             margin: 0 auto;
-            display: flex; /* Для размещения барабанов и ручки рядом */
+            display: flex; 
             justify-content: center;
             align-items: flex-start;
             padding: 20px 0;
         }
         .slot-container {
-            width: 550px; /* Фиксированная ширина для барабанов */
+            width: 550px;
             padding: 20px;
             background-color: var(--card-bg);
             border-radius: 15px;
             border: 2px solid var(--accent-blue);
             box-shadow: 0 0 25px rgba(51, 204, 255, 0.5);
+            position: relative;
         }
 
-        /* ДИСПЛЕЙ БАРАБАНОВ */
+        /* БАРАБАНЫ */
         .reels {
             display: flex;
             justify-content: space-around;
             margin-bottom: 25px;
+            gap: 10px;
         }
         .reel {
-            font-size: 4em; /* Крупные эмодзи */
+            font-size: 3em; 
             width: 120px;
             height: 120px;
             line-height: 120px;
             background-color: #000000; 
             border-radius: 8px;
             border: 4px solid var(--accent-pink);
-            box-shadow: inset 0 0 15px rgba(0, 0, 0, 1), 0 0 10px var(--accent-pink);
-            font-weight: 900;
-            /* Важный стиль для эмодзи: тень для контраста */
-            text-shadow: 0 0 5px #000, 0 0 10px #000; 
-            -webkit-font-smoothing: antialiased; 
-            transition: color 0.1s;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 1), 0 0 15px var(--accent-pink);
+            font-weight: 600; 
+            color: var(--accent-blue); 
+            text-shadow: 0 0 8px var(--accent-blue); 
+            transition: all 0.2s;
+            overflow: hidden; 
+        }
+        .reel.win-glow {
+            border-color: var(--win-color);
+            box-shadow: 0 0 30px var(--win-color), inset 0 0 10px var(--win-color);
+            color: var(--win-color);
         }
 
-        /* РУЧКА СЛОТОВ */
+        /* НЕОНОВЫЙ РЫЧАГ */
         #lever-wrapper {
-            margin-left: 20px;
+            margin-left: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 25px; /* Выравнивание по верхнему краю барабанов */
+            padding-top: 25px;
         }
-        .lever-base {
-            width: 30px;
+        .lever-arm {
+            width: 20px;
             height: 100px;
-            background-color: #8B4513; /* Коричневая база */
-            border-radius: 15px;
-            border: 2px solid #5C3317;
+            background-color: #444; 
+            border-radius: 5px;
+            border: 2px solid #666;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .lever-arm::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, var(--accent-pink) 0%, transparent 50%, var(--accent-blue) 100%);
+            opacity: 0.3;
+            filter: blur(5px);
+            pointer-events: none;
         }
         #lever-handle {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background-color: var(--accent-pink);
             border-radius: 50%;
             cursor: pointer;
-            border: 3px solid #FFDDFF;
-            box-shadow: 0 0 15px var(--accent-pink);
+            border: 4px solid #FFDDFF;
+            box-shadow: 0 0 20px var(--accent-pink); 
             margin-top: -15px;
             transition: transform 0.2s;
             position: relative;
             z-index: 5;
         }
         #lever-handle:hover:not(:disabled) {
-            transform: translateY(5px); /* Движение вниз при клике/наведении */
-            box-shadow: 0 0 25px var(--accent-blue);
+            transform: translateY(10px); 
+            box-shadow: 0 0 30px var(--accent-blue); 
         }
         #lever-handle:disabled {
             background-color: #555;
@@ -141,8 +159,8 @@
             cursor: not-allowed;
             transform: none;
         }
-
-        /* УПРАВЛЕНИЕ ИГРОЙ (Скрываем кнопку "Крутить") */
+        
+        /* УПРАВЛЕНИЕ И ДИСПЛЕИ */
         .controls {
             margin-bottom: 20px;
             display: flex;
@@ -160,11 +178,6 @@
             border: 2px solid var(--accent-blue);
             border-radius: 5px;
         }
-        #spin-button {
-             display: none; /* Скрываем основную кнопку, используем Ручку */
-        }
-
-        /* БАЛАНС И СООБЩЕНИЯ (стили из прошлого шага) */
         #balance-display {
             font-size: 1.5em;
             font-weight: 700;
@@ -182,36 +195,28 @@
         .loss { color: var(--loss-color); text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
         .info { color: var(--accent-blue); text-shadow: 0 0 15px rgba(51, 204, 255, 0.8); }
 
-        /* КЛИКЕР-ПАНЕЛЬ (стили из прошлого шага) */
-        .clicker-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #282828;
-            border: 2px dashed var(--accent-blue);
-            border-radius: 10px;
-            color: var(--accent-blue);
-            max-width: 650px;
-            margin: 30px auto;
+        /* АНИМАЦИИ */
+        @keyframes spin {
+            0% { transform: translateY(0%); }
+            100% { transform: translateY(-100%); }
         }
-        #clicker-button {
-             padding: 10px 20px;
-             margin-top: 10px;
-             font-size: 1.1em;
-             background-color: var(--accent-blue);
-             color: #111;
-             border: none;
-             border-radius: 5px;
-             cursor: pointer;
-             font-weight: 700;
-             box-shadow: 0 0 10px var(--accent-blue);
-             transition: background-color 0.3s, box-shadow 0.3s;
+        .spinning {
+             animation: spin 0.05s infinite alternate; 
+             opacity: 0.5;
         }
-        #clicker-button:hover {
-            background-color: var(--accent-pink);
-            box-shadow: 0 0 10px var(--accent-pink);
+        
+        @keyframes glitch {
+            0% { transform: translate(0); opacity: 1; }
+            5% { transform: translate(-2px, 2px); opacity: 0.8; }
+            10% { transform: translate(1px, -1px); opacity: 1; }
+            15% { transform: translate(-3px, 0); opacity: 0.7; }
+            20% { transform: translate(0); opacity: 1; }
+        }
+        .glitch-active {
+            animation: glitch 0.5s linear 3;
         }
 
-        /* МОБИЛЬНАЯ ВЕРСИЯ (Слоты) */
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
         @media (max-width: 768px) {
             .slot-wrapper {
                 flex-direction: column;
@@ -220,29 +225,29 @@
             }
             .slot-container {
                 width: 100%;
-                max-width: 400px; /* Ограничиваем на маленьких экранах */
+                max-width: 400px;
                 margin-bottom: 20px;
             }
             .reels {
-                gap: 10px;
+                gap: 5px;
             }
             .reel {
-                font-size: 3em; 
-                width: 80px;
-                height: 80px;
-                line-height: 80px;
+                font-size: 2.5em; 
+                width: 90px;
+                height: 90px;
+                line-height: 90px;
             }
             #lever-wrapper {
                 margin-left: 0;
                 padding-top: 0;
             }
-            .lever-base {
-                width: 25px;
+            .lever-arm {
+                width: 15px;
                 height: 70px;
             }
             #lever-handle {
-                width: 35px;
-                height: 35px;
+                width: 30px;
+                height: 30px;
                 margin-top: -10px;
             }
         }
@@ -256,12 +261,14 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🎰 Слоты Гения</h1>
+    <h1>🎰 СЛОТЫ | [СИСТЕМА]</h1>
 
-    <div id="balance-display">Баланс: 0 Мани</div>
+    <div id="balance-display">КРЕДИТ: 0 М</div>
 
     <div class="slot-wrapper">
         <div class="slot-container">
+            <div style="position: absolute; top: 78px; left: 0; width: 100%; height: 5px; background: var(--accent-pink); box-shadow: 0 0 10px var(--accent-pink); z-index: 1;"></div>
+            
             <div class="reels">
                 <div class="reel" id="reel1">?</div>
                 <div class="reel" id="reel2">?</div>
@@ -269,23 +276,24 @@
             </div>
 
             <div class="controls">
-                <label for="bet-input" style="font-weight: 700;">Ставка:</label>
+                <label for="bet-input" style="font-weight: 700;">СТАВКА [КРЕДИТ]:</label>
                 <input type="number" id="bet-input" value="10" min="10" step="10">
-                <button id="spin-button"></button> </div>
+                <button id="spin-button" style="display: none;"></button> 
+            </div>
             
-            <p id="message-display" class="info">Минимальная ставка: 10 Мани</p>
+            <p id="message-display" class="info">МИНИМАЛЬНО: 10 М. АКТИВИРУЙТЕ РЫЧАГ.</p>
         </div>
         
         <div id="lever-wrapper">
-            <div class="lever-base"></div>
-            <div id="lever-handle" title="Крутить!"></div>
+            <div class="lever-arm"></div>
+            <div id="lever-handle" title="СПИН!"></div>
         </div>
 
     </div>
 
     <div class="clicker-section" id="clicker-panel" style="display: none;">
-        <p>Упс! Кажется, у тебя закончились Мани.</p>
-        <button id="clicker-button">КЛИКНИ, чтобы получить 1 Мани</button>
+        <p>КРЕДИТ [0]. АКТИВИРУЙ КЛИКЕР.</p>
+        <button id="clicker-button">КЛИКНИ +1 М</button>
     </div>
 
     <script>
@@ -296,29 +304,29 @@
                 document.getElementById('reel3')
             ];
             const BET_INPUT = document.getElementById('bet-input');
-            const SPIN_BUTTON = document.getElementById('spin-button');
-            const LEVER_HANDLE = document.getElementById('lever-handle'); // Новая ручка
+            const SPIN_BUTTON = document.getElementById('spin-button'); 
+            const LEVER_HANDLE = document.getElementById('lever-handle'); 
             const BALANCE_DISPLAY = document.getElementById('balance-display');
             const MESSAGE_DISPLAY = document.getElementById('message-display');
             const CLICKER_PANEL = document.getElementById('clicker-panel');
             const CLICKER_BUTTON = document.getElementById('clicker-button');
 
-            // --- КОНСТАНТЫ ИГРЫ (Возвращаем Эмодзи, но с контрастом!) ---
+            // --- НОВЫЕ СИМВОЛЫ ИГРЫ ---
             const SYMBOLS = [
-                { text: '🍒', color: '#FF0000' },     // Вишня
-                { text: '🍋', color: '#FFD700' },      // Лимон
-                { text: '7️⃣', color: '#FF8C00' },      // Семерка
-                { text: '💎', color: '#00FFFF' }     // BAR
+                { text: 'X', color: '#FF33CC' },
+                { text: '0', color: '#FFD700' },
+                { text: 'CODE', color: '#00FF00' },
+                { text: 'TRON', color: '#33CCFF' }
             ];
             const PAYOUTS = {
-                '🍒': 2,
-                '🍋': 5,
-                '7️⃣': 10,
-                '💎': 50
+                'X': 2,
+                '0': 5,
+                'CODE': 15,
+                'TRON': 50
             };
             const MIN_BET = 10;
             
-            // --- ЛОГИКА БАЛАНСА (Оставим без изменений) ---
+            // --- ЛОГИКА БАЛАНСА ---
             const currentUsername = localStorage.getItem('denisKazakovUser');
             const isUserLoggedIn = !!currentUsername;
             const SECRET_KEY = 952; 
@@ -353,7 +361,7 @@
                 }
                 
                 if (storedMoney + SECRET_KEY !== storedChecksum) {
-                    MESSAGE_DISPLAY.textContent = "Баланс сброшен! Обнаружена ошибка данных.";
+                    MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ОШИБКА. КРЕДИТ СБРОШЕН.";
                     MESSAGE_DISPLAY.className = 'loss';
                     return setMoney(ANTI_CHEAT_RESET_AMOUNT); 
                 }
@@ -364,7 +372,7 @@
             // --- УПРАВЛЕНИЕ ИНТЕРФЕЙСОМ ---
 
             function updateBalanceDisplay(currentMoney) {
-                BALANCE_DISPLAY.textContent = `Баланс: ${currentMoney} Мани`;
+                BALANCE_DISPLAY.textContent = `КРЕДИТ: ${currentMoney} М`;
                 
                 const isAffordable = currentMoney >= MIN_BET;
                 
@@ -374,13 +382,12 @@
                     CLICKER_PANEL.style.display = 'none';
                 }
                 
-                // Кнопка и ручка управляются одной логикой
                 SPIN_BUTTON.disabled = !isAffordable;
                 LEVER_HANDLE.disabled = !isAffordable;
                 BET_INPUT.disabled = !isAffordable;
 
                 if (!isAffordable) {
-                     MESSAGE_DISPLAY.textContent = `Нужно минимум ${MIN_BET} Мани для игры!`;
+                     MESSAGE_DISPLAY.textContent = `[СИСТЕМА] КРЕДИТА НЕДОСТАТОЧНО. МИНИМУМ: ${MIN_BET} М.`;
                      MESSAGE_DISPLAY.className = 'loss';
                 }
             }
@@ -388,43 +395,42 @@
             // --- ЛОГИКА ИГРЫ ---
             
             function spin() {
-                // Если ручка или кнопка не активны, выходим
                 if (SPIN_BUTTON.disabled) return; 
 
                 const bet = parseInt(BET_INPUT.value);
                 let currentMoney = getMoney();
                 
                 if (isNaN(bet) || bet < MIN_BET || bet > currentMoney) {
-                    MESSAGE_DISPLAY.textContent = `Ставка должна быть от ${MIN_BET} до ${currentMoney} Мани.`;
+                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] НЕДОПУСТИМАЯ СТАВКА.`;
                     MESSAGE_DISPLAY.className = 'loss';
                     return;
                 }
 
-                // Списываем ставку
                 setMoney(currentMoney - bet);
 
-                // Запускаем анимацию и блокируем управление
-                REELS.forEach(reel => reel.classList.add('spinning'));
-                SPIN_BUTTON.disabled = true;
+                REELS.forEach(reel => {
+                    reel.classList.add('spinning');
+                    reel.classList.remove('win-glow');
+                    reel.classList.remove('glitch-active');
+                    reel.textContent = '?';
+                });
                 LEVER_HANDLE.disabled = true;
 
-                // Останавливаем через 2 секунды
                 setTimeout(() => {
                     REELS.forEach(reel => reel.classList.remove('spinning'));
                     
                     const results = REELS.map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
                     
-                    // ПРИСВОЕНИЕ ЭМОДЗИ И ЦВЕТА
                     results.forEach((item, index) => {
                         REELS[index].textContent = item.text;
-                        // Эмодзи не меняют цвет, но можно менять цвет контейнера или тени, для визуальной связи
-                        // REELS[index].style.color = item.color; 
+                        REELS[index].style.color = item.color; 
                         REELS[index].style.borderColor = item.color;
+                        REELS[index].style.boxShadow = `inset 0 0 10px rgba(0, 0, 0, 1), 0 0 15px ${item.color}`;
+                        REELS[index].style.textShadow = `0 0 8px ${item.color}`;
                     });
                     
                     checkResult(results, bet);
                     
-                    SPIN_BUTTON.disabled = false;
                     LEVER_HANDLE.disabled = false;
                     updateBalanceDisplay(getMoney()); 
                 }, 2000);
@@ -434,27 +440,26 @@
                 const [r1, r2, r3] = results;
                 let winnings = 0;
                 
-                // Конвертируем обратно в текст для сравнения
                 const r1_text = r1.text;
                 const r2_text = r2.text;
                 const r3_text = r3.text;
 
-                // 3 одинаковых (Джекпот)
                 if (r1_text === r2_text && r2_text === r3_text) {
                     winnings = bet * PAYOUTS[r1_text];
-                    MESSAGE_DISPLAY.textContent = `🎉 ДЖЕКПОТ! Выиграл ${winnings} Мани!`;
+                    MESSAGE_DISPLAY.textContent = `[JACKPOT!] ВЫИГРЫШ: ${winnings} М.`;
                     MESSAGE_DISPLAY.className = 'win';
+                    REELS.forEach(reel => reel.classList.add('win-glow'));
+                    REELS.forEach(reel => reel.classList.add('glitch-active'));
                 } 
-                // 2 одинаковых (небольшой выигрыш)
                 else if (r1_text === r2_text || r2_text === r3_text || r1_text === r3_text) {
                     winnings = bet * 0.5;
-                    MESSAGE_DISPLAY.textContent = `💰 Почти! Выиграл ${winnings} Мани.`;
+                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] АКТИВАЦИЯ. ВЫИГРЫШ: ${winnings} М.`;
                     MESSAGE_DISPLAY.className = 'win';
                 } 
-                // Проигрыш
                 else {
-                    MESSAGE_DISPLAY.textContent = '❌ Не повезло. Попробуй еще раз, Гений!';
+                    MESSAGE_DISPLAY.textContent = '[СИСТЕМА] ПЕРЕЗАГРУЗКА. ПОПЫТКА №.';
                     MESSAGE_DISPLAY.className = 'loss';
+                    REELS.forEach(reel => reel.classList.add('glitch-active'));
                 }
 
                 if (winnings > 0) {
@@ -466,22 +471,22 @@
             function handleCick() {
                 if (isUserLoggedIn) {
                     setMoney(getMoney() + 1);
-                    CLICKER_BUTTON.textContent = `+1 Мани! Баланс: ${getMoney()}`;
+                    CLICKER_BUTTON.textContent = `[+1 М] КРЕДИТ: ${getMoney()}`;
                 }
             }
 
             // --- Инициализация ---
             if (!isUserLoggedIn) {
-                 MESSAGE_DISPLAY.textContent = "Войдите, чтобы играть!";
+                 MESSAGE_DISPLAY.textContent = "[СИСТЕМА] ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.";
                  CLICKER_PANEL.style.display = 'block';
-                 CLICKER_BUTTON.textContent = 'Войдите на страницу "Вход/Выход"';
+                 CLICKER_BUTTON.textContent = 'АВТОРИЗУЙСЯ';
                  CLICKER_BUTTON.disabled = true;
             } else {
                 updateBalanceDisplay(getMoney());
             }
 
             // СЛУШАТЕЛИ
-            LEVER_HANDLE.addEventListener('click', spin); // Ручка запускает спин
+            LEVER_HANDLE.addEventListener('click', spin); 
             BET_INPUT.addEventListener('input', () => updateBalanceDisplay(getMoney()));
             CLICKER_BUTTON.addEventListener('click', handleCick);
         };
