@@ -196,7 +196,7 @@
         <a href="login.html">Вход/Выход</a>
     </div>
 
-    <h1>🔐 СИСТЕМА АВТОРИЗАЦИИ v.3.2 (DEV READY)</h1>
+    <h1>🔐 СИСТЕМА АВТОРИЗАЦИИ v.3.3 (DEV PRIORITY FIX)</h1>
 
     <div class="auth-card">
         
@@ -255,17 +255,17 @@
             const FORM_TITLE = document.getElementById('form-title');
 
             const USER_KEY = 'denisKazakovUser'; 
-            const PASSWORD_PREFIX = 'pass_'; // Префикс для хранения пароля
+            const PASSWORD_PREFIX = 'pass_';
             const INITIAL_MONEY = 100;
             const MONEY_PREFIX = 'money_';
             const CHECKSUM_PREFIX = 'checksum_';
             const SECRET_KEY = 952; 
             
-            // --- АККАУНТ РАЗРАБОТЧИКА ---
+            // --- АККАУНТ РАЗРАБОТЧИКА (Dev Priority Fix) ---
             const DEV_USERNAME = 'DenisKazakov';
             const DEV_PASSWORD = '4aika4jo';
 
-            let authMode = 'register'; // 'register' или 'login'
+            let authMode = 'register'; 
 
             // --- УТИЛИТЫ БАЛАНСА ---
             function setInitialMoney(username) {
@@ -313,8 +313,8 @@
             function handleRegister(username, password, confirmPassword) {
                 // ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
                 if (username === DEV_USERNAME) {
-                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] ОШИБКА: Этот АЙДИ зарезервирован для разработчика.`;
-                    MESSAGE_DISPLAY.className = 'error';
+                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] ОШИБКА: Этот АЙДИ зарезервирован как Аккаунт разработчика.`;
+                    MESSAGE_DISPLAY.className = 'dev-message';
                     return;
                 }
                 
@@ -349,14 +349,15 @@
 
             // --- ОБРАБОТЧИК ВХОДА ---
             function handleLogin(username, password) {
-                let status = 'user'; // По умолчанию обычный пользователь
+                let status = 'user'; 
                 
-                // ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
+                // 1. ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА (DEV PRIORITY)
                 if (username === DEV_USERNAME && password === DEV_PASSWORD) {
                     status = 'dev';
-                    // Устанавливаем статус разработчика в localStorage, чтобы его можно было проверить позже (например, в играх)
                     localStorage.setItem('userStatus', 'dev'); 
-                } else {
+                } 
+                // 2. ПРОВЕРКА ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ
+                else {
                     const storedPassword = getStoredPassword(username);
 
                     if (!storedPassword) {
@@ -412,7 +413,7 @@
                 const username = localStorage.getItem(USER_KEY);
                 
                 localStorage.removeItem(USER_KEY);
-                localStorage.removeItem('userStatus'); // Удаляем статус при выходе
+                localStorage.removeItem('userStatus'); 
                 removeGameData(); 
 
                 MESSAGE_DISPLAY.textContent = `СИСТЕМА: Доступ ${username} деактивирован. Данные сброшены.`;
@@ -439,7 +440,7 @@
                         STATUS_TEXT.textContent = 'ДОСТУП АКТИВИРОВАН [РЕЖИМ РАЗРАБОТЧИКА]';
                         STATUS_TEXT.style.color = 'var(--dev-color)';
                         STATUS_DISPLAY.className = 'status-box dev-mode';
-                        DEV_STATUS_TEXT.textContent = 'ВНИМАНИЕ: Активирован режим разработчика. Имеет полный доступ.';
+                        DEV_STATUS_TEXT.textContent = 'ВНИМАНИЕ: Активирован режим разработчика. Имеет полный доступ и не требует сохранения баланса.';
                         DEV_STATUS_TEXT.style.color = 'var(--dev-color)';
                     } else {
                         // Обычный пользователь
