@@ -115,6 +115,7 @@
         <a href="index.html">Главная</a>
         <a href="games.html">Игры</a>
         <a href="about.html">Автор</a>
+        <a href="login.html">Вход/Выход</a>
     </div>
 
     <h1>🔥 Игровой Автомат: "Гений Умножения" 🔥</h1>
@@ -289,15 +290,3 @@
                 if (winAmount > 0) {
                     setMoney(getMoney() + winAmount);
                     RESULT_MESSAGE.style.color = '#00FF00';
-                } else {
-                    RESULT_MESSAGE.style.color = '#FF0000';
-                }
-                
-                RESULT_MESSAGE.innerHTML = message;
-            }
-
-            SPIN_BUTTON.addEventListener('click', spin);
-        };
-    </script>
-</body>
-</html>
