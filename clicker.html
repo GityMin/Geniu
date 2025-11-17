@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <title>Кликер МММ | Денис Казаков</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: 'Arial', sans-serif; background-color: #121212; color: #E0E0E0; text-align: center; padding-top: 50px; }
         .nav-bar { background-color: #333; padding: 10px 0; margin-bottom: 50px; }
@@ -11,6 +12,13 @@
         #money-display { font-size: 4em; margin: 20px; color: #4CAF50; }
         #click-button { padding: 20px 40px; font-size: 2em; background-color: #FFD700; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.1s; }
         #click-button:active { transform: scale(0.95); }
+
+        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ --- */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            #money-display { font-size: 3em; }
+            #click-button { padding: 15px 30px; font-size: 1.5em; }
+        }
     </style>
 </head>
 <body>
@@ -28,20 +36,16 @@
 
     <script>
         window.onload = function() {
-            // 1. ИЗВЛЕКАЕМ ДЕНЬГИ ИЗ ПАМЯТИ ИЛИ НАЧИНАЕМ С 0
             let money = parseInt(localStorage.getItem('denisKazakovMoney')) || 0;
             const display = document.getElementById('money-display');
             const button = document.getElementById('click-button');
             
-            // Функция обновления дисплея и сохранения
             function updateMoney(amount) {
                 money += amount;
                 display.textContent = `Мани: ${money}`;
-                // 2. СОХРАНЯЕМ НОВОЕ ЗНАЧЕНИЕ В ПАМЯТИ БРАУЗЕРА
                 localStorage.setItem('denisKazakovMoney', money);
             }
 
-            // Инициализация при загрузке
             updateMoney(0);
 
             button.addEventListener('click', () => {
