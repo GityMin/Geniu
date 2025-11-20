@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Geniu Login</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 body {
     margin:0; padding:0;
@@ -26,48 +28,29 @@ header .logo { font-size:24px; font-weight:700; color:#ff69b4; }
 header nav a {
     color:#ff69b4; margin-right:20px; text-decoration:none; font-weight:600;
     transition:0.3s;
+    cursor:pointer;
 }
 header nav a:hover { color:#fff; text-shadow:0 0 8px #ff69b4; }
-.container {
-    margin-top:90px;
-    max-width: 700px;
-    margin-left:auto; margin-right:auto;
-    padding:25px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 20px;
-    box-shadow:0 0 25px rgba(255,20,147,0.5);
-    animation: fadeIn 1s ease;
-}
+.container { margin-top:90px; max-width:700px; margin-left:auto; margin-right:auto; padding:25px; background: rgba(0,0,0,0.5); border-radius:20px; box-shadow:0 0 25px rgba(255,20,147,0.5); animation: fadeIn 1s ease; }
 h1,h2 { text-align:center; }
-input, select, button {
-    width:100%; padding:12px; margin:10px 0; border-radius:10px; border:none; font-size:16px;
-    outline:none;
-}
+input, select, button { width:100%; padding:12px; margin:10px 0; border-radius:10px; border:none; font-size:16px; outline:none; }
 input { background: rgba(255,255,255,0.1); color:#fff; }
 input::placeholder { color:#ffb6c1; }
 select { background: rgba(255,255,255,0.1); color:#fff; }
-button {
-    background: #ff69b4;
-    color:#fff; font-weight:bold; cursor:pointer;
-    transition:0.3s;
-    box-shadow:0 0 10px #ff69b4;
-}
-button:hover {
-    background:#ff1493;
-    box-shadow:0 0 20px #ff1493;
-}
+button { background: #ff69b4; color:#fff; font-weight:bold; cursor:pointer; transition:0.3s; box-shadow:0 0 10px #ff69b4; }
+button:hover { background:#ff1493; box-shadow:0 0 20px #ff1493; }
 #message { text-align:center; margin-top:10px; color:#ffb6c1; }
 .hidden { display:none; }
-
-/* Панели */
 .panel { background: rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-top:20px; display:none; animation: slideDown 0.5s ease; }
 table { width:100%; border-collapse: collapse; margin-top:10px; }
 th, td { border:1px solid #ff69b4; padding:5px; text-align:center; }
 th { background: rgba(255,105,180,0.2); color:#fff; }
-
-/* Анимации */
+#chat-box p { margin:5px 0; opacity:0; transform:translateY(-10px); animation: msgFade 0.3s forwards; }
+@keyframes msgFade { to { opacity:1; transform:translateY(0); } }
 @keyframes fadeIn { from {opacity:0} to {opacity:1} }
 @keyframes slideDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+.tab-content { display:none; margin-top:20px; animation: fadeIn 0.5s ease; }
+.tab-content.active { display:block; }
 </style>
 </head>
 <body>
@@ -75,26 +58,24 @@ th { background: rgba(255,105,180,0.2); color:#fff; }
 <header>
     <div class="logo">Geniu</div>
     <nav>
-        <a href="#">Главная</a>
-        <a href="#">Игры</a>
-        <a href="#">Магазин</a>
-        <a href="#">Рейтинг</a>
-        <a href="#">О владельце</a>
+        <a data-tab="home">Главная</a>
+        <a data-tab="games">Игры</a>
+        <a data-tab="store">Магазин</a>
+        <a data-tab="rating">Рейтинг</a>
+        <a data-tab="owner">О владельце</a>
     </nav>
 </header>
 
 <div class="container">
 
+<div class="tab-content active" id="home">
 <h1 id="form-title">> РЕЖИМ: РЕГИСТРАЦИЯ</h1>
-
 <div id="auth-form">
     <input id="username" placeholder="Логин">
     <input type="password" id="password" placeholder="Пароль">
     <div id="confirm-password-group">
         <input type="password" id="confirm-password" placeholder="Подтвердите пароль">
-        <select id="role-select">
-            <option value="user">user</option>
-        </select>
+        <select id="role-select"><option value="user">user</option></select>
     </div>
     <button id="main-action-button">Зарегистрироваться</button>
     <button id="mode-toggle">Войти</button>
@@ -103,51 +84,52 @@ th { background: rgba(255,105,180,0.2); color:#fff; }
 
 <div id="welcome-message"></div>
 
-<!-- Панель игрока -->
 <div id="user-panel" class="panel">
     <h2>Панель игрока</h2>
     <p>Баланс: <span id="user-balance">0</span></p>
     <button id="bonus-btn">Получить бонус +10</button>
 </div>
 
-<!-- Панель модератора/админа -->
 <div id="admin-panel" class="panel">
     <h2>Панель модератора / админа</h2>
-    <table id="users-table">
-        <tr><th>Логин</th><th>Роль</th><th>Баланс</th><th>Действия</th></tr>
-    </table>
+    <table id="users-table"><tr><th>Логин</th><th>Роль</th><th>Баланс</th><th>Действия</th></tr></table>
 </div>
 
-<!-- Owner панель -->
 <div id="owner-panel" class="panel">
     <h2>Супер-функции владельца</h2>
     <button id="reset-all">Сбросить всех пользователей</button>
 </div>
 
-<!-- Чат -->
 <div id="chat-panel" class="panel">
     <h2>Чат игроков</h2>
     <div id="chat-box" style="height:150px; overflow:auto; background: rgba(255,255,255,0.1); padding:5px; border-radius:5px;"></div>
     <input id="chat-input" placeholder="Введите сообщение">
     <button id="chat-send">Отправить</button>
 </div>
-
-<!-- Достижения -->
-<div id="achievements-panel" class="panel">
-    <h2>Достижения</h2>
-    <div id="achievements-box"></div>
 </div>
 
-<!-- Лог модераторов -->
-<div id="mod-log-panel" class="panel">
-    <h2>Лог модераторов</h2>
-    <div id="mod-log-box"></div>
-</div>
+<div class="tab-content" id="games">Игры</div>
+<div class="tab-content" id="store">Магазин</div>
+<div class="tab-content" id="rating">Рейтинг</div>
+<div class="tab-content" id="owner">Информация о владельце</div>
 
 </div>
 
 <script>
-// ===== Переменные =====
+// ===== Firebase init =====
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ===== Users =====
 const USER_KEY='app_users';
 const DEV_USERNAME='DenisKazakov';
 const DEV_PASSWORD_HASH='4aika4jo';
@@ -155,12 +137,10 @@ const DEV_ROLE='owner';
 let authMode='register';
 let currentUser=null;
 
-// ===== Утилиты =====
 function getUsers(){ return JSON.parse(localStorage.getItem(USER_KEY)||'{}'); }
 function saveUsers(users){ localStorage.setItem(USER_KEY,JSON.stringify(users)); }
 function hashString(str){ return str.split('').reduce((a,b)=>a+b.charCodeAt(0),0); }
 
-// ===== Регистрация / Вход =====
 async function registerUser(username,password,role='user'){
     let users=getUsers();
     if(users[username]){ return showMessage('Пользователь уже существует!'); }
@@ -169,7 +149,6 @@ async function registerUser(username,password,role='user'){
     showMessage('Регистрация успешна! Войдите.', 'green');
     toggleMode();
 }
-
 async function loginUser(username,password){
     if(username===DEV_USERNAME && password===DEV_PASSWORD_HASH){
         currentUser={username:DEV_USERNAME,role:DEV_ROLE,balance:Infinity};
@@ -186,7 +165,6 @@ async function loginUser(username,password){
     } else showMessage('Неверный пароль.');
 }
 
-// ===== UI =====
 function showMessage(msg,color='red'){ 
     document.getElementById('message').textContent=msg; 
     document.getElementById('message').style.color=color; 
@@ -207,12 +185,9 @@ function showPanels(){
     if(['moderator','admin','owner'].includes(currentUser.role)) document.getElementById('admin-panel').style.display='block';
     if(currentUser.role==='owner') document.getElementById('owner-panel').style.display='block';
     document.getElementById('chat-panel').style.display='block';
-    document.getElementById('achievements-panel').style.display='block';
-    document.getElementById('mod-log-panel').style.display='block';
     renderUsersTable();
 }
 
-// ===== События =====
 document.getElementById('main-action-button').onclick=async()=>{
     const username=document.getElementById('username').value.trim();
     const password=document.getElementById('password').value;
@@ -226,53 +201,31 @@ document.getElementById('main-action-button').onclick=async()=>{
 };
 document.getElementById('mode-toggle').onclick=(e)=>{ e.preventDefault(); toggleMode(); };
 
-// ===== Панель игрока =====
-document.getElementById('bonus-btn').onclick=()=>{
-    currentUser.balance+=10;
-    document.getElementById('user-balance').textContent=currentUser.balance;
-    if(currentUser.username!==DEV_USERNAME){ let u=getUsers(); u[currentUser.username].balance=currentUser.balance; saveUsers(u); }
-};
+// ===== Tabs =====
+const tabs = document.querySelectorAll('header nav a');
+const contents = document.querySelectorAll('.tab-content');
+tabs.forEach(tab=>{
+    tab.addEventListener('click', e=>{
+        e.preventDefault();
+        const target = tab.getAttribute('data-tab');
+        contents.forEach(c=>c.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+    });
+});
 
-// ===== Панель админа =====
-function renderUsersTable(){
-    const table=document.getElementById('users-table');
-    table.innerHTML='<tr><th>Логин</th><th>Роль</th><th>Баланс</th><th>Действия</th></tr>';
-    let users=getUsers();
-    if(currentUser.username!==DEV_USERNAME) users[DEV_USERNAME]={role:DEV_ROLE,balance:'∞'};
-    for(let u in users){
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td>${u}</td><td>${users[u].role}</td><td>${users[u].balance}</td>
-            <td>
-                <button onclick="changeRole('${u}')">Роль</button>
-                <button onclick="deleteUser('${u}')">Удалить</button>
-                <button onclick="addMoney('${u}',10)">+10</button>
-            </td>`;
-        table.appendChild(tr);
-    }
-}
-window.changeRole=(username)=>{ let role=prompt('Новая роль (user/moderator/admin):'); if(!role) return; let u=getUsers(); if(u[username]){ u[username].role=role; saveUsers(u); renderUsersTable(); logAction(currentUser.username,'сменил роль',username); } };
-window.deleteUser=(username)=>{ if(!confirm('Удалить '+username+'?')) return; let u=getUsers(); delete u[username]; saveUsers(u); renderUsersTable(); logAction(currentUser.username,'удалил пользователя',username); };
-window.addMoney=(username,amount)=>{ let u=getUsers(); if(u[username]){ u[username].balance+=amount; saveUsers(u); renderUsersTable(); logAction(currentUser.username,'добавил '+amount+' монет',username); } };
-
-// ===== Owner =====
-document.getElementById('reset-all').onclick=()=>{ if(!confirm('Сбросить всех?')) return; localStorage.removeItem(USER_KEY); renderUsersTable(); };
-
-// ===== Чат =====
-const chatBox=document.getElementById('chat-box'); const chatInput=document.getElementById('chat-input'); const chatSend=document.getElementById('chat-send');
-function renderChat(){ const msgs=JSON.parse(localStorage.getItem('chat_messages')||'[]'); chatBox.innerHTML=msgs.map(m=>`<p><b>${m.user}</b>: ${m.text}</p>`).join(''); chatBox.scrollTop=chatBox.scrollHeight; }
-chatSend.onclick=()=>{ if(!currentUser) return; const txt=chatInput.value.trim(); if(!txt) return; const msgs=JSON.parse(localStorage.getItem('chat_messages')||'[]'); msgs.push({user:currentUser.username,text:txt,time:Date.now()}); localStorage.setItem('chat_messages',JSON.stringify(msgs)); chatInput.value=''; renderChat(); };
-setInterval(renderChat,2000); renderChat();
-
-// ===== Achievements =====
-function grantAchievement(user,ach){ const a=JSON.parse(localStorage.getItem('achievements')||'{}'); if(!a[user]) a[user]=[]; if(!a[user].includes(ach)){ a[user].push(ach); localStorage.setItem('achievements',JSON.stringify(a)); alert(user+' получил достижение: '+ach); renderAchievements(); } }
-function renderAchievements(){ const box=document.getElementById('achievements-box'); const a=JSON.parse(localStorage.getItem('achievements')||'{}'); box.innerHTML=currentUser && a[currentUser.username]? a[currentUser.username].map(x=>`<p>✅ ${x}</p>`).join('') : 'Нет достижений'; }
-setInterval(renderAchievements,3000); renderAchievements();
-
-// ===== Moderator log =====
-function logAction(actor,action,target=null){ const logs=JSON.parse(localStorage.getItem('mod_logs')||'[]'); logs.push({actor,action,target,time:new Date().toLocaleString()}); localStorage.setItem('mod_logs',JSON.stringify(logs)); renderModLog(); }
-function renderModLog(){ const box=document.getElementById('mod-log-box'); const logs=JSON.parse(localStorage.getItem('mod_logs')||'[]'); box.innerHTML=logs.map(l=>`<p>[${l.time}] ${l.actor} → ${l.action} ${l.target||''}</p>`).join(''); }
-setInterval(renderModLog,3000); renderModLog();
+// ===== Firebase Chat =====
+const chatBox=document.getElementById('chat-box');
+const chatInput=document.getElementById('chat-input');
+const chatSend=document.getElementById('chat-send');
+function addChatMessage(user,text){ db.ref('chat').push().set({user,text,time:Date.now()}); }
+chatSend.onclick=()=>{ if(!currentUser) return; const txt=chatInput.value.trim(); if(!txt) return; addChatMessage(currentUser.username,txt); chatInput.value=''; };
+db.ref('chat').on('child_added',(snapshot)=>{
+    const data=snapshot.val();
+    const p=document.createElement('p');
+    p.innerHTML=`<b>${data.user}</b>: ${data.text}`;
+    chatBox.appendChild(p);
+    chatBox.scrollTop=chatBox.scrollHeight;
+});
 </script>
-
 </body>
 </html>
