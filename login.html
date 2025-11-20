@@ -1,480 +1,252 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>Вход/Регистрация | СИСТЕМА АВТОРИЗАЦИИ</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        /* ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ */
-        :root {
-            --bg-color: #0A0A0A; 
-            --text-color: #F0F0F0; 
-            --accent-pink: #FF33CC; 
-            --accent-blue: #33CCFF; 
-            --card-bg: #181818; 
-            --success-color: #00FF00;
-            --dev-color: #FFFF00; /* Новый цвет для DEV-статуса */
-        }
-
-        /* ОСНОВНЫЕ СТИЛИ */
-        body { 
-            font-family: 'Orbitron', sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            text-align: center; 
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-image: radial-gradient(circle at center, rgba(51, 204, 255, 0.1) 0%, transparent 50%),
-                              repeating-linear-gradient(45deg, rgba(255, 51, 204, 0.05) 0px, rgba(255, 51, 204, 0.05) 1px, transparent 1px, transparent 10px);
-        }
-        
-        /* НАВИГАЦИЯ */
-        .nav-bar { 
-            background-color: #000000;
-            padding: 15px 0; 
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent-blue);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-        .nav-bar a { 
-            color: var(--text-color); 
-            padding: 14px 25px; 
-            text-decoration: none; 
-            font-size: 16px; 
-            font-weight: 700; 
-            transition: color 0.3s, text-shadow 0.3s;
-            border-radius: 5px;
-        }
-        .nav-bar a:hover { 
-            color: var(--accent-pink); 
-            text-shadow: 0 0 10px var(--accent-pink); 
-        }
-
-        h1 { 
-            color: var(--accent-blue); 
-            font-size: 3em; 
-            font-weight: 900;
-            text-shadow: 0 0 25px rgba(51, 204, 255, 1); 
-            margin-bottom: 50px;
-        }
-        
-        /* КАРТОЧКА АВТОРИЗАЦИИ */
-        .auth-card {
-            width: 350px;
-            padding: 40px;
-            background-color: var(--card-bg);
-            border-radius: 10px;
-            border: 3px solid var(--accent-pink);
-            box-shadow: 0 0 30px rgba(255, 51, 204, 0.5);
-            transition: transform 0.5s;
-            transform: perspective(1000px) rotateY(3deg);
-        }
-
-        /* ФОРМЫ И ИНПУТЫ */
-        .input-group {
-            margin-bottom: 25px;
-            text-align: left;
-            position: relative;
-        }
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--accent-blue);
-            font-weight: 700;
-            text-shadow: 0 0 5px var(--accent-blue);
-        }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            background-color: #000;
-            color: var(--success-color);
-            border: 2px solid #555;
-            border-radius: 4px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1em;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--accent-pink);
-            box-shadow: 0 0 10px var(--accent-pink);
-        }
-
-        /* КНОПКА */
-        .action-button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--accent-blue);
-            color: var(--bg-color);
-            border: none;
-            border-radius: 5px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2em;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 0 15px var(--accent-blue);
-            transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
-            margin-top: 15px;
-        }
-        .action-button:hover {
-            background-color: var(--accent-pink);
-            box-shadow: 0 0 20px var(--accent-pink);
-            color: var(--text-color);
-        }
-        .action-button:active {
-            transform: scale(0.98);
-        }
-
-        #mode-toggle {
-            background: none;
-            color: var(--accent-blue);
-            border: 1px solid var(--accent-blue);
-            padding: 8px;
-            font-size: 0.9em;
-            margin-top: 15px;
-            box-shadow: none;
-            transition: color 0.3s, border-color 0.3s;
-        }
-        #mode-toggle:hover {
-            color: var(--accent-pink);
-            border-color: var(--accent-pink);
-            background: none;
-        }
-
-        /* СООБЩЕНИЯ */
-        #message {
-            margin-top: 20px;
-            font-size: 1.1em;
-            font-weight: 700;
-            min-height: 25px;
-        }
-        .success { color: var(--success-color); text-shadow: 0 0 10px var(--success-color); }
-        .error { color: var(--accent-pink); text-shadow: 0 0 10px var(--accent-pink); }
-        .dev-message { color: var(--dev-color); text-shadow: 0 0 10px var(--dev-color); }
-        
-        /* АНИМАЦИИ ДЛЯ СТАТУСА */
-        .status-box {
-            margin-top: 30px;
-            padding: 15px;
-            border-radius: 5px;
-            border: 2px dashed var(--accent-blue);
-            text-align: left;
-            transition: border-color 0.5s;
-            transform: skewX(-2deg);
-        }
-        .status-box.logged-in {
-            border-color: var(--success-color);
-            box-shadow: 0 0 15px var(--success-color);
-        }
-        .status-box.dev-mode {
-            border-color: var(--dev-color);
-            box-shadow: 0 0 20px var(--dev-color);
-        }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 2.2em; }
-            .auth-card {
-                width: 90%;
-                padding: 20px;
-                transform: none;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Админка с ролями</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+#auth-form, #user-panel, #admin-panel, #welcome-message { margin-top: 20px; }
+#user-panel, #admin-panel, #welcome-message { display: none; }
+button { margin: 3px; }
+.hidden { display: none; }
+table { border-collapse: collapse; margin-top: 10px; }
+td, th { border: 1px solid black; padding: 5px 10px; }
+</style>
 </head>
 <body>
-    <div class="nav-bar">
-        <a href="index.html">Главная</a>
-        <a href="games.html">Игры</a>
-        <a href="about.html">Автор</a>
-        <a href="login.html">Вход/Выход</a>
+
+<h1 id="form-title">> РЕЖИМ: РЕГИСТРАЦИЯ</h1>
+
+<div id="auth-form">
+    <input id="username" placeholder="Логин"><br><br>
+    <input type="password" id="password" placeholder="Пароль"><br><br>
+    <div id="confirm-password-group">
+        <input type="password" id="confirm-password" placeholder="Подтвердите пароль"><br><br>
+        <select id="role-select">
+            <option value="user">user</option>
+        </select>
     </div>
+    <button id="main-action-button">Зарегистрироваться</button>
+    <button id="mode-toggle">Войти</button>
+    <div id="message" style="color:red;"></div>
+</div>
 
-    <h1>🔐 СИСТЕМА АВТОРИЗАЦИИ v.3.3 (DEV PRIORITY FIX)</h1>
+<div id="welcome-message"></div>
 
-    <div class="auth-card">
-        
-        <div id="auth-form">
-            <h2 id="form-title">> РЕЖИМ: РЕГИСТРАЦИЯ</h2>
-            
-            <div class="input-group">
-                <label for="username">ИМЯ ПОЛЬЗОВАТЕЛЯ (АЙДИ):</label>
-                <input type="text" id="username" placeholder="Введите ваш уникальный АЙДИ" required>
-            </div>
-            
-            <div class="input-group">
-                <label for="password">ПАРОЛЬ:</label>
-                <input type="password" id="password" placeholder="Введите пароль" required>
-            </div>
-            
-            <div class="input-group" id="confirm-password-group">
-                <label for="confirm-password">ПОДТВЕРДИТЬ ПАРОЛЬ:</label>
-                <input type="password" id="confirm-password" placeholder="Повторите пароль" required>
-            </div>
-            
-            <button id="main-action-button" class="action-button">ЗАРЕГИСТРИРОВАТЬСЯ</button>
-            <button id="mode-toggle" class="action-button">ПЕРЕКЛЮЧИТЬ НА ВХОД</button>
-        </div>
+<div id="user-panel">
+    <h2>Панель игрока</h2>
+    <p>Баланс: <span id="user-balance">0</span></p>
+    <button id="bonus-btn">Получить бонус +10</button>
+</div>
 
-        <div id="logout-panel" style="display: none;">
-            <h2 id="welcome-message"></h2>
-            <p id="dev-status-text">Вы успешно подключены к **[СИСТЕМЕ]**. Ваш игровой процесс защищен Античит-протоколом.</p>
-            <button id="logout-button" class="action-button" style="background-color: var(--accent-pink); box-shadow: 0 0 15px var(--accent-pink);">ДЕАКТИВИРОВАТЬ ДОСТУП</button>
-        </div>
+<div id="admin-panel">
+    <h2>Панель управления пользователями</h2>
+    <table id="users-table">
+        <tr><th>Логин</th><th>Роль</th><th>Баланс</th><th>Действия</th></tr>
+    </table>
+    <button id="reset-all">Сбросить всех пользователей</button>
+</div>
 
-        <p id="message"></p>
+<script>
+window.onload = function() {
+    const USERNAME_INPUT = document.getElementById('username');
+    const PASSWORD_INPUT = document.getElementById('password');
+    const CONFIRM_PASSWORD_INPUT = document.getElementById('confirm-password');
+    const CONFIRM_PASSWORD_GROUP = document.getElementById('confirm-password-group');
+    const ROLE_SELECT = document.getElementById('role-select');
+    const MAIN_ACTION_BUTTON = document.getElementById('main-action-button');
+    const MODE_TOGGLE_BUTTON = document.getElementById('mode-toggle');
+    const MESSAGE_DISPLAY = document.getElementById('message');
+    const AUTH_FORM = document.getElementById('auth-form');
+    const WELCOME_MESSAGE = document.getElementById('welcome-message');
+    const FORM_TITLE = document.getElementById('form-title');
 
-        <div id="status-display" class="status-box">
-            СИСТЕМНЫЙ СТАТУС: <span id="status-text" style="color: var(--accent-pink);">ОЖИДАНИЕ...</span>
-        </div>
-        
-    </div>
+    const USER_PANEL = document.getElementById('user-panel');
+    const ADMIN_PANEL = document.getElementById('admin-panel');
+    const USER_BALANCE = document.getElementById('user-balance');
+    const USERS_TABLE = document.getElementById('users-table');
+    const BONUS_BTN = document.getElementById('bonus-btn');
+    const RESET_ALL_BTN = document.getElementById('reset-all');
 
-    <script>
-        window.onload = function() {
-            const USERNAME_INPUT = document.getElementById('username');
-            const PASSWORD_INPUT = document.getElementById('password');
-            const CONFIRM_PASSWORD_INPUT = document.getElementById('confirm-password');
-            const CONFIRM_PASSWORD_GROUP = document.getElementById('confirm-password-group');
-            const MAIN_ACTION_BUTTON = document.getElementById('main-action-button');
-            const LOGOUT_BUTTON = document.getElementById('logout-button');
-            const MODE_TOGGLE_BUTTON = document.getElementById('mode-toggle');
-            const MESSAGE_DISPLAY = document.getElementById('message');
-            const AUTH_FORM = document.getElementById('auth-form');
-            const LOGOUT_PANEL = document.getElementById('logout-panel');
-            const WELCOME_MESSAGE = document.getElementById('welcome-message');
-            const DEV_STATUS_TEXT = document.getElementById('dev-status-text');
-            const STATUS_DISPLAY = document.getElementById('status-display');
-            const STATUS_TEXT = document.getElementById('status-text');
-            const FORM_TITLE = document.getElementById('form-title');
+    const USER_KEY = 'app_users';
 
-            const USER_KEY = 'denisKazakovUser'; 
-            const PASSWORD_PREFIX = 'pass_';
-            const INITIAL_MONEY = 100;
-            const MONEY_PREFIX = 'money_';
-            const CHECKSUM_PREFIX = 'checksum_';
-            const SECRET_KEY = 952; 
-            
-            // --- АККАУНТ РАЗРАБОТЧИКА ---
-            const DEV_USERNAME = 'DenisKazakov';
-            const DEV_PASSWORD = '4aika4jo';
+    // Админ / owner
+    const DEV_USERNAME = 'DenisKazakov';
+    const DEV_PASSWORD_HASH = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd'; // hash для "password"
+    const DEV_ROLE = 'owner';
 
-            let authMode = 'register'; 
+    let authMode = 'register';
+    let currentUser = null;
 
-            // --- УТИЛИТЫ БАЛАНСА ---
-            function setInitialMoney(username) {
-                const moneyKey = MONEY_PREFIX + username;
-                const checksumKey = CHECKSUM_PREFIX + username;
-                const newChecksum = INITIAL_MONEY + SECRET_KEY;
-                localStorage.setItem(moneyKey, INITIAL_MONEY);
-                localStorage.setItem(checksumKey, newChecksum);
+    async function hashString(str) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+        return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    function getUsers() {
+        let data = localStorage.getItem(USER_KEY);
+        return data ? JSON.parse(data) : {};
+    }
+
+    function saveUsers(users) {
+        localStorage.setItem(USER_KEY, JSON.stringify(users));
+    }
+
+    async function registerUser(username, password, role='user') {
+        let users = getUsers();
+        if(users[username]){
+            MESSAGE_DISPLAY.textContent = 'Пользователь уже существует!';
+            return;
+        }
+        const hash = await hashString(password);
+        users[username] = { passwordHash: hash, role: role, balance: 100 };
+        saveUsers(users);
+        MESSAGE_DISPLAY.style.color = 'green';
+        MESSAGE_DISPLAY.textContent = 'Регистрация успешна! Теперь войдите.';
+        toggleMode();
+    }
+
+    async function loginUser(username, password){
+        const hash = await hashString(password);
+
+        if(username === DEV_USERNAME && hash === DEV_PASSWORD_HASH){
+            currentUser = { username: DEV_USERNAME, role: DEV_ROLE, balance: Infinity };
+            MESSAGE_DISPLAY.style.color = 'green';
+            MESSAGE_DISPLAY.textContent = `Добро пожаловать, ${DEV_ROLE}!`;
+            showPanels();
+            return;
+        }
+
+        let users = getUsers();
+        if(!users[username]){
+            MESSAGE_DISPLAY.style.color = 'red';
+            MESSAGE_DISPLAY.textContent = 'Пользователь не найден.';
+            return;
+        }
+
+        if(hash === users[username].passwordHash){
+            currentUser = { username: username, role: users[username].role, balance: users[username].balance };
+            MESSAGE_DISPLAY.style.color = 'green';
+            MESSAGE_DISPLAY.textContent = `Вход успешен. Роль: ${currentUser.role}`;
+            showPanels();
+        } else {
+            MESSAGE_DISPLAY.style.color = 'red';
+            MESSAGE_DISPLAY.textContent = 'Неверный пароль.';
+        }
+    }
+
+    function showPanels(){
+        AUTH_FORM.style.display = 'none';
+        WELCOME_MESSAGE.style.display = 'block';
+        WELCOME_MESSAGE.textContent = `Привет, ${currentUser.username}! Роль: ${currentUser.role}`;
+
+        if(currentUser.role === 'user') USER_PANEL.style.display = 'block';
+        if(['moderator','admin','owner'].includes(currentUser.role)) {
+            USER_PANEL.style.display = 'block';
+            ADMIN_PANEL.style.display = 'block';
+            renderUsersTable();
+        }
+    }
+
+    function toggleMode(){
+        if(authMode==='register'){
+            authMode='login';
+            FORM_TITLE.textContent = '> РЕЖИМ: ВХОД';
+            MAIN_ACTION_BUTTON.textContent = 'ВОЙТИ';
+            MODE_TOGGLE_BUTTON.textContent = 'РЕГИСТРАЦИЯ';
+            CONFIRM_PASSWORD_GROUP.style.display='none';
+        } else {
+            authMode='register';
+            FORM_TITLE.textContent = '> РЕЖИМ: РЕГИСТРАЦИЯ';
+            MAIN_ACTION_BUTTON.textContent = 'ЗАРЕГИСТРИРОВАТЬСЯ';
+            MODE_TOGGLE_BUTTON.textContent = 'ВХОД';
+            CONFIRM_PASSWORD_GROUP.style.display='block';
+            // Роль можно выбирать только для админа
+            ROLE_SELECT.innerHTML = '';
+            if(currentUser && ['admin','owner'].includes(currentUser.role)){
+                ['user','moderator','admin'].forEach(r=>{
+                    let opt = document.createElement('option'); opt.value=r; opt.text=r; ROLE_SELECT.appendChild(opt);
+                });
+            } else {
+                ROLE_SELECT.innerHTML = '<option value="user">user</option>';
             }
-            function removeGameData() {
-                 Object.keys(localStorage).filter(key => 
-                    key.startsWith(MONEY_PREFIX) || key.startsWith(CHECKSUM_PREFIX)
-                ).forEach(key => localStorage.removeItem(key));
-            }
-            function getStoredPassword(username) {
-                return localStorage.getItem(PASSWORD_PREFIX + username);
-            }
-            function setStoredPassword(username, password) {
-                localStorage.setItem(PASSWORD_PREFIX + username, password);
-            }
+        }
+        MESSAGE_DISPLAY.textContent='';
+        USERNAME_INPUT.value=''; PASSWORD_INPUT.value=''; CONFIRM_PASSWORD_INPUT.value='';
+    }
 
-            // --- ПЕРЕКЛЮЧЕНИЕ РЕЖИМА ---
-            function toggleMode() {
-                if (authMode === 'register') {
-                    authMode = 'login';
-                    FORM_TITLE.textContent = '> РЕЖИМ: ВХОД';
-                    MAIN_ACTION_BUTTON.textContent = 'ВОЙТИ В СИСТЕМУ';
-                    MODE_TOGGLE_BUTTON.textContent = 'ПЕРЕКЛЮЧИТЬ НА РЕГИСТРАЦИЮ';
-                    CONFIRM_PASSWORD_GROUP.style.display = 'none';
-                    CONFIRM_PASSWORD_INPUT.value = '';
-                } else {
-                    authMode = 'register';
-                    FORM_TITLE.textContent = '> РЕЖИМ: РЕГИСТРАЦИЯ';
-                    MAIN_ACTION_BUTTON.textContent = 'ЗАРЕГИСТРИРОВАТЬСЯ';
-                    MODE_TOGGLE_BUTTON.textContent = 'ПЕРЕКЛЮЧИТЬ НА ВХОД';
-                    CONFIRM_PASSWORD_GROUP.style.display = 'block';
-                }
-                MESSAGE_DISPLAY.textContent = '';
-                USERNAME_INPUT.value = '';
-                PASSWORD_INPUT.value = '';
-                
-            }
+    MAIN_ACTION_BUTTON.addEventListener('click', async function(e){
+        e.preventDefault();
+        const username = USERNAME_INPUT.value.trim();
+        const password = PASSWORD_INPUT.value;
+        if(!username || !password){ MESSAGE_DISPLAY.textContent='Заполните все поля'; return; }
 
-            // --- ОБРАБОТЧИК РЕГИСТРАЦИИ ---
-            function handleRegister(username, password, confirmPassword) {
-                // ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
-                if (username === DEV_USERNAME) {
-                    MESSAGE_DISPLAY.textContent = `[СИСТЕМА] ОШИБКА: Этот АЙДИ зарезервирован как Аккаунт разработчика.`;
-                    MESSAGE_DISPLAY.className = 'dev-message';
-                    return;
-                }
-                
-                if (getStoredPassword(username)) {
-                    MESSAGE_DISPLAY.textContent = `ОТКАЗ: Пользователь с АЙДИ [${username}] уже существует. Используйте ВХОД.`;
-                    MESSAGE_DISPLAY.className = 'error';
-                    return;
-                }
-                if (password !== confirmPassword) {
-                    MESSAGE_DISPLAY.textContent = 'ОШИБКА: Пароли не совпадают.';
-                    MESSAGE_DISPLAY.className = 'error';
-                    return;
-                }
-                if (username.length < 3 || password.length < 3) {
-                     MESSAGE_DISPLAY.textContent = 'ОШИБКА: АЙДИ и Пароль должны содержать минимум 3 символа.';
-                    MESSAGE_DISPLAY.className = 'error';
-                    return;
-                }
+        if(authMode==='register'){
+            const confirm = CONFIRM_PASSWORD_INPUT.value;
+            if(password !== confirm){ MESSAGE_DISPLAY.textContent='Пароли не совпадают'; return; }
+            const role = ROLE_SELECT.value || 'user';
+            await registerUser(username,password,role);
+        } else { await loginUser(username,password); }
+    });
 
-                // Успешная регистрация
-                setStoredPassword(username, password);
-                setInitialMoney(username);
-                
-                MESSAGE_DISPLAY.textContent = `СИСТЕМА: АЙДИ [${username}] СОЗДАН. Теперь войдите в систему.`;
-                MESSAGE_DISPLAY.className = 'success';
-                
-                // Переключение на вход
-                toggleMode();
-                USERNAME_INPUT.value = username;
-                PASSWORD_INPUT.value = password;
-            }
+    MODE_TOGGLE_BUTTON.addEventListener('click', function(e){ e.preventDefault(); toggleMode(); });
 
-            // --- ОБРАБОТЧИК ВХОДА ---
-            function handleLogin(username, password) {
-                let status = 'user'; 
-                
-                // 1. ПРОВЕРКА НА АККАУНТ РАЗРАБОТЧИКА
-                if (username === DEV_USERNAME && password === DEV_PASSWORD) {
-                    status = 'dev';
-                    localStorage.setItem('userStatus', 'dev'); 
-                } 
-                // 2. ПРОВЕРКА ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ
-                else {
-                    const storedPassword = getStoredPassword(username);
+    BONUS_BTN.addEventListener('click', ()=>{
+        currentUser.balance +=10;
+        USER_BALANCE.textContent = currentUser.balance;
+        // сохраняем
+        if(currentUser.username !== DEV_USERNAME){
+            let users = getUsers();
+            users[currentUser.username].balance = currentUser.balance;
+            saveUsers(users);
+        }
+    });
 
-                    if (!storedPassword) {
-                        MESSAGE_DISPLAY.textContent = `ОТКАЗ: АЙДИ [${username}] не найден. Используйте РЕГИСТРАЦИЮ.`;
-                        MESSAGE_DISPLAY.className = 'error';
-                        return;
-                    }
-                    
-                    if (storedPassword !== password) {
-                        MESSAGE_DISPLAY.textContent = 'ОТКАЗ В ДОСТУПЕ. Неверный пароль.';
-                        MESSAGE_DISPLAY.className = 'error';
-                        return;
-                    }
-                    localStorage.setItem('userStatus', 'user');
-                }
+    function renderUsersTable(){
+        USERS_TABLE.innerHTML='<tr><th>Логин</th><th>Роль</th><th>Баланс</th><th>Действия</th></tr>';
+        let users = getUsers();
+        if(currentUser.username !== DEV_USERNAME) users[DEV_USERNAME] = {role: DEV_ROLE, balance: '∞'}; // показать админа
 
-                // Успешный вход
-                localStorage.setItem(USER_KEY, username);
-                MESSAGE_DISPLAY.textContent = `СИСТЕМА: Пользователь ${username} ИДЕНТИФИЦИРОВАН.`;
-                MESSAGE_DISPLAY.className = (status === 'dev') ? 'dev-message' : 'success';
-                
-                // Очистка полей
-                USERNAME_INPUT.value = '';
-                PASSWORD_INPUT.value = '';
-                
-                setTimeout(() => {
-                    checkLoginStatus(); 
-                }, 500);
-            }
+        for(let u in users){
+            let tr = document.createElement('tr');
+            tr.innerHTML=`<td>${u}</td><td>${users[u].role}</td><td>${users[u].balance}</td>
+            <td>
+                <button onclick="changeRole('${u}')">Роль</button>
+                <button onclick="deleteUser('${u}')">Удалить</button>
+                <button onclick="addMoney('${u}',10)">+10 монет</button>
+            </td>`;
+            USERS_TABLE.appendChild(tr);
+        }
+    }
 
+    window.changeRole = function(username){
+        if(!['admin','owner'].includes(currentUser.role)) return alert('Нет доступа');
+        let newRole = prompt('Введите новую роль (user/moderator/admin):');
+        if(!newRole) return;
+        let users = getUsers();
+        if(users[username]) { users[username].role = newRole; saveUsers(users); renderUsersTable(); }
+    }
 
-            // --- ГЛАВНЫЙ ОБРАБОТЧИК ДЕЙСТВИЯ ---
-            function handleMainAction() {
-                const username = USERNAME_INPUT.value.trim();
-                const password = PASSWORD_INPUT.value.trim();
-                const confirmPassword = CONFIRM_PASSWORD_INPUT.value.trim();
+    window.deleteUser = function(username){
+        if(!['admin','owner'].includes(currentUser.role)) return alert('Нет доступа');
+        let users = getUsers();
+        delete users[username]; saveUsers(users); renderUsersTable();
+    }
 
-                if (username === '' || password === '') {
-                    MESSAGE_DISPLAY.textContent = 'ОШИБКА: Заполните все обязательные поля.';
-                    MESSAGE_DISPLAY.className = 'error';
-                    return;
-                }
+    window.addMoney = function(username, amount){
+        let users = getUsers();
+        if(users[username]) { users[username].balance += amount; saveUsers(users); renderUsersTable(); }
+    }
 
-                if (authMode === 'register') {
-                    handleRegister(username, password, confirmPassword);
-                } else {
-                    handleLogin(username, password);
-                }
-            }
-            
-            // --- ОБРАБОТЧИК ВЫХОДА ---
-            function handleLogout() {
-                const username = localStorage.getItem(USER_KEY);
-                
-                localStorage.removeItem(USER_KEY);
-                localStorage.removeItem('userStatus'); 
-                removeGameData(); 
+    RESET_ALL_BTN.addEventListener('click', ()=>{
+        if(!['owner'].includes(currentUser.role)) return alert('Только владелец может сбросить всех!');
+        localStorage.removeItem(USER_KEY);
+        USERS_TABLE.innerHTML='<tr><th>Логин</th><th>Роль</th><th>Баланс</th><th>Действия</th></tr>';
+        alert('Все пользователи удалены!');
+    });
 
-                MESSAGE_DISPLAY.textContent = `СИСТЕМА: Доступ ${username} деактивирован. Данные сброшены.`;
-                MESSAGE_DISPLAY.className = 'error';
-                
-                setTimeout(() => {
-                    checkLoginStatus();
-                }, 500);
-            }
-
-            // --- ПРОВЕРКА СТАТУСА ---
-            function checkLoginStatus() {
-                const username = localStorage.getItem(USER_KEY);
-                const status = localStorage.getItem('userStatus');
-                
-                if (username) {
-                    // Пользователь авторизован
-                    AUTH_FORM.style.display = 'none';
-                    LOGOUT_PANEL.style.display = 'block';
-                    WELCOME_MESSAGE.textContent = `> ДОБРО ПОЖАЛОВАТЬ, ${username.toUpperCase()}`;
-                    
-                    if (status === 'dev') {
-                        // Режим разработчика
-                        STATUS_TEXT.textContent = 'ДОСТУП АКТИВИРОВАН [РЕЖИМ РАЗРАБОТЧИКА]';
-                        STATUS_TEXT.style.color = 'var(--dev-color)';
-                        STATUS_DISPLAY.className = 'status-box dev-mode';
-                        DEV_STATUS_TEXT.textContent = 'ВНИМАНИЕ: Активирован режим разработчика. Имеет полный доступ и не требует сохранения баланса.';
-                        DEV_STATUS_TEXT.style.color = 'var(--dev-color)';
-                    } else {
-                        // Обычный пользователь
-                        STATUS_TEXT.textContent = 'ДОСТУП АКТИВИРОВАН';
-                        STATUS_TEXT.style.color = 'var(--success-color)';
-                        STATUS_DISPLAY.className = 'status-box logged-in';
-                        DEV_STATUS_TEXT.textContent = 'Вы успешно подключены к **[СИСТЕМЕ]**. Ваш игровой процесс защищен Античит-протоколом.';
-                        DEV_STATUS_TEXT.style.color = 'var(--text-color)';
-                    }
-                    
-                    MESSAGE_DISPLAY.textContent = '';
-
-                } else {
-                    // Пользователь не авторизован
-                    AUTH_FORM.style.display = 'block';
-                    LOGOUT_PANEL.style.display = 'none';
-                    
-                    STATUS_TEXT.textContent = 'ОЖИДАНИЕ...';
-                    STATUS_TEXT.style.color = 'var(--accent-pink)';
-                    STATUS_DISPLAY.className = 'status-box';
-                    
-                    if (authMode !== 'register') {
-                        toggleMode(); 
-                    }
-                }
-            }
-
-            // --- Инициализация ---
-            MAIN_ACTION_BUTTON.addEventListener('click', handleMainAction);
-            LOGOUT_BUTTON.addEventListener('click', handleLogout);
-            MODE_TOGGLE_BUTTON.addEventListener('click', toggleMode);
-            
-            checkLoginStatus();
-        };
-    </script>
+    toggleMode();
+};
+</script>
 </body>
 </html>
